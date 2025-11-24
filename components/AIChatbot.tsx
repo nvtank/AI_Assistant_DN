@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChatMessage, Location, WeatherData, Incident, Place, MOCK_PLACES } from '@/lib/types';
 import { calculateDistance, formatDistance } from '@/lib/utils';
-import { callPuterAI, initPuterAI } from '@/lib/puterAI';
+import { callGeminiAI, initGeminiAI } from '@/lib/geminiAI';
 import PlaceCard from './PlaceCard';
 
 interface AIChatbotProps {
@@ -23,7 +23,7 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [suggestedPlaces, setSuggestedPlaces] = useState<Place[]>([]);
-  const [puterReady, setPuterReady] = useState(false);
+  const [geminiReady, setGeminiReady] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,15 +31,10 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
   }, [messages]);
 
   useEffect(() => {
-    // Check if Puter is ready
-    const checkPuter = setInterval(() => {
-      if (initPuterAI()) {
-        setPuterReady(true);
-        clearInterval(checkPuter);
-      }
-    }, 500);
-
-    return () => clearInterval(checkPuter);
+    // Initialize Gemini AI
+    if (initGeminiAI()) {
+      setGeminiReady(true);
+    }
   }, []);
 
   const handleSend = async () => {
@@ -58,23 +53,23 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
     try {
       let aiResponse;
 
-      // Try Puter AI first (FREE!)
-      if (puterReady) {
+      // Use Gemini AI
+      if (geminiReady) {
         try {
-          aiResponse = await callPuterAI(input, {
+          aiResponse = await callGeminiAI(input, {
             userLocation,
             weather,
             nearbyIncidents,
           });
           
-          console.log('✅ Puter AI response received:', aiResponse.substring(0, 100) + '...');
-        } catch (puterError) {
-          console.error('Puter AI error, falling back:', puterError);
+          console.log('✅ Gemini AI response received:', aiResponse.substring(0, 100) + '...');
+        } catch (geminiError) {
+          console.error('Gemini AI error, falling back:', geminiError);
           // Fallback to server-side
           aiResponse = await callServerAI();
         }
       } else {
-        // Puter not ready, use server-side fallback
+        // Gemini not ready, use server-side fallback
         aiResponse = await callServerAI();
       }
 
@@ -166,9 +161,9 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold">🤖 Smart AI Assistant</h2>
-            <p className="text-sm opacity-90">Powered by Puter AI (Free!)</p>
+            <p className="text-sm opacity-90">Powered by Google Gemini</p>
           </div>
-          {puterReady && (
+          {geminiReady && (
             <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
               ✓ AI Ready
             </div>

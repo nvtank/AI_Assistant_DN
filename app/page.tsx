@@ -199,7 +199,6 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-180px)]">
           {/* Map Section */}
@@ -211,7 +210,6 @@ export default function HomePage() {
                 onMapClick={handleMapClick}
               />
               
-              {/* Floating Report Button */}
               <button
                 onClick={() => setShowReportForm(true)}
                 className="absolute bottom-6 right-6 bg-grab-green text-white px-6 py-3 rounded-full shadow-lg hover:bg-green-600 transition-all hover:scale-105 font-semibold flex items-center gap-2 z-[1000]"
@@ -220,7 +218,6 @@ export default function HomePage() {
                 <span>Report Incident</span>
               </button>
 
-              {/* Legend */}
               <div className="absolute top-6 left-6 bg-white rounded-lg shadow-lg p-3 z-[1000]">
                 <h3 className="font-semibold text-sm mb-2">Legend:</h3>
                 <div className="space-y-1 text-xs">
@@ -245,7 +242,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Chatbot Section */}
           <div className="lg:col-span-1">
             <AIChatbot
               userLocation={userLocation}
@@ -256,7 +252,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Report Form Modal */}
       {showReportForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[2000] p-4">
           <ReportIncidentForm
