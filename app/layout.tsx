@@ -1,13 +1,13 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Script from 'next/script'
+import { AuthProvider } from '@/components/AuthProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Grab The Beyond - Smart Travel Assistant',
-  description: 'Real-time incident map with AI assistant powered by Puter AI for Da Nang tourism',
+  description: 'Real-time incident map with AI assistant powered by Google Gemini for Da Nang tourism',
   keywords: ['Da Nang', 'tourism', 'AI assistant', 'travel', 'incident map', 'Grab'],
   authors: [{ name: 'Grab The Beyond Team' }],
   openGraph: {
@@ -25,12 +25,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Puter AI SDK - FREE AI (GPT-5, Claude, Gemini) */}
-        <Script
-          src="https://js.puter.com/v2/"
-          strategy="beforeInteractive"
-        />
-        
         {/* Leaflet CSS */}
         <link
           rel="stylesheet"
@@ -40,7 +34,9 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )

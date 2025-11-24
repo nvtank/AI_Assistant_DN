@@ -1,4 +1,4 @@
-import { Location } from './types';
+import { Location, DA_NANG_CENTER } from './types';
 
 /**
  * Calculate distance between two coordinates using Haversine formula
@@ -42,77 +42,127 @@ export function formatDistance(km: number): string {
 }
 
 /**
- * Get current user location with two-stage fallback
- * Stage 1: Try high accuracy (GPS) - best for outdoor
- * Stage 2: Try low accuracy (WiFi/Network) - faster, works indoor
- * Stage 3: Error - caller handles fallback to default location
+ * Helper: Get location from IP address (Fallback for Desktop/Laptop without GPS)
+ * Uses ip-api.com free API - Higher limits, no API key required
+ * ALWAYS returns a valid location (Da Nang center if all else fails)
+ */
+async function getLocationFromIP(): Promise<Location> {
+  try {
+    console.log('🌐 Fetching location from IP address...');
+    
+    // Use ip-api.com (free, no key, 45 requests/minute)
+    // Note: Uses HTTP in development. For HTTPS production, consider alternatives or proxy
+    const response = await fetch('http://ip-api.com/json/?fields=status,message,lat,lon,city,country');
+    
+    // If API error or rate limit exceeded, return Da Nang center (safe fallback)
+    if (!response.ok) {
+      console.warn(`⚠️ IP API Error (${response.status}), using default Da Nang location`);
+      return DA_NANG_CENTER;
+    }
+    
+    const data = await response.json();
+    
+    if (data.status === 'success' && data.lat && data.lon) {
+      console.log(`✅ IP location success: ${data.city}, ${data.country}`);
+      console.log(`   Coordinates: ${data.lat}, ${data.lon}`);
+      
+      return {
+        lat: data.lat,
+        lng: data.lon,
+        address: `${data.city}, ${data.country}`
+      };
+    }
+    
+    // API returned fail status, use Da Nang
+    console.warn('⚠️ IP API failed to get location, using default Da Nang location');
+    return DA_NANG_CENTER;
+
+  } catch (error) {
+    console.warn('❌ IP API connection error, using default Da Nang location');
+    console.warn('   Error:', error);
+    
+    // CRITICAL: Always return a valid location instead of throwing error
+    // This ensures the app never crashes due to location issues
+    return DA_NANG_CENTER;
+  }
+}
+
+/**
+ * Get current user location with 4-stage fallback
+ * Stage 1: Browser GPS (High accuracy) - Best for mobile devices
+ * Stage 2: Browser Network Location (Low accuracy) - WiFi/Cell towers
+ * Stage 3: IP Geolocation - For Desktop/Laptop without GPS
+ * Stage 4: Da Nang Center - ALWAYS returns a valid location (never fails)
+ * 
+ * This function NEVER rejects - it always resolves with a valid location
  */
 export function getCurrentLocation(): Promise<Location> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve) => {
+    // Check if geolocation is not supported at all
     if (!navigator.geolocation) {
-      reject(new Error('Geolocation is not supported by your browser'));
+      console.warn('⚠️ Geolocation API not supported, trying IP location...');
+      const ipLocation = await getLocationFromIP();
+      resolve(ipLocation); // getLocationFromIP() already handles fallback to DA_NANG_CENTER
       return;
     }
 
-    console.log('🔍 Requesting geolocation with high accuracy...');
+    console.log('🔍 Requesting geolocation (Stage 1: High accuracy GPS)...');
 
-    // Stage 1: Try high accuracy (GPS)
+    // Stage 1: Try high accuracy (GPS) - Best for mobile
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        console.log('✅ High accuracy geolocation success:', position.coords);
+        console.log('✅ GPS success (High accuracy):', position.coords);
         resolve({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         });
       },
       (error) => {
-        console.warn('⚠️ High accuracy failed, trying low accuracy...', error.message);
+        console.warn('⚠️ GPS failed, trying Stage 2 (Network location)...', error.message);
         
         // Stage 2: Fallback to low accuracy (WiFi/Network)
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            console.log('✅ Low accuracy geolocation success:', position.coords);
+            console.log('✅ Network location success (Low accuracy):', position.coords);
             resolve({
               lat: position.coords.latitude,
               lng: position.coords.longitude,
             });
           },
-          (fallbackError) => {
-            let errorMessage = 'Unable to get your location';
+          async (fallbackError) => {
+            console.warn('⚠️ Network location failed, trying Stage 3 (IP location)...');
             
+            // Stage 3: Fallback to IP Geolocation (already handles fallback to DA_NANG_CENTER)
+            const ipLocation = await getLocationFromIP();
+            
+            // Log detailed error info for debugging
             switch (fallbackError.code) {
               case fallbackError.PERMISSION_DENIED:
-                errorMessage = 'Location permission denied. Please enable location access in your browser settings.';
-                console.error('❌ PERMISSION_DENIED');
+                console.warn('📍 Location permission denied. Using IP or default location.');
                 break;
               case fallbackError.POSITION_UNAVAILABLE:
-                errorMessage = 'Location information unavailable. Please check your GPS/network connection.';
-                console.error('❌ POSITION_UNAVAILABLE - Possible reasons:');
-                console.error('   1. GPS is turned off on your device');
-                console.error('   2. No network connection');
-                console.error('   3. Browser cannot determine location');
-                console.error('   4. Using VPN/proxy that blocks location');
+                console.warn('📍 Location unavailable (GPS off, no network, or desktop). Using IP or default.');
                 break;
               case fallbackError.TIMEOUT:
-                errorMessage = 'Location request timed out. Please try again.';
-                console.error('❌ TIMEOUT');
+                console.warn('📍 Location request timed out. Using IP or default location.');
                 break;
               default:
-                console.error('❌ Unknown geolocation error:', fallbackError);
+                console.warn('📍 Geolocation error:', fallbackError);
             }
             
-            reject(new Error(errorMessage));
+            // Stage 4: Always resolve (IP location already returns DA_NANG_CENTER on failure)
+            resolve(ipLocation);
           },
           {
             enableHighAccuracy: false,
-            timeout: 10000,
+            timeout: 8000,
             maximumAge: 60000,
           }
         );
       },
       {
         enableHighAccuracy: true,
-        timeout: 8000,
+        timeout: 5000, // Reduced to 5s for faster fallback
         maximumAge: 0,
       }
     );

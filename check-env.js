@@ -129,25 +129,6 @@ async function testWeatherAPI() {
   });
 }
 
-/**
- * Test Puter AI
- */
-async function testPuterAI() {
-  console.log('\n🤖 Puter AI Configuration');
-  console.log('-'.repeat(60));
-  
-  const enabled = process.env.PUTER_ENABLED === 'true';
-  
-  if (enabled) {
-    console.log('✅ Puter AI: Enabled');
-    console.log('ℹ️  Note: Puter loads via CDN (https://js.puter.com/v2/)');
-    console.log('ℹ️  No API key required - FREE AI service!');
-    results.passed.push('Puter AI: Enabled');
-  } else {
-    console.log('⚠️  Puter AI: Disabled');
-    results.warnings.push('Puter AI: Disabled');
-  }
-}
 
 /**
  * Test Server Configuration

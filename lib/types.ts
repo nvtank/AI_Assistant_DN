@@ -83,10 +83,11 @@ export const SEVERITY_LEVELS = {
   },
 };
 
-// Da Nang center coordinates
-export const DA_NANG_CENTER = {
+// Default location: Da Nang city center (when all location methods fail)
+export const DA_NANG_CENTER: Location = {
   lat: 16.0544,
   lng: 108.2022,
+  address: 'Da Nang, Vietnam'
 };
 
 // Real Da Nang places data with accurate coordinates

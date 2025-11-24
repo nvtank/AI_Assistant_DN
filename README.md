@@ -64,86 +64,168 @@ npm run server
 - Frontend: [http://localhost:3000](http://localhost:3000)
 - Backend API: [http://localhost:3001](http://localhost:3001)
 
-## 📁 Cấu trúc dự án
+## 📁 Project Structure
 
 ```
 GrabTheBeyond/
-├── components/           # React Components
-│   ├── IncidentMap.tsx  # Bản đồ Leaflet với markers
-│   ├── ReportIncidentForm.tsx  # Form báo cáo sự cố
-│   ├── AIChatbot.tsx    # Chatbot AI
-│   └── PlaceCard.tsx    # Card địa điểm + nút Grab
-├── lib/                 # Utilities & Types
-│   ├── firebase.ts      # Firebase config
-│   ├── socket.ts        # Socket.IO client
-│   ├── types.ts         # TypeScript types
-│   └── utils.ts         # Helper functions
-├── pages/               # Next.js pages
-│   ├── index.tsx        # Homepage chính
-│   ├── _app.tsx         # App wrapper
-│   └── _document.tsx    # HTML document
-├── server/              # Backend Node.js
-│   └── index.js         # Express + Socket.IO server
-├── styles/              # CSS
-│   └── globals.css      # Global styles
-└── public/              # Static files
+├── app/                          # Next.js 14 App Router
+│   ├── layout.tsx               # Root layout with providers
+│   ├── page.tsx                 # Home page
+│   ├── login/                   # Authentication pages
+│   │   └── page.tsx
+│   ├── signup/
+│   │   └── page.tsx
+│   ├── profile/
+│   │   └── page.tsx
+│   └── globals.css              # Global styles
+├── components/                   # React Components
+│   ├── AIChatbot.tsx            # Context-aware AI chatbot
+│   ├── AuthProvider.tsx         # Authentication context
+│   ├── IncidentMap.tsx          # Interactive Leaflet map
+│   ├── PlaceCard.tsx            # Destination card with Grab button
+│   ├── ProtectedRoute.tsx       # Route protection wrapper
+│   ├── ReportIncidentForm.tsx   # Incident reporting form
+│   └── UserMenu.tsx             # User profile menu
+├── lib/                          # Core libraries & utilities
+│   ├── authService.ts           # Firebase authentication
+│   ├── firebase.ts              # Firebase configuration
+│   ├── placesAPI.ts             # Google Places integration
+│   ├── puterAI.ts               # Puter AI service
+│   ├── socket.ts                # Socket.IO client
+│   ├── types.ts                 # TypeScript definitions
+│   └── utils.ts                 # Helper functions
+├── server/                       # Backend API
+│   └── index.js                 # Express + Socket.IO server
+├── uploads/                      # User-uploaded files
+│   └── incidents/               # Incident photos
+└── public/                       # Static assets
 ```
 
-## 🔧 Tech Stack
+## �️ Technology Stack
 
 ### Frontend
-- **Next.js 14** - React framework
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-- **Leaflet** - Interactive maps
-- **Socket.IO Client** - Real-time communication
+| Technology | Purpose | Version |
+|-----------|---------|---------|
+| [Next.js](https://nextjs.org/) | React framework with App Router | 14.0.4 |
+| [TypeScript](https://www.typescriptlang.org/) | Type-safe JavaScript | 5.3.3 |
+| [Tailwind CSS](https://tailwindcss.com/) | Utility-first CSS framework | 3.4.0 |
+| [Leaflet](https://leafletjs.com/) | Interactive map library | 1.9.4 |
+| [React Leaflet](https://react-leaflet.js.org/) | React wrapper for Leaflet | 4.2.1 |
+| [Socket.IO Client](https://socket.io/) | Real-time WebSocket client | 4.6.1 |
 
 ### Backend
-- **Node.js + Express** - REST API server
-- **Socket.IO** - WebSocket for real-time
-- **Firebase Admin** - Database & storage
-- **Multer** - File upload handling
+| Technology | Purpose | Version |
+|-----------|---------|---------|
+| [Node.js](https://nodejs.org/) | JavaScript runtime | - |
+| [Express](https://expressjs.com/) | Web application framework | 4.18.2 |
+| [Socket.IO](https://socket.io/) | Real-time bidirectional communication | 4.6.1 |
+| [Multer](https://github.com/expressjs/multer) | File upload middleware | 1.4.5-lts.1 |
+| [CORS](https://github.com/expressjs/cors) | Cross-origin resource sharing | 2.8.5 |
 
-### AI & APIs
-- **Puter AI** - FREE AI chatbot (GPT-5 nano, Claude, Gemini)
-- **OpenWeatherMap API** - Weather data
-- **Nominatim (OSM)** - Reverse geocoding
+### Database & Authentication
+| Technology | Purpose | Version |
+|-----------|---------|---------|
+| [Firebase](https://firebase.google.com/) | Backend-as-a-Service | 10.14.1 |
+| [Firebase Admin](https://firebase.google.com/docs/admin/setup) | Server-side Firebase SDK | 12.0.0 |
+| [Firestore](https://firebase.google.com/docs/firestore) | NoSQL cloud database | - |
+| [Firebase Auth](https://firebase.google.com/docs/auth) | Authentication service | - |
+| [Firebase Storage](https://firebase.google.com/docs/storage) | File storage service | - |
 
-### Integration
-- **Grab Deep Linking** - Direct app integration
+### External APIs
+| Service | Purpose | Documentation |
+|---------|---------|---------------|
+| [Puter AI](https://puter.com/) | Multi-model AI (GPT-5 nano, Claude, Gemini) | [Docs](https://docs.puter.com/) |
+| [OpenWeatherMap](https://openweathermap.org/) | Real-time weather data | [API Docs](https://openweathermap.org/api) |
+| [Google Places](https://developers.google.com/maps/documentation/places) | Location search and details | [API Docs](https://developers.google.com/maps/documentation) |
+| [Nominatim](https://nominatim.org/) | Reverse geocoding | [API Docs](https://nominatim.org/release-docs/develop/api/Overview/) |
 
-## 📱 Tính năng nổi bật
+### Integrations
+- **Grab Deep Linking**: Native app integration via custom URL scheme (`grab://`)
+- **Google OAuth**: Social authentication via Firebase
+- **Facebook OAuth**: Social authentication via Firebase
 
-### Real-time Updates ⚡
-- Sự cố được broadcast ngay lập tức tới tất cả users
-- Hiển thị số người đang online
-- Notifications khi có sự cố mới
+## 🎯 Core Functionalities
 
-### Context-Aware AI 🧠
-- AI biết vị trí hiện tại của user
-- AI check thời tiết realtime
-- AI lọc địa điểm phù hợp (trong nhà khi mưa, v.v.)
+### 1. Real-time Incident Management ⚡
+```typescript
+// Features:
+- Live incident broadcasting via WebSocket
+- Photo upload with Firebase Storage
+- Map marker clustering for better UX
+- Admin verification workflow
+- Online user counter
+- Automatic notifications for nearby incidents
+```
 
-### Smart Navigation 🗺️
-- One-tap để mở Grab app
-- Auto-fill điểm đi/đến
-- Fallback sang web nếu không có app
+### 2. Context-Aware AI Assistant 🧠
+```typescript
+// AI considers:
+- User's current GPS coordinates
+- Real-time weather conditions
+- Nearby reported incidents
+- Time of day
+- User preferences
 
-## 🎨 UI/UX Highlights
+// Provides:
+- Intelligent venue recommendations
+- Weather-appropriate suggestions
+- Incident-aware routing advice
+- Local insights and tips
+```
 
-- ✨ Modern, clean interface với Grab branding
-- 📱 Fully responsive (mobile-first)
-- 🎯 Intuitive map interactions
-- 💬 Conversational AI chat
-- 🚀 Fast loading với dynamic imports
+### 3. Seamless Grab Integration �
+```typescript
+// Functionality:
+- One-tap booking with deep linking
+- Pre-filled origin and destination
+- Automatic app detection
+- Web fallback for non-app users
+- Distance and ETA calculation
+```
 
-## 🔐 Security & Best Practices
+### 4. User Authentication & Management 🔐
+```typescript
+// Supported methods:
+- Email/Password registration
+- Google OAuth 2.0
+- Facebook OAuth 2.0
+- Session persistence
+- Protected routes
+- User profile management
+```
 
-- ✅ Environment variables cho sensitive data
-- ✅ Firebase Admin SDK cho server-side operations
-- ✅ Input validation & sanitization
-- ✅ CORS configuration
-- ✅ Error handling & logging
+## 🎨 UI/UX Features
+
+- ✨ **Modern Design**: Clean interface with Grab's brand identity
+- 📱 **Fully Responsive**: Mobile-first design, works on all devices
+- 🗺️ **Interactive Maps**: Smooth pan, zoom, and marker interactions
+- 💬 **Natural Conversations**: AI chatbot with conversational UI
+- 🚀 **Performance Optimized**: Code splitting and lazy loading
+- ♿ **Accessible**: WCAG 2.1 compliant design principles
+- 🌓 **Visual Feedback**: Loading states, animations, and transitions
+
+## � Security & Best Practices
+
+### Authentication & Authorization
+- ✅ Firebase Authentication with email verification
+- ✅ OAuth 2.0 for social logins
+- ✅ JWT-based session management
+- ✅ Protected API endpoints
+- ✅ Route guards for authenticated pages
+
+### Data Security
+- ✅ Environment variables for sensitive data
+- ✅ Firebase Security Rules for Firestore
+- ✅ Server-side validation with Firebase Admin SDK
+- ✅ Input sanitization and validation
+- ✅ HTTPS-only in production
+
+### Code Quality
+- ✅ TypeScript for type safety
+- ✅ ESLint for code linting
+- ✅ Error boundaries for graceful error handling
+- ✅ Comprehensive error logging
+- ✅ CORS configuration for API security
 
 ## 📝 Notes cho Hackathon
 
