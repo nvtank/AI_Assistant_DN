@@ -79,7 +79,7 @@ Before you begin, ensure you have the following installed:
 
 Run both frontend and backend simultaneously:
 ```bash
-npm run dev:all
+npm run dev
 ```
 
 This starts:
