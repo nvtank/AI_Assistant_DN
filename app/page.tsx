@@ -1,12 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Incident, Location, WeatherData, DA_NANG_CENTER } from '@/lib/types';
 import { initSocket, getSocket } from '@/lib/socket';
 import { getCurrentLocation, getAddressFromCoords } from '@/lib/utils';
 import AIChatbot from '@/components/AIChatbot';
 import ReportIncidentForm from '@/components/ReportIncidentForm';
+import UserMenu from '@/components/UserMenu';
+import { useAuth } from '@/components/AuthProvider';
 
 // Dynamic import for map component (to avoid SSR issues with Leaflet)
 const IncidentMap = dynamic(() => import('@/components/IncidentMap'), {
@@ -22,6 +25,8 @@ const IncidentMap = dynamic(() => import('@/components/IncidentMap'), {
 });
 
 export default function HomePage() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [userLocation, setUserLocation] = useState<Location>(DA_NANG_CENTER);
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -30,10 +35,19 @@ export default function HomePage() {
   const [connectedUsers, setConnectedUsers] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // Check authentication
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, authLoading, router]);
+
   // Initialize
   useEffect(() => {
-    initializeApp();
-  }, []);
+    if (user) {
+      initializeApp();
+    }
+  }, [user]);
 
   const initializeApp = async () => {
     try {
@@ -154,7 +168,7 @@ export default function HomePage() {
     return distance <= 5;
   });
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-grab-green to-green-600">
         <div className="text-center text-white">
@@ -164,6 +178,10 @@ export default function HomePage() {
         </div>
       </div>
     );
+  }
+
+  if (!user) {
+    return null; // Will redirect to login
   }
 
   return (
@@ -193,6 +211,7 @@ export default function HomePage() {
                     🌡️ {Math.round(weather.temp)}°C - {weather.description}
                   </div>
                 )}
+                <UserMenu />
               </div>
             </div>
           </div>
