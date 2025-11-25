@@ -36,7 +36,7 @@ Before you begin, ensure you have the following installed:
 
    Create a `.env` file in the root directory:
    ```bash
-   cp .env.example .env
+   cp .env
    ```
 
    Configure the following environment variables:
