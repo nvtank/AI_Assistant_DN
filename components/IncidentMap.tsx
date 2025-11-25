@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Incident, INCIDENT_TYPES, Location } from '@/lib/types';
-import { getSocket } from '@/lib/socket';
+import { initPusher, onNewIncident } from '@/lib/pusher';
 import { formatTimestamp } from '@/lib/utils';
 
 interface IncidentMapProps {
@@ -69,14 +69,15 @@ export default function IncidentMap({
 
     mapRef.current = map;
 
-    // Listen for real-time incident updates
-    const socket = getSocket();
-    socket.on('incident:new', (incident: Incident) => {
-      console.log('New incident received:', incident);
+    // Initialize Pusher and listen for real-time incident updates
+    initPusher();
+    const unsubscribe = onNewIncident((incident: Incident) => {
+      console.log('📬 New incident received via Pusher:', incident.type);
       // Map will re-render with updated incidents from parent
     });
 
     return () => {
+      unsubscribe(); // Clean up Pusher subscription
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;

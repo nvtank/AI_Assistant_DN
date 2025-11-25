@@ -2,7 +2,9 @@
 
 import { useState, useRef } from 'react';
 import { Incident, INCIDENT_TYPES, Location, SEVERITY_LEVELS } from '@/lib/types';
-import { getSocket } from '@/lib/socket';
+import { broadcastIncident, uploadImage } from '@/lib/pusher';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 interface ReportIncidentFormProps {
   location: Location;
@@ -47,47 +49,44 @@ export default function ReportIncidentForm({
 
       let imageUrl = '';
 
-      // Upload image if exists
+      // Upload image if exists (via Firebase Storage API)
       if (image) {
-        const formData = new FormData();
-        formData.append('image', image);
-
-        const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_SOCKET_URL}/api/upload`, {
-          method: 'POST',
-          body: formData,
-        });
-
-        const uploadData = await uploadResponse.json();
-        if (uploadData.success) {
-          imageUrl = uploadData.imageUrl;
-        }
+        console.log('📤 Uploading image...');
+        imageUrl = await uploadImage(image);
+        console.log('✅ Image uploaded:', imageUrl);
       }
 
-      // Report incident via Socket.IO
-      const socket = getSocket();
+      // Prepare incident data
       const incidentData: Partial<Incident> = {
         type,
         severity,
         description,
         location,
         imageUrl,
+        status: 'pending',
+        createdAt: new Date(),
       };
 
-      socket.emit('incident:report', incidentData);
+      // Save to Firestore
+      console.log('💾 Saving incident to Firestore...');
+      const docRef = await addDoc(collection(db, 'incidents'), incidentData);
+      
+      const savedIncident: Incident = {
+        ...incidentData as Incident,
+        id: docRef.id,
+      };
 
-      // Wait for confirmation
-      socket.once('incident:reported', (response: any) => {
-        setLoading(false);
-        if (response.success) {
-          alert('✅ Incident reported successfully! We will verify and notify other users.');
-          onSuccess?.();
-        } else {
-          alert('❌ Error: ' + response.error);
-        }
-      });
-    } catch (error) {
-      console.error('Error reporting incident:', error);
-      alert('❌ An error occurred while reporting the incident');
+      // Broadcast to all clients via Pusher
+      console.log('📡 Broadcasting incident...');
+      await broadcastIncident(savedIncident);
+
+      setLoading(false);
+      alert('✅ Incident reported successfully! We will verify and notify other users.');
+      onSuccess?.();
+
+    } catch (error: any) {
+      console.error('❌ Error reporting incident:', error);
+      alert('❌ An error occurred: ' + error.message);
       setLoading(false);
     }
   };
