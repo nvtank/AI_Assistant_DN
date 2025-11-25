@@ -17,7 +17,7 @@ export default function UserMenu() {
 
   if (loading) {
     return (
-      <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+      <div className="w-10 h-10 bg-white/20 rounded-full animate-pulse"></div>
     );
   }
 
@@ -26,13 +26,13 @@ export default function UserMenu() {
       <div className="flex gap-2">
         <button
           onClick={() => router.push('/login')}
-          className="px-4 py-2 text-green-600 hover:text-green-700 font-semibold"
+          className="px-4 py-2 text-white hover:text-gray-200 font-semibold transition-colors"
         >
           Login
         </button>
         <button
           onClick={() => router.push('/signup')}
-          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold"
+          className="px-4 py-2 bg-white text-green-600 rounded-lg hover:bg-gray-100 font-semibold transition-colors"
         >
           Sign Up
         </button>
@@ -50,15 +50,15 @@ export default function UserMenu() {
           <img
             src={user.photoURL}
             alt={user.displayName || 'User'}
-            className="w-10 h-10 rounded-full border-2 border-green-500"
+            className="w-10 h-10 rounded-full border-2 border-white"
           />
         ) : (
-          <div className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-semibold">
+          <div className="w-10 h-10 rounded-full bg-white text-green-600 flex items-center justify-center font-semibold">
             {user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}
           </div>
         )}
-        <span className="hidden md:block font-medium text-gray-700">
-          {user.displayName || user.email}
+        <span className="hidden md:block font-medium text-white">
+          {user.displayName || user.email?.split('@')[0]}
         </span>
       </button>
 

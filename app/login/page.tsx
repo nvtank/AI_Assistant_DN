@@ -23,7 +23,10 @@ export default function LoginPage() {
     if (authError) {
       setError(authError);
       setLoading(false);
-    } else if (user) router.push("/");
+    } else if (user) {
+      // User info is automatically saved to storage by AuthProvider
+      router.push("/");
+    }
   };
 
   const handleGoogleLogin = async () => {
@@ -32,7 +35,10 @@ export default function LoginPage() {
     if (authError) {
       setError(authError);
       setLoading(false);
-    } else if (user) router.push("/");
+    } else if (user) {
+      // User info is automatically saved to storage by AuthProvider
+      router.push("/");
+    }
   };
 
   const handleFacebookLogin = async () => {
@@ -41,7 +47,10 @@ export default function LoginPage() {
     if (authError) {
       setError(authError);
       setLoading(false);
-    } else if (user) router.push("/");
+    } else if (user) {
+      // User info is automatically saved to storage by AuthProvider
+      router.push("/");
+    }
   };
 
   return (

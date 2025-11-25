@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
-import { onAuthStateChange } from '@/lib/authService';
+import { onAuthStateChange, saveUserToStorage, getUserFromStorage } from '@/lib/authService';
 
 interface AuthContextType {
   user: User | null;
@@ -21,9 +21,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((user) => {
-      setUser(user);
+    // Try to get user from localStorage first
+    const storedUser = getUserFromStorage();
+    if (storedUser) {
+      setUser(storedUser as User);
+    }
+
+    const unsubscribe = onAuthStateChange((firebaseUser) => {
+      setUser(firebaseUser);
       setLoading(false);
+      
+      // Save user to localStorage when logged in
+      if (firebaseUser) {
+        saveUserToStorage(firebaseUser);
+      } else {
+        // Remove from localStorage when logged out
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('user');
+        }
+      }
     });
 
     return () => unsubscribe();

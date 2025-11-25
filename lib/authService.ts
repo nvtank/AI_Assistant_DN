@@ -67,6 +67,10 @@ export const signInWithFacebook = async () => {
 export const logOut = async () => {
   try {
     await signOut(auth);
+    // Clear user from localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user');
+    }
     return { error: null };
   } catch (error: any) {
     return { error: error.message };
@@ -76,4 +80,26 @@ export const logOut = async () => {
 // Auth state observer
 export const onAuthStateChange = (callback: (user: User | null) => void) => {
   return onAuthStateChanged(auth, callback);
+};
+
+// Save user to localStorage
+export const saveUserToStorage = (user: User) => {
+  if (typeof window !== 'undefined') {
+    const userData = {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+    };
+    localStorage.setItem('user', JSON.stringify(userData));
+  }
+};
+
+// Get user from localStorage
+export const getUserFromStorage = () => {
+  if (typeof window !== 'undefined') {
+    const userData = localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
+  }
+  return null;
 };
