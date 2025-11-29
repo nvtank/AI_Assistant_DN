@@ -130,7 +130,7 @@ export default function LoginPage() {
             <span className="hidden sm:inline">Continue with Google</span>
             <span className="sm:hidden">Google</span>
           </motion.button>
-
+{/* 
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={handleFacebookLogin}
@@ -140,7 +140,7 @@ export default function LoginPage() {
             <FaFacebook className="w-4 h-4 sm:w-5 sm:h-5" /> 
             <span className="hidden sm:inline">Continue with Facebook</span>
             <span className="sm:hidden">Facebook</span>
-          </motion.button>
+          </motion.button> */}
         </div>
 
         <div className="text-center mt-4 sm:mt-6 text-xs sm:text-sm text-white/90">
