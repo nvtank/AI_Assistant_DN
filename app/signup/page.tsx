@@ -176,7 +176,7 @@ export default function SignUpPage() {
             <span className="sm:hidden">Google</span>
           </motion.button>
 
-          <motion.button
+          {/* <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={handleFacebookSignUp}
             disabled={loading}
@@ -185,7 +185,7 @@ export default function SignUpPage() {
             <Facebook size={16} />
             <span className="hidden sm:inline">Sign up with Facebook</span>
             <span className="sm:hidden">Facebook</span>
-          </motion.button>
+          </motion.button> */}
         </div>
 
         <div className="text-center mt-4 sm:mt-6 text-xs sm:text-sm text-white/90">
