@@ -203,11 +203,10 @@ export function generateMockGrabLink(
 ): string {
   // Mock Grab app link (internal demo app)
   const params = new URLSearchParams({
-    pickup_latitude: fromLat.toString(),
-    pickup_longitude: fromLng.toString(),
-    dropoff_latitude: toLat.toString(),
-    dropoff_longitude: toLng.toString(),
-    dropoff_name: toName,
+    lat: toLat.toString(),
+    lng: toLng.toString(),
+    name: toName,
+    address: toName, // Use name as address for simplicity
   });
 
   return `/mock-grab?${params.toString()}`;

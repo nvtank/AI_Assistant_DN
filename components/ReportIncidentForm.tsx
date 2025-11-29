@@ -62,7 +62,15 @@ export default function ReportIncidentForm({
       setLoading(false);
       
       // Show success message
-      alert('✅ Report sent to Admin successfully!\n\nYour incident is pending approval and will be displayed on the map after Admin verification.');
+      alert('✅ Report Submitted Successfully!\n\n' +
+            '📋 Status: Pending Admin Approval\n' +
+            '🔍 Your report will be reviewed and verified by Admin\n' +
+            '✓ Once approved, it will appear on the map for all users\n\n' +
+            '💡 Demo Note: In production version, you will receive:\n' +
+            '   • Real-time push notifications\n' +
+            '   • SMS/Email confirmations\n' +
+            '   • Report tracking with status updates\n' +
+            '   • Integration with city emergency services');
       
       onSuccess?.();
 
@@ -78,6 +86,19 @@ export default function ReportIncidentForm({
       <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-grab-dark">
         📍 Report Incident
       </h2>
+
+      {/* Demo Notice */}
+      <div className="mb-3 sm:mb-4 bg-blue-50 border border-blue-200 rounded-lg p-2 sm:p-3">
+        <div className="flex items-start space-x-2">
+          <span className="text-sm sm:text-base">💡</span>
+          <div className="flex-1">
+            <p className="text-[10px] sm:text-xs text-blue-800 leading-relaxed">
+              <span className="font-semibold">Demo Mode:</span> Reports are stored locally for admin review. 
+              Once we are in the next round, we will update the website to match the goals we have set out in the plan.
+            </p>
+          </div>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
         {/* Incident Type */}

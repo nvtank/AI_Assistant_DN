@@ -42,16 +42,27 @@ export default function IncidentMap({
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
       });
 
+      // Define Da Nang bounds
+      const daNangBounds = L.latLngBounds(
+        L.latLng(15.9, 107.9),  // Southwest corner (bottom-left)
+        L.latLng(16.2, 108.4)   // Northeast corner (top-right)
+      );
+
       const map = L.map(mapContainerRef.current, {
         zoomControl: true,
         scrollWheelZoom: true,
         doubleClickZoom: true,
         touchZoom: true,
+        maxBounds: daNangBounds,           // Restrict panning to Da Nang area
+        maxBoundsViscosity: 1.0,           // Make bounds completely solid (can't drag outside)
+        minZoom: 11,                       // Minimum zoom to see Da Nang area
+        maxZoom: 18,                       // Maximum zoom for details
       }).setView([center.lat, center.lng], 13);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
-        maxZoom: 19,
+        maxZoom: 18,
+        bounds: daNangBounds,              // Only load tiles within Da Nang
       }).addTo(map);
 
       // Add user location marker
