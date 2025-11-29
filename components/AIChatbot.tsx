@@ -178,7 +178,7 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
   ];
 
   return (
-    <div className="flex flex-col h-full sm:h-[850px] bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+    <div className="flex flex-col h-full sm:h-screen bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
       
       {/* HEADER */}
       <div className="bg-gradient-to-br from-grab-green to-emerald-600 text-white p-3 sm:p-5 rounded-t-2xl shadow-md flex-shrink-0">
