@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Location, DA_NANG_CENTER } from '@/lib/types';
 import { getCurrentLocation, calculateDistance, formatDistance } from '@/lib/utils';
@@ -41,7 +41,7 @@ const VEHICLE_TYPES: VehicleType[] = [
   },
 ];
 
-export default function MockGrabPage() {
+function MockGrabContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -448,5 +448,21 @@ export default function MockGrabPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Wrap with Suspense to handle useSearchParams
+export default function MockGrabPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-screen w-full flex items-center justify-center bg-green-600">
+        <div className="text-center text-white">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-white mx-auto mb-4"></div>
+          <p className="text-xl font-semibold">Loading Grab...</p>
+        </div>
+      </div>
+    }>
+      <MockGrabContent />
+    </Suspense>
   );
 }
