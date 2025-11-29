@@ -24,54 +24,116 @@ export async function callGeminiAI(
   }
 ): Promise<string> {
   try {
-    // Build context-aware prompt with real-time data
+    // Analyze user intent and keywords
+    const messageLower = message.toLowerCase();
+    const keywords = {
+      coffee: ['coffee', 'cafe', 'cà phê', 'café', 'caphe'],
+      restaurant: ['restaurant', 'food', 'eat', 'quán ăn', 'nhà hàng', 'ăn'],
+      salon: ['salon', 'hair', 'cut', 'cắt tóc', 'tiệm tóc'],
+      spa: ['spa', 'massage', 'mát-xa'],
+      gym: ['gym', 'fitness', 'phòng tập'],
+      bar: ['bar', 'drink', 'beer', 'quán bar'],
+      shopping: ['shop', 'mall', 'shopping', 'mua sắm', 'siêu thị'],
+      beach: ['beach', 'sea', 'biển'],
+      hotel: ['hotel', 'stay', 'khách sạn'],
+      pharmacy: ['pharmacy', 'medicine', 'hiệu thuốc', 'thuốc'],
+    };
+
+    let placeType = '';
+    for (const [type, words] of Object.entries(keywords)) {
+      if (words.some(word => messageLower.includes(word))) {
+        placeType = type;
+        break;
+      }
+    }
+
+    // Weather-aware response
+    const weatherCondition = context.weather?.main?.toLowerCase() || '';
+    const isRaining = weatherCondition.includes('rain') || context.weather?.description?.toLowerCase().includes('rain');
+    const isCloudy = weatherCondition.includes('cloud');
+    const isSunny = weatherCondition.includes('clear') || weatherCondition.includes('sun');
+    const temp = context.weather?.temp || 0;
+
+    // Check if user is asking about weather
+    const isWeatherQuery = messageLower.includes('weather') || 
+                          messageLower.includes('thời tiết') || 
+                          messageLower.includes('trời') ||
+                          messageLower.match(/how.*(?:is|'s).*(?:the )?weather/) ||
+                          messageLower.includes('nhiệt độ') ||
+                          messageLower.includes('temperature');
+
+    let weatherResponse = '';
+    if (isWeatherQuery) {
+      if (isRaining) {
+        weatherResponse = `You're right! It's raining today in Da Nang 🌧️ (${context.weather?.description}, ${temp}°C). I recommend visiting indoor places like cafes, shopping malls, or spas to stay dry and comfortable.\n\n`;
+      } else if (temp > 30) {
+        weatherResponse = `Yes, it's quite hot today! 🌡️ ${temp}°C with ${context.weather?.description}. Perfect weather to visit air-conditioned cafes, indoor shopping malls, or take a refreshing swim at the beach!\n\n`;
+      } else if (isSunny) {
+        weatherResponse = `Beautiful sunny day in Da Nang! ☀️ ${temp}°C with ${context.weather?.description}. Great time to explore beaches, outdoor cafes, or visit the famous bridges!\n\n`;
+      } else if (isCloudy) {
+        weatherResponse = `It's a bit cloudy today ☁️ (${temp}°C, ${context.weather?.description}). Nice weather for walking around and exploring the city!\n\n`;
+      } else {
+        weatherResponse = `Currently in Da Nang, the weather is ${context.weather?.description} with a temperature of ${temp}°C. `;
+      }
+    }
+
+    // Build context-aware prompt
     const contextPrompt = `
-You are an intelligent AI travel assistant for Da Nang, Vietnam tourism with access to REAL-TIME Google Places API data.
+You are a friendly, natural AI travel assistant for Da Nang, Vietnam.
 
-CURRENT CONTEXT:
-- User Location: ${context.userLocation?.address || 'Unknown location'}
-- GPS Coordinates: Lat ${context.userLocation?.lat}, Lng ${context.userLocation?.lng}
-- Weather Conditions: ${context.weather?.description || 'Unknown'} at ${context.weather?.temp || 'N/A'}°C
-- Traffic/Safety: ${context.nearbyIncidents?.length || 0} active incidents nearby${context.nearbyIncidents?.length ? ` (Types: ${context.nearbyIncidents.map((i: any) => i.type).join(', ')})` : ''}
-${context.realTimePlaces?.length ? `- Real-time Places Found: ${context.realTimePlaces.length} locations in database
-  Featured: ${context.realTimePlaces.slice(0, 5).map((p: any) => `${p.name} (${p.rating || 'N/A'}★, ${p.isIndoor ? 'Indoor' : 'Outdoor'})`).join(', ')}` : '- Real-time places: Not loaded yet'}
+CURRENT WEATHER DATA (from OpenWeather API):
+- Weather: ${context.weather?.description || 'Unknown'}
+- Temperature: ${temp}°C
+- Main Condition: ${context.weather?.main || 'Unknown'}
+- Details: ${isRaining ? '🌧️ Raining' : isSunny ? '☀️ Sunny' : isCloudy ? '☁️ Cloudy' : 'Normal conditions'}
+- Humidity: ${context.weather?.humidity || 'N/A'}%
+- Wind Speed: ${context.weather?.windSpeed || 'N/A'} m/s
 
-YOUR CAPABILITIES:
-✅ Search Google Places API for: restaurants, cafes, bars, street food, hair salons, nail salons, spas, massage, gyms, pharmacies, convenience stores, shopping malls, cinemas, parks, attractions
-✅ Provide REAL-TIME information: current ratings, reviews count, opening hours, exact addresses, phone numbers
-✅ Understand Vietnamese and English queries (translate keywords automatically)
-✅ Filter by weather conditions (rain → indoor, sunny → outdoor/beach)
-✅ Avoid dangerous areas with traffic incidents
-✅ Calculate distances and suggest best transportation method (walk/bike/car)
+OTHER CONTEXT:
+- User Location: ${context.userLocation?.address || 'Da Nang'}
+- Safety: ${context.nearbyIncidents?.length || 0} incidents nearby
+- User is looking for: ${placeType || 'general information'}
 
-RESPONSE GUIDELINES:
-1. Analyze user's intent (looking for food? services? entertainment?)
-2. Check weather: If raining/hot → prioritize indoor/air-conditioned places
-3. Safety first: Avoid areas with flooding, potholes, or traffic jams
-4. Suggest 3-5 specific places with:
-   - Name and rating (★)
-   - Distance from user (~XXm or ~XXkm)
-   - Why it's good (specialty, ambiance, price range)
-   - Indoor/outdoor status
-5. Add helpful tips (operating hours, best time to visit, booking advice)
-6. Always end with "Book Grab" call-to-action
-7. Use emojis appropriately (🍜 food, ☕ cafe, 💇 salon, 💆 spa, etc.)
-8. Reply in user's language (Vietnamese if user asks in Vietnamese, English if English)
-9. Be conversational, friendly, and practical (like a local friend)
+IMPORTANT INSTRUCTIONS:
+1. **Weather Responses** - When user asks about weather (like "how is the weather today in da nang"):
+   - Respond DIRECTLY with current weather information: description, temperature, conditions
+   - Examples:
+     * "The weather in Da Nang today is quite nice! ☀️ It's ${context.weather?.description} with a temperature of ${temp}°C. Perfect for outdoor activities!"
+     * "Currently in Da Nang, it's ${context.weather?.description} and ${temp}°C. ${isRaining ? 'Bring an umbrella!' : isSunny ? 'Great day to explore!' : 'Nice day for sightseeing!'}"
+   - If raining: "You're right! It's raining today 🌧️..." 
+   - If hot: "It's really hot today! 🌡️..."
+   - If sunny: "Beautiful day today! ☀️..."
+   - ALWAYS include actual temperature and description from the context
+   - Be conversational and friendly!
 
-VIETNAMESE KEYWORDS AUTO-TRANSLATION:
-- "quán ăn" → restaurant
-- "quán cà phê/cafe" → cafe
-- "tiệm cắt tóc" → hair salon
-- "spa" → spa/massage
-- "phòng gym" → gym
-- "ăn vặt" → street food/snack
-- "siêu thị" → supermarket
-- "hiệu thuốc" → pharmacy
+2. **Place Recommendations** - MUST MATCH USER INTENT:
+   - If user says "coffee" or "cafe" → ONLY recommend coffee shops/cafes
+   - If user says "restaurant" or "food" → ONLY recommend restaurants
+   - If user says "salon" or "hair" → ONLY recommend hair salons
+   - If user says "spa" or "massage" → ONLY recommend spas
+   - DO NOT mix categories! If they want coffee, don't suggest restaurants!
 
-USER QUESTION: ${message}
+3. **Weather-Smart Suggestions**:
+   - Raining → Indoor places (malls, cafes with AC, indoor attractions)
+   - Hot (>30°C) → Air-conditioned places or beaches
+   - Nice weather → Outdoor cafes, beaches, parks
 
-Provide a helpful, actionable response now:`;
+4. **Response Format**:
+   - Start with weather acknowledgment if relevant
+   - Suggest 3-5 specific places matching EXACT user intent
+   - Include: Name, rating (if known), distance, why it's good
+   - Add helpful tips
+   - End with "Book Grab to get there easily! 🚗"
+
+5. **Language**: Match user's language (Vietnamese or English)
+
+6. **Tone**: Friendly, natural, like chatting with a local friend
+
+USER MESSAGE: "${message}"
+
+${weatherResponse ? 'Start with this weather response: ' + weatherResponse : ''}
+
+Now provide specific recommendations matching user's intent:`;
 
     // Call Gemini API
     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
@@ -86,7 +148,7 @@ Provide a helpful, actionable response now:`;
           }]
         }],
         generationConfig: {
-          temperature: 0.7,
+          temperature: 0.8,
           topK: 40,
           topP: 0.95,
           maxOutputTokens: 1024,
@@ -113,34 +175,110 @@ Provide a helpful, actionable response now:`;
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('❌ Gemini API error:', errorData);
-      throw new Error(`Gemini API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+      const errorText = await response.text();
+      console.error('❌ Gemini API error:', errorText);
+      throw new Error(`Gemini API error: ${response.status}`);
     }
 
     const data = await response.json();
     console.log('🔍 Raw Gemini AI response:', data);
 
-    // Extract text from Gemini response
-    if (data.candidates && data.candidates.length > 0) {
+    // Extract text from Gemini response with better error handling
+    if (data.candidates && Array.isArray(data.candidates) && data.candidates.length > 0) {
       const candidate = data.candidates[0];
-      if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
-        const text = candidate.content.parts[0].text;
-        console.log('✅ Gemini AI response extracted:', text.substring(0, 200) + '...');
-        return text;
+      
+      // Check if blocked by safety filters
+      if (candidate.finishReason === 'SAFETY') {
+        console.warn('⚠️ Response blocked by safety filters');
+        return getFallbackResponse(message, context, placeType, isRaining);
+      }
+      
+      // Try multiple paths to extract text
+      let text = null;
+      
+      // Path 1: candidate.content.parts[0].text (standard structure)
+      if (candidate.content?.parts && Array.isArray(candidate.content.parts) && candidate.content.parts.length > 0) {
+        text = candidate.content.parts[0].text;
+      }
+      
+      // Path 2: candidate.text (alternative structure)
+      if (!text && candidate.text) {
+        text = candidate.text;
+      }
+      
+      // Path 3: candidate.output (another alternative)
+      if (!text && candidate.output) {
+        text = candidate.output;
+      }
+      
+      if (text && typeof text === 'string' && text.trim()) {
+        console.log('✅ Gemini AI response extracted successfully');
+        return weatherResponse + text;
       }
     }
 
+    console.warn('⚠️ Invalid response structure from Gemini API');
+    console.warn('Response data:', JSON.stringify(data, null, 2));
     throw new Error('Invalid response format from Gemini API');
 
   } catch (error: any) {
     console.error('❌ Gemini AI error:', error);
-    
-    // Fallback response
-    return `Sorry, I'm having trouble connecting to AI. Please try again later or contact support..
-    
-Error: ${error.message}`;
+    return getFallbackResponse(message, context, '', false);
   }
+}
+
+// Fallback response when Gemini fails
+function getFallbackResponse(
+  message: string, 
+  context: any, 
+  placeType: string, 
+  isRaining: boolean
+): string {
+  const temp = context.weather?.temp || 0;
+  const weather = context.weather?.description || 'pleasant';
+  
+  // Weather-aware greeting
+  let response = '';
+  if (isRaining) {
+    response = `It's raining today 🌧️ (${weather}, ${temp}°C). `;
+  } else if (temp > 30) {
+    response = `It's quite hot today 🌡️ (${temp}°C). `;
+  } else {
+    response = `Nice weather today! ${temp}°C and ${weather}. `;
+  }
+
+  // Recommendations based on place type
+  if (placeType === 'coffee') {
+    response += `\n\nHere are some great coffee shops in Da Nang:\n\n`;
+    response += `☕ **Cong Caphe** - Traditional Vietnamese cafe with vintage decor\n`;
+    response += `☕ **43 Factory Coffee Roaster** - Specialty coffee, modern atmosphere\n`;
+    response += `☕ **K'HỒ COFFEE** - Cozy spot with amazing views\n`;
+  } else if (placeType === 'restaurant') {
+    response += `\n\nGreat restaurants you should try:\n\n`;
+    response += `🍜 **Madame Lan** - Famous for authentic Vietnamese cuisine\n`;
+    response += `🍽️ **Waterfront** - International dishes with beach views\n`;
+    response += `🥘 **Bà Dương** - Local favorite for traditional food\n`;
+  } else if (placeType === 'salon') {
+    response += `\n\nPopular hair salons:\n\n`;
+    response += `💇 **30Shine** - Modern chain with quality service\n`;
+    response += `💇 **Hair Salon Luxury** - Professional styling\n`;
+  } else if (placeType === 'spa') {
+    response += `\n\nRelaxing spa recommendations:\n\n`;
+    response += `💆 **Herbal Spa** - Traditional Vietnamese massage\n`;
+    response += `💆 **Brilliant Top Spa** - Full-service spa with great reviews\n`;
+  } else {
+    response += `\n\nI can help you find:\n`;
+    response += `☕ Coffee shops & cafes\n`;
+    response += `🍜 Restaurants & street food\n`;
+    response += `💇 Hair salons & spas\n`;
+    response += `🏖️ Beaches & attractions\n`;
+    response += `🏪 Shopping malls & stores\n\n`;
+    response += `What would you like to explore?`;
+  }
+
+  response += `\n\n🚗 Book Grab to get there easily!`;
+  
+  return response;
 }
 
 

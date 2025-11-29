@@ -2,9 +2,8 @@
 
 import { useState, useRef } from 'react';
 import { Incident, INCIDENT_TYPES, Location, SEVERITY_LEVELS } from '@/lib/types';
-import { broadcastIncident, uploadImage } from '@/lib/pusher';
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { reportIncident } from '@/lib/incidentService';
+import { useAuth } from './AuthProvider';
 
 interface ReportIncidentFormProps {
   location: Location;
@@ -17,6 +16,7 @@ export default function ReportIncidentForm({
   onSuccess,
   onCancel,
 }: ReportIncidentFormProps) {
+  const { user } = useAuth();
   const [type, setType] = useState<keyof typeof INCIDENT_TYPES>('flooding');
   const [severity, setSeverity] = useState<'low' | 'medium' | 'high'>('medium');
   const [description, setDescription] = useState('');
@@ -42,46 +42,28 @@ export default function ReportIncidentForm({
     setLoading(true);
 
     try {
-      // Request notification permission when user interacts (submits report)
-      if ('Notification' in window && Notification.permission === 'default') {
-        await Notification.requestPermission();
-      }
-
       let imageUrl = '';
 
-      // Upload image if exists (via Firebase Storage API)
+      // Convert image to base64 for localStorage
       if (image) {
-        console.log('📤 Uploading image...');
-        imageUrl = await uploadImage(image);
-        console.log('✅ Image uploaded:', imageUrl);
+        imageUrl = imagePreview; // Use the preview as the stored image
       }
 
-      // Prepare incident data
-      const incidentData: Partial<Incident> = {
+      // Report incident (saves to localStorage as pending)
+      const newIncident = reportIncident({
         type,
         severity,
         description,
         location,
         imageUrl,
-        status: 'pending',
-        createdAt: new Date(),
-      };
-
-      // Save to Firestore
-      console.log('💾 Saving incident to Firestore...');
-      const docRef = await addDoc(collection(db, 'incidents'), incidentData);
-      
-      const savedIncident: Incident = {
-        ...incidentData as Incident,
-        id: docRef.id,
-      };
-
-      // Broadcast to all clients via Pusher
-      console.log('📡 Broadcasting incident...');
-      await broadcastIncident(savedIncident);
+        reportedBy: user?.email || 'Anonymous',
+      });
 
       setLoading(false);
-      alert('✅ Incident reported successfully! We will verify and notify other users.');
+      
+      // Show success message
+      alert('✅ Report sent to Admin successfully!\n\nYour incident is pending approval and will be displayed on the map after Admin verification.');
+      
       onSuccess?.();
 
     } catch (error: any) {
@@ -92,15 +74,15 @@ export default function ReportIncidentForm({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-      <h2 className="text-2xl font-bold mb-4 text-grab-dark">
+    <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-grab-dark">
         📍 Report Incident
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
         {/* Incident Type */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
             Incident Type
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -109,14 +91,14 @@ export default function ReportIncidentForm({
                 key={key}
                 type="button"
                 onClick={() => setType(key as keyof typeof INCIDENT_TYPES)}
-                className={`p-3 rounded-lg border-2 transition-all ${
+                className={`p-2 sm:p-3 rounded-lg border-2 transition-all ${
                   type === key
                     ? 'border-grab-green bg-green-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <div className="text-2xl mb-1">{value.icon}</div>
-                <div className="text-sm font-medium">{value.label}</div>
+                <div className="text-xl sm:text-2xl mb-1">{value.icon}</div>
+                <div className="text-xs sm:text-sm font-medium">{value.label}</div>
               </button>
             ))}
           </div>
@@ -124,7 +106,7 @@ export default function ReportIncidentForm({
 
         {/* Severity */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
             Severity Level
           </label>
           <div className="flex gap-2">
@@ -143,7 +125,7 @@ export default function ReportIncidentForm({
                   backgroundColor: severity === key ? `${value.color}20` : undefined,
                 }}
               >
-                <div className="text-sm font-medium">{value.label}</div>
+                <div className="text-xs sm:text-sm font-medium">{value.label}</div>
               </button>
             ))}
           </div>
@@ -151,7 +133,7 @@ export default function ReportIncidentForm({
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
             Detailed Description
           </label>
           <textarea
@@ -159,14 +141,14 @@ export default function ReportIncidentForm({
             onChange={(e) => setDescription(e.target.value)}
             required
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-grab-green focus:border-transparent"
-            placeholder="Example: Flooded 30cm deep, impassable..."
+            className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-grab-green focus:border-transparent"
+            placeholder="Example: Flooded 30cm deep..."
           />
         </div>
 
         {/* Image Upload */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
             Image (optional)
           </label>
           <input
@@ -179,22 +161,22 @@ export default function ReportIncidentForm({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-grab-green transition-colors"
+            className="w-full p-3 sm:p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-grab-green transition-colors"
           >
             {imagePreview ? (
-              <img src={imagePreview} alt="Preview" className="max-h-40 mx-auto rounded" />
+              <img src={imagePreview} alt="Preview" className="max-h-32 sm:max-h-40 mx-auto rounded" />
             ) : (
               <div className="text-center">
-                <div className="text-4xl mb-2">📸</div>
-                <div className="text-sm text-gray-600">Click to capture/select image</div>
+                <div className="text-3xl sm:text-4xl mb-2">📸</div>
+                <div className="text-xs sm:text-sm text-gray-600">Click to capture/select image</div>
               </div>
             )}
           </button>
         </div>
 
         {/* Location Info */}
-        <div className="bg-gray-50 p-3 rounded-lg text-sm text-gray-600">
-          📍 Location: {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+        <div className="bg-gray-50 p-2 sm:p-3 rounded-lg text-xs sm:text-sm text-gray-600">
+          📍 Location: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
         </div>
 
         {/* Actions */}
@@ -204,7 +186,7 @@ export default function ReportIncidentForm({
               type="button"
               onClick={onCancel}
               disabled={loading}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
@@ -212,7 +194,7 @@ export default function ReportIncidentForm({
           <button
             type="submit"
             disabled={loading || !description}
-            className="flex-1 px-4 py-2 bg-grab-green text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base bg-grab-green text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? '⏳ Submitting...' : '✅ Report'}
           </button>
