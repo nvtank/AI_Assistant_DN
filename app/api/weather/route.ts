@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
       humidity: data.main.humidity,
       description: data.weather[0].description,
       main: data.weather[0].main,
-      wind_speed: data.wind.speed,
+      windSpeed: data.wind.speed,
     });
 
   } catch (error: any) {

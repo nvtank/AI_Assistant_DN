@@ -24,7 +24,8 @@ export interface WeatherData {
   humidity: number;
   description: string;
   main: string;
-  wind_speed: number;
+  wind_speed?: number;
+  windSpeed?: number;
 }
 
 export interface ChatMessage {

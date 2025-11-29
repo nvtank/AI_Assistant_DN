@@ -50,9 +50,8 @@ async function getLocationFromIP(): Promise<Location> {
   try {
     console.log('🌐 Fetching location from IP address...');
     
-    // Use ip-api.com (free, no key, 45 requests/minute)
-    // Note: Uses HTTP in development. For HTTPS production, consider alternatives or proxy
-    const response = await fetch('http://ip-api.com/json/?fields=status,message,lat,lon,city,country');
+    // Use ipapi.co (free HTTPS API, 1000 requests/day, no key)
+    const response = await fetch('https://ipapi.co/json/');
     
     // If API error or rate limit exceeded, return Da Nang center (safe fallback)
     if (!response.ok) {
@@ -62,14 +61,14 @@ async function getLocationFromIP(): Promise<Location> {
     
     const data = await response.json();
     
-    if (data.status === 'success' && data.lat && data.lon) {
-      console.log(`✅ IP location success: ${data.city}, ${data.country}`);
-      console.log(`   Coordinates: ${data.lat}, ${data.lon}`);
+    if (data.latitude && data.longitude) {
+      console.log(`✅ IP location success: ${data.city}, ${data.country_name}`);
+      console.log(`   Coordinates: ${data.latitude}, ${data.longitude}`);
       
       return {
-        lat: data.lat,
-        lng: data.lon,
-        address: `${data.city}, ${data.country}`
+        lat: data.latitude,
+        lng: data.longitude,
+        address: `${data.city}, ${data.country_name}`
       };
     }
     

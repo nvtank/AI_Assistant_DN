@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Incident, INCIDENT_TYPES, Location } from '@/lib/types';
-import { initPusher, onNewIncident } from '@/lib/pusher';
 import { formatTimestamp } from '@/lib/utils';
 
 interface IncidentMapProps {
@@ -24,6 +23,7 @@ export default function IncidentMap({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const [isClient, setIsClient] = useState(false);
+  const isInitializedRef = useRef(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -31,124 +31,167 @@ export default function IncidentMap({
 
   // Initialize map
   useEffect(() => {
-    if (!isClient || !mapContainerRef.current || mapRef.current) return;
+    if (!isClient || !mapContainerRef.current || isInitializedRef.current) return;
 
-    // Fix for default marker icon
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-    });
-
-    const map = L.map(mapContainerRef.current).setView([center.lat, center.lng], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-      maxZoom: 19,
-    }).addTo(map);
-
-    // Add user location marker
-    const userIcon = L.divIcon({
-      className: 'user-location-marker',
-      html: '<div style="background: #00B14F; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>',
-      iconSize: [20, 20],
-      iconAnchor: [10, 10],
-    });
-
-    L.marker([center.lat, center.lng], { icon: userIcon })
-      .addTo(map)
-      .bindPopup('<b>Your Location</b>');
-
-    // Handle map click
-    if (onMapClick) {
-      map.on('click', (e: L.LeafletMouseEvent) => {
-        onMapClick({ lat: e.latlng.lat, lng: e.latlng.lng });
+    try {
+      // Fix for default marker icon
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
       });
+
+      const map = L.map(mapContainerRef.current, {
+        zoomControl: true,
+        scrollWheelZoom: true,
+        doubleClickZoom: true,
+        touchZoom: true,
+      }).setView([center.lat, center.lng], 13);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19,
+      }).addTo(map);
+
+      // Add user location marker
+      const userIcon = L.divIcon({
+        className: 'user-location-marker',
+        html: '<div style="background: #00B14F; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+      });
+
+      L.marker([center.lat, center.lng], { icon: userIcon })
+        .addTo(map)
+        .bindPopup('<b>Your Location</b>');
+
+      // Handle map click
+      if (onMapClick) {
+        map.on('click', (e: L.LeafletMouseEvent) => {
+          onMapClick({ lat: e.latlng.lat, lng: e.latlng.lng });
+        });
+      }
+
+      mapRef.current = map;
+      isInitializedRef.current = true;
+
+      // Force map to invalidate size after a brief delay
+      setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.invalidateSize();
+        }
+      }, 100);
+
+    } catch (error) {
+      console.error('Error initializing map:', error);
     }
 
-    mapRef.current = map;
-
-    // Initialize Pusher and listen for real-time incident updates
-    initPusher();
-    const unsubscribe = onNewIncident((incident: Incident) => {
-      console.log('📬 New incident received via Pusher:', incident.type);
-      // Map will re-render with updated incidents from parent
-    });
-
     return () => {
-      unsubscribe(); // Clean up Pusher subscription
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
+      try {
+        // Clear all markers first
+        markersRef.current.forEach((marker) => {
+          try {
+            marker.remove();
+          } catch (e) {
+            // Ignore errors when removing markers
+          }
+        });
+        markersRef.current = [];
+
+        // Remove map
+        if (mapRef.current) {
+          mapRef.current.off(); // Remove all event listeners
+          mapRef.current.remove();
+          mapRef.current = null;
+        }
+        isInitializedRef.current = false;
+      } catch (error) {
+        console.error('Error cleaning up map:', error);
       }
     };
-  }, [isClient, center.lat, center.lng, onMapClick]);
+  }, [isClient]);
 
   // Update incident markers
   useEffect(() => {
-    if (!mapRef.current || !isClient) return;
+    if (!mapRef.current || !isClient || !isInitializedRef.current) return;
 
-    // Clear existing markers
-    markersRef.current.forEach((marker) => marker.remove());
-    markersRef.current = [];
-
-    // Add new markers
-    incidents.forEach((incident) => {
-      if (!mapRef.current) return;
-
-      const incidentType = INCIDENT_TYPES[incident.type];
-      
-      const icon = L.divIcon({
-        className: 'incident-marker',
-        html: `
-          <div style="
-            background: ${incidentType.color};
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            border: 3px solid white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            cursor: pointer;
-          ">
-            ${incidentType.icon}
-          </div>
-        `,
-        iconSize: [40, 40],
-        iconAnchor: [20, 20],
-        popupAnchor: [0, -20],
+    try {
+      // Clear existing markers safely
+      markersRef.current.forEach((marker) => {
+        try {
+          if (marker && mapRef.current) {
+            marker.remove();
+          }
+        } catch (e) {
+          // Ignore errors when removing markers
+        }
       });
+      markersRef.current = [];
 
-      const marker = L.marker([incident.location.lat, incident.location.lng], { icon })
-        .addTo(mapRef.current)
-        .bindPopup(`
-          <div class="incident-popup">
-            <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: bold;">
-              ${incidentType.icon} ${incidentType.label}
-            </h3>
-            <p style="margin: 0 0 8px 0; font-size: 14px;">
-              ${incident.description}
-            </p>
-            ${incident.imageUrl ? `
-              <img src="${incident.imageUrl}" alt="Incident" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 8px;" />
-            ` : ''}
-            <p style="margin: 0; font-size: 12px; color: #666;">
-              ${formatTimestamp(incident.createdAt)}
-            </p>
-          </div>
-        `);
+      // Add new markers
+      incidents.forEach((incident) => {
+        if (!mapRef.current) return;
 
-      if (onIncidentClick) {
-        marker.on('click', () => onIncidentClick(incident));
-      }
+        try {
+          const incidentType = INCIDENT_TYPES[incident.type];
+          
+          const icon = L.divIcon({
+            className: 'incident-marker',
+            html: `
+              <div style="
+                background: ${incidentType.color};
+                color: white;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                border: 3px solid white;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                cursor: pointer;
+              ">
+                ${incidentType.icon}
+              </div>
+            `,
+            iconSize: [40, 40],
+            iconAnchor: [20, 20],
+            popupAnchor: [0, -20],
+          });
 
-      markersRef.current.push(marker);
-    });
+          const marker = L.marker([incident.location.lat, incident.location.lng], { icon })
+            .addTo(mapRef.current)
+            .bindPopup(`
+              <div class="incident-popup">
+                <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: bold;">
+                  ${incidentType.icon} ${incidentType.label}
+                </h3>
+                <p style="margin: 0 0 8px 0; font-size: 14px;">
+                  ${incident.description}
+                </p>
+                ${incident.imageUrl ? `
+                  <img src="${incident.imageUrl}" alt="Incident" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 8px;" />
+                ` : ''}
+                <p style="margin: 0; font-size: 12px; color: #666;">
+                  ${formatTimestamp(incident.createdAt)}
+                </p>
+              </div>
+            `);
+
+          if (onIncidentClick) {
+            marker.on('click', () => onIncidentClick(incident));
+          }
+
+          markersRef.current.push(marker);
+        } catch (error) {
+          console.error('Error adding marker:', error);
+        }
+      });
+    } catch (error) {
+      console.error('Error updating markers:', error);
+    }
   }, [incidents, isClient, onIncidentClick]);
 
   if (!isClient) {
