@@ -6,15 +6,16 @@ import { AuthProvider } from '@/components/AuthProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Grab The Beyond - Smart Travel Assistant',
+  title: 'Findly - AI Assistant for Da Nang',
   description: 'Real-time incident map with AI assistant powered by Google Gemini for Da Nang tourism',
   keywords: ['Da Nang', 'tourism', 'AI assistant', 'travel', 'incident map', 'Grab'],
   authors: [{ name: 'Grab The Beyond Team' }],
-  openGraph: {
-    title: 'Grab The Beyond - Smart Travel Assistant',
-    description: 'Real-time incident map with AI assistant for Da Nang',
-    type: 'website',
+  icons: {
+    icon: '/canvas.png',
+    shortcut: '/canvas.png',
+    apple: '/canvas.png',
   },
+
 }
 
 export default function RootLayout({
@@ -25,7 +26,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Leaflet CSS */}
         <link
           rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
