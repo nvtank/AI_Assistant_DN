@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Place, Location } from '@/lib/types';
 import { formatDistance, openGrabApp } from '@/lib/utils';
 
@@ -9,6 +10,8 @@ interface PlaceCardProps {
 }
 
 export default function PlaceCard({ place, userLocation }: PlaceCardProps) {
+  const [imageError, setImageError] = useState(false);
+  
   const handleBookGrab = () => {
     // Use Mock Grab App for demo (no real Grab API needed)
     openGrabApp(
@@ -21,19 +24,38 @@ export default function PlaceCard({ place, userLocation }: PlaceCardProps) {
     );
   };
 
+  // Get emoji icon based on place type
+  const getPlaceIcon = (name: string) => {
+    if (name.includes('Coffee') || name.includes('Cafe')) return '☕';
+    if (name.includes('Restaurant') || name.includes('Food')) return '🍜';
+    if (name.includes('Beach') || name.includes('Sea')) return '🏖️';
+    if (name.includes('Mountain') || name.includes('Hills')) return '⛰️';
+    if (name.includes('Bridge')) return '🌉';
+    if (name.includes('Museum')) return '🏛️';
+    if (name.includes('Market')) return '🏪';
+    if (name.includes('Hotel')) return '🏨';
+    if (name.includes('Bar') || name.includes('Pub')) return '🍺';
+    if (name.includes('Salon') || name.includes('Spa')) return '💇';
+    return '📍';
+  };
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
       <div className="flex">
-        {/* Image */}
-        {place.imageUrl && (
-          <div className="w-16 h-16 sm:w-24 sm:h-24 flex-shrink-0">
+        {/* Image or Fallback Icon */}
+        <div className="w-16 h-16 sm:w-24 sm:h-24 flex-shrink-0 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+          {place.imageUrl && !imageError ? (
             <img
               src={place.imageUrl}
               alt={place.name}
               className="w-full h-full object-cover"
+              onError={() => setImageError(true)}
+              loading="lazy"
             />
-          </div>
-        )}
+          ) : (
+            <span className="text-3xl sm:text-4xl">{getPlaceIcon(place.name)}</span>
+          )}
+        </div>
 
         {/* Content */}
         <div className="flex-1 p-2 sm:p-3">

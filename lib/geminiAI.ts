@@ -151,7 +151,7 @@ Now provide specific recommendations matching user's intent:`;
           temperature: 0.8,
           topK: 40,
           topP: 0.95,
-          maxOutputTokens: 1024,
+          maxOutputTokens: 2048, // Increased from 1024 to handle longer responses
         },
         safetySettings: [
           {
@@ -187,9 +187,14 @@ Now provide specific recommendations matching user's intent:`;
     if (data.candidates && Array.isArray(data.candidates) && data.candidates.length > 0) {
       const candidate = data.candidates[0];
       
-      // Check if blocked by safety filters
+      // Check finish reason
       if (candidate.finishReason === 'SAFETY') {
         console.warn('⚠️ Response blocked by safety filters');
+        return getFallbackResponse(message, context, placeType, isRaining);
+      }
+      
+      if (candidate.finishReason === 'MAX_TOKENS') {
+        console.warn('⚠️ Response truncated due to MAX_TOKENS - using fallback');
         return getFallbackResponse(message, context, placeType, isRaining);
       }
       
@@ -214,6 +219,12 @@ Now provide specific recommendations matching user's intent:`;
       if (text && typeof text === 'string' && text.trim()) {
         console.log('✅ Gemini AI response extracted successfully');
         return weatherResponse + text;
+      }
+      
+      // If no text but finish reason is STOP, it might be empty response
+      if (candidate.finishReason === 'STOP' && !text) {
+        console.warn('⚠️ Empty response from Gemini - using fallback');
+        return getFallbackResponse(message, context, placeType, isRaining);
       }
     }
 
