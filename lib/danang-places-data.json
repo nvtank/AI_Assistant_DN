@@ -1,0 +1,502 @@
+{
+  "attractions": [
+    {
+      "id": "bana-hills",
+      "name": "Bà Nà Hills",
+      "type": "attraction",
+      "category": "theme_park",
+      "location": {
+        "lat": 15.9969,
+        "lng": 107.9971,
+        "address": "Hòa Ninh, Hòa Vang, Đà Nẵng"
+      },
+      "description": "Khu du lịch nghỉ dưỡng cao cấp trên núi với cáp treo, Cầu Vàng nổi tiếng thế giới",
+      "estimatedCost": 750000,
+      "duration": 480,
+      "rating": 4.6,
+      "bestTime": ["morning", "full_day"],
+      "weather": ["sunny", "cloudy"],
+      "tips": [
+        "Đi sớm để tránh đông người (7-8h)",
+        "Mang áo ấm vì trên núi lạnh (15-20°C)",
+        "Vé đã bao gồm cáp treo và tất cả trò chơi",
+        "Nên dành cả ngày để khám phá"
+      ],
+      "openingHours": "07:00-22:00",
+      "suitable": ["family", "couple", "friends", "adventure"]
+    },
+    {
+      "id": "marble-mountains",
+      "name": "Ngũ Hành Sơn",
+      "type": "attraction",
+      "category": "nature",
+      "location": {
+        "lat": 16.0017,
+        "lng": 108.2624,
+        "address": "Hòa Hải, Ngũ Hành Sơn, Đà Nẵng"
+      },
+      "description": "Quần thể 5 ngọn núi đá vôi với chùa chiền, hang động đẹp và tầm nhìn toàn cảnh",
+      "estimatedCost": 40000,
+      "duration": 120,
+      "rating": 4.3,
+      "bestTime": ["morning", "afternoon"],
+      "weather": ["sunny", "cloudy"],
+      "tips": [
+        "Mang giày thoải mái để leo núi",
+        "Nên thuê hướng dẫn viên (100k) để hiểu rõ lịch sử",
+        "Mang nước uống",
+        "Tránh giờ trưa vì nóng"
+      ],
+      "openingHours": "07:00-17:30",
+      "suitable": ["cultural", "adventure", "family"]
+    },
+    {
+      "id": "dragon-bridge",
+      "name": "Cầu Rồng",
+      "type": "attraction",
+      "category": "landmark",
+      "location": {
+        "lat": 16.0609,
+        "lng": 108.2273,
+        "address": "Cầu Rồng, Đà Nẵng"
+      },
+      "description": "Cầu biểu tượng của Đà Nẵng, rồng phun lửa và nước vào 21h thứ 7 & CN",
+      "estimatedCost": 0,
+      "duration": 30,
+      "rating": 4.4,
+      "bestTime": ["evening", "night"],
+      "weather": ["sunny", "cloudy", "rainy"],
+      "tips": [
+        "Xem rồng phun lửa lúc 21h thứ 7 & Chủ nhật",
+        "Đến trước 20:30 để có chỗ đẹp",
+        "Chụp ảnh đẹp nhất từ bờ sông phía Nam"
+      ],
+      "openingHours": "00:00-24:00",
+      "suitable": ["all"]
+    },
+    {
+      "id": "my-khe-beach",
+      "name": "Bãi biển Mỹ Khê",
+      "type": "attraction",
+      "category": "beach",
+      "location": {
+        "lat": 16.0399,
+        "lng": 108.2497,
+        "address": "Đường Võ Nguyên Giáp, Đà Nẵng"
+      },
+      "description": "Một trong 6 bãi biển đẹp nhất hành tinh theo Forbes",
+      "estimatedCost": 0,
+      "duration": 180,
+      "rating": 4.6,
+      "bestTime": ["morning", "afternoon"],
+      "weather": ["sunny"],
+      "tips": [
+        "Đẹp nhất vào buổi sáng sớm (6-8h) và hoàng hôn (16-18h)",
+        "Tắm biển an toàn có cứu hộ",
+        "Nhiều hoạt động: lướt sóng, jet ski, dù bay",
+        "Dọc bãi biển có nhiều quán ăn hải sản"
+      ],
+      "openingHours": "00:00-24:00",
+      "suitable": ["relax", "family", "couple", "adventure"]
+    },
+    {
+      "id": "son-tra-peninsula",
+      "name": "Bán đảo Sơn Trà",
+      "type": "attraction",
+      "category": "nature",
+      "location": {
+        "lat": 16.1081,
+        "lng": 108.2706,
+        "address": "Sơn Trà, Đà Nẵng"
+      },
+      "description": "Khu bảo tồn thiên nhiên, chùa Linh Ứng với tượng Phật Quan Âm cao 67m",
+      "estimatedCost": 0,
+      "duration": 180,
+      "rating": 4.5,
+      "bestTime": ["morning", "afternoon"],
+      "weather": ["sunny", "cloudy"],
+      "tips": [
+        "Đường lên đẹp, nên thuê xe máy hoặc taxi",
+        "Có thể gặp voọc chà vá chân xám quý hiếm",
+        "Ghé chùa Linh Ứng để cầu may",
+        "View biển tuyệt đẹp từ trên cao"
+      ],
+      "openingHours": "06:00-18:00",
+      "suitable": ["nature", "cultural", "couple"]
+    },
+    {
+      "id": "han-market",
+      "name": "Chợ Hàn",
+      "type": "attraction",
+      "category": "shopping",
+      "location": {
+        "lat": 16.0678,
+        "lng": 108.2208,
+        "address": "119 Trần Phú, Hải Châu, Đà Nẵng"
+      },
+      "description": "Chợ truyền thống lớn nhất Đà Nẵng, mua sắm quà lưu niệm",
+      "estimatedCost": 200000,
+      "duration": 90,
+      "rating": 4.0,
+      "bestTime": ["morning", "afternoon"],
+      "weather": ["all"],
+      "tips": [
+        "Mặc cả khi mua hàng",
+        "Mua đặc sản: mắm nêm, bánh tráng, hạt điều",
+        "Ăn sáng tại khu food court tầng 2",
+        "Giữ tài sản cẩn thận"
+      ],
+      "openingHours": "06:00-19:00",
+      "suitable": ["all"]
+    },
+    {
+      "id": "asia-park",
+      "name": "Asia Park",
+      "type": "attraction",
+      "category": "theme_park",
+      "location": {
+        "lat": 16.0403,
+        "lng": 108.2266,
+        "address": "Hải Châu, Đà Nẵng"
+      },
+      "description": "Công viên giải trí với vòng quay Sun Wheel cao nhất Việt Nam",
+      "estimatedCost": 200000,
+      "duration": 240,
+      "rating": 4.2,
+      "bestTime": ["afternoon", "evening"],
+      "weather": ["sunny", "cloudy"],
+      "tips": [
+        "Đẹp nhất vào buổi tối khi có đèn",
+        "Vé vào cổng miễn phí, trả tiền từng trò chơi",
+        "Nên mua vé combo để tiết kiệm",
+        "Phù hợp cho gia đình có trẻ em"
+      ],
+      "openingHours": "15:00-22:00",
+      "suitable": ["family", "couple", "friends"]
+    },
+    {
+      "id": "museum-cham",
+      "name": "Bảo tàng Điêu khắc Chăm",
+      "type": "attraction",
+      "category": "museum",
+      "location": {
+        "lat": 16.0614,
+        "lng": 108.2223,
+        "address": "02 Tháng 9, Hải Châu, Đà Nẵng"
+      },
+      "description": "Bảo tàng lưu giữ nghệ thuật điêu khắc Chăm Pa cổ",
+      "estimatedCost": 60000,
+      "duration": 90,
+      "rating": 4.1,
+      "bestTime": ["morning", "afternoon"],
+      "weather": ["all"],
+      "tips": [
+        "Thuê audio guide (50k) để hiểu rõ lịch sử",
+        "Thích hợp cho người yêu văn hóa, lịch sử",
+        "Có điều hòa, thoáng mát",
+        "Không nên chụp ảnh flash"
+      ],
+      "openingHours": "07:00-17:00",
+      "suitable": ["cultural", "educational"]
+    }
+  ],
+  "restaurants": [
+    {
+      "id": "be-man",
+      "name": "Bê Mặn - Mỹ Quang",
+      "type": "restaurant",
+      "category": "local_food",
+      "cuisine": "vietnamese",
+      "location": {
+        "lat": 16.0544,
+        "lng": 108.2022,
+        "address": "K280/23 Hoàng Diệu, Hải Châu, Đà Nẵng"
+      },
+      "description": "Món đặc sản Đà Nẵng: Bê mặn bằm, Mỹ Quảng trộn",
+      "estimatedCost": 150000,
+      "rating": 4.5,
+      "bestTime": ["lunch", "dinner"],
+      "dishes": ["Bê mặn bằm", "Mỳ Quảng trộn", "Nem lụi"],
+      "tips": [
+        "Đặt bàn trước vì luôn đông",
+        "Thử combo bê mặn + mỳ quảng (200k/2 người)",
+        "Phục vụ nhanh, không gian sạch sẽ"
+      ],
+      "openingHours": "10:00-22:00",
+      "priceRange": "medium",
+      "suitable": ["foodie", "local_experience"]
+    },
+    {
+      "id": "mi-quang-ba-mua",
+      "name": "Mì Quảng Bà Mua",
+      "type": "restaurant",
+      "category": "local_food",
+      "cuisine": "vietnamese",
+      "location": {
+        "lat": 16.0697,
+        "lng": 108.2239,
+        "address": "Hải Phòng, Hải Châu, Đà Nẵng"
+      },
+      "description": "Mì Quảng truyền thống nổi tiếng nhất Đà Nẵng",
+      "estimatedCost": 35000,
+      "rating": 4.6,
+      "bestTime": ["breakfast", "lunch"],
+      "dishes": ["Mì Quảng gà", "Mì Quảng tôm thịt", "Bánh tráng cuốn thịt"],
+      "tips": [
+        "Quán mở từ sáng sớm",
+        "Đông nhất vào giờ ăn trưa",
+        "Giá rất phải chăng",
+        "Must-try khi đến Đà Nẵng"
+      ],
+      "openingHours": "06:00-14:00",
+      "priceRange": "cheap",
+      "suitable": ["all"]
+    },
+    {
+      "id": "banh-xeo-ba-duong",
+      "name": "Bánh Xèo Bà Dưỡng",
+      "type": "restaurant",
+      "category": "local_food",
+      "cuisine": "vietnamese",
+      "location": {
+        "lat": 16.0544,
+        "lng": 108.2022,
+        "address": "K280/23 Hoàng Diệu, Đà Nẵng"
+      },
+      "description": "Bánh xèo giòn rụm đặc sản Đà Nẵng",
+      "estimatedCost": 40000,
+      "rating": 4.4,
+      "bestTime": ["lunch", "dinner"],
+      "dishes": ["Bánh xèo", "Bánh căn", "Nem lụi"],
+      "tips": [
+        "Bánh xèo giòn, nhiều nhân",
+        "Ăn kèm rau sống và nước chấm đặc biệt",
+        "Giá rẻ, phục vụ nhiệt tình"
+      ],
+      "openingHours": "10:00-21:00",
+      "priceRange": "cheap",
+      "suitable": ["all"]
+    },
+    {
+      "id": "hai-san-be-man",
+      "name": "Hải sản Bé Mặn",
+      "type": "restaurant",
+      "category": "seafood",
+      "cuisine": "seafood",
+      "location": {
+        "lat": 16.0399,
+        "lng": 108.2497,
+        "address": "Võ Nguyên Giáp, Sơn Trà, Đà Nẵng"
+      },
+      "description": "Nhà hàng hải sản tươi sống ven biển Mỹ Khê",
+      "estimatedCost": 400000,
+      "rating": 4.3,
+      "bestTime": ["lunch", "dinner"],
+      "dishes": ["Tôm hùm", "Cua hoàng đế", "Mực nướng", "Ốc hương"],
+      "tips": [
+        "Hải sản tươi sống, có bể nuôi",
+        "View biển đẹp",
+        "Giá hơi cao nhưng xứng đáng",
+        "Đặt bàn trước vào cuối tuần"
+      ],
+      "openingHours": "10:00-22:00",
+      "priceRange": "expensive",
+      "suitable": ["seafood_lover", "family", "celebration"]
+    },
+    {
+      "id": "banh-trang-cuon-thit-heo",
+      "name": "Bánh Tráng Cuốn Thịt Heo Hoàng Khánh",
+      "type": "restaurant",
+      "category": "local_food",
+      "cuisine": "vietnamese",
+      "location": {
+        "lat": 16.0544,
+        "lng": 108.2022,
+        "address": "01 Hoàng Kế Viêm, Đà Nẵng"
+      },
+      "description": "Món ăn vặt đặc sản Đà Nẵng",
+      "estimatedCost": 25000,
+      "rating": 4.5,
+      "bestTime": ["snack", "lunch"],
+      "dishes": ["Bánh tráng cuốn thịt heo", "Nem lụi"],
+      "tips": [
+        "Giá rẻ, ăn no",
+        "Nước chấm đậm đà",
+        "Phù hợp ăn nhẹ giữa ngày"
+      ],
+      "openingHours": "08:00-20:00",
+      "priceRange": "cheap",
+      "suitable": ["all"]
+    },
+    {
+      "id": "com-ga-ba-buoi",
+      "name": "Cơm Gà Bà Buội",
+      "type": "restaurant",
+      "category": "local_food",
+      "cuisine": "vietnamese",
+      "location": {
+        "lat": 16.0544,
+        "lng": 108.2022,
+        "address": "Trần Cao Vân, Thanh Khê, Đà Nẵng"
+      },
+      "description": "Cơm gà Hội An nổi tiếng tại Đà Nẵng",
+      "estimatedCost": 40000,
+      "rating": 4.4,
+      "bestTime": ["lunch", "dinner"],
+      "dishes": ["Cơm gà", "Cháo gà", "Gà luộc"],
+      "tips": [
+        "Cơm gà thơm, gà mềm",
+        "Kèm rau sống và nước chấm ngon",
+        "Giá phải chăng"
+      ],
+      "openingHours": "10:00-21:00",
+      "priceRange": "cheap",
+      "suitable": ["all"]
+    },
+    {
+      "id": "bun-cha-ca-109",
+      "name": "Bún Chả Cá 109",
+      "type": "restaurant",
+      "category": "local_food",
+      "cuisine": "vietnamese",
+      "location": {
+        "lat": 16.0544,
+        "lng": 108.2022,
+        "address": "109 Nguyễn Chí Thanh, Đà Nẵng"
+      },
+      "description": "Bún chả cá Đà Nẵng chính gốc",
+      "estimatedCost": 35000,
+      "rating": 4.5,
+      "bestTime": ["breakfast", "lunch"],
+      "dishes": ["Bún chả cá", "Chả cá chiên"],
+      "tips": [
+        "Nước dùng đậm đà",
+        "Chả cá tự làm, tươi ngon",
+        "Ăn sáng hoặc trưa đều ok"
+      ],
+      "openingHours": "06:00-14:00",
+      "priceRange": "cheap",
+      "suitable": ["all"]
+    },
+    {
+      "id": "waterfront",
+      "name": "Waterfront Restaurant",
+      "type": "restaurant",
+      "category": "fine_dining",
+      "cuisine": "international",
+      "location": {
+        "lat": 16.0609,
+        "lng": 108.2273,
+        "address": "150-152 Bạch Đằng, Đà Nẵng"
+      },
+      "description": "Nhà hàng fine dining view sông Hàn",
+      "estimatedCost": 600000,
+      "rating": 4.7,
+      "bestTime": ["dinner"],
+      "dishes": ["Steak", "Pasta", "Seafood", "Wine"],
+      "tips": [
+        "View sông Hàn tuyệt đẹp",
+        "Phù hợp hẹn hò, kỷ niệm",
+        "Đặt bàn trước",
+        "Dress code: Smart casual"
+      ],
+      "openingHours": "11:00-23:00",
+      "priceRange": "expensive",
+      "suitable": ["couple", "celebration", "business"]
+    }
+  ],
+  "cafes": [
+    {
+      "id": "cong-caphe",
+      "name": "Cộng Cà Phê",
+      "type": "cafe",
+      "category": "coffee",
+      "location": {
+        "lat": 16.0544,
+        "lng": 108.2022,
+        "address": "Several locations in Danang"
+      },
+      "description": "Cà phê phong cách retro Việt Nam",
+      "estimatedCost": 45000,
+      "rating": 4.4,
+      "bestTime": ["morning", "afternoon", "evening"],
+      "dishes": ["Cà phê sữa đá", "Sinh tố bơ", "Bánh mì"],
+      "tips": [
+        "Không gian đẹp, chụp ảnh xinh",
+        "Giá hợp lý",
+        "Có nhiều chi nhánh"
+      ],
+      "openingHours": "07:00-23:00",
+      "suitable": ["all"]
+    },
+    {
+      "id": "43-factory-coffee",
+      "name": "43 Factory Coffee Roaster",
+      "type": "cafe",
+      "category": "specialty_coffee",
+      "location": {
+        "lat": 16.0544,
+        "lng": 108.2022,
+        "address": "Trần Phú, Hải Châu, Đà Nẵng"
+      },
+      "description": "Specialty coffee, không gian hiện đại",
+      "estimatedCost": 60000,
+      "rating": 4.6,
+      "bestTime": ["morning", "afternoon"],
+      "dishes": ["Espresso", "Pour over", "Latte art", "Bánh ngọt"],
+      "tips": [
+        "Cà phê chất lượng cao",
+        "View đẹp, yên tĩnh",
+        "Phù hợp làm việc, đọc sách"
+      ],
+      "openingHours": "07:00-22:00",
+      "suitable": ["coffee_lover", "work", "relax"]
+    }
+  ],
+  "hotels": [
+    {
+      "id": "grand-mercure",
+      "name": "Grand Mercure Danang",
+      "type": "hotel",
+      "category": "4_star",
+      "location": {
+        "lat": 16.0399,
+        "lng": 108.2497,
+        "address": "Lot A1, Zone of the Villas of Green Island, Danang"
+      },
+      "description": "Khách sạn 4 sao view biển Mỹ Khê",
+      "estimatedCost": 1500000,
+      "rating": 4.5,
+      "amenities": ["Pool", "Beach", "Spa", "Gym", "Restaurant"],
+      "tips": [
+        "View biển đẹp",
+        "Bãi biển riêng",
+        "Bữa sáng buffet phong phú",
+        "Gần trung tâm"
+      ],
+      "suitable": ["family", "couple", "business"]
+    },
+    {
+      "id": "fusion-suites",
+      "name": "Fusion Suites Danang Beach",
+      "type": "hotel",
+      "category": "5_star",
+      "location": {
+        "lat": 16.0399,
+        "lng": 108.2497,
+        "address": "Võ Nguyên Giáp, Đà Nẵng"
+      },
+      "description": "Resort 5 sao all-inclusive với spa miễn phí",
+      "estimatedCost": 2500000,
+      "rating": 4.7,
+      "amenities": ["Pool", "Spa", "Breakfast", "Beach", "Gym"],
+      "tips": [
+        "Bao gồm 2 lần spa/ngày miễn phí",
+        "Buffet sáng + trưa/tối",
+        "View biển tuyệt đẹp",
+        "Phù hợp nghỉ dưỡng"
+      ],
+      "suitable": ["relax", "couple", "family"]
+    }
+  ]
+}

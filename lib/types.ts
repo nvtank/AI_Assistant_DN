@@ -46,6 +46,139 @@ export interface Place {
   imageUrl?: string;
 }
 
+// ============= TRAVEL PLANNER TYPES =============
+
+export interface TravelPlanRequest {
+  startDate: string;
+  endDate: string;
+  numberOfPeople: {
+    adults: number;
+    children: number;
+  };
+  budget: {
+    min: number;
+    max: number;
+    currency: 'VND' | 'USD';
+  };
+  accommodation: 'hotel' | 'resort' | 'homestay' | 'hostel' | 'any';
+  transportation: 'motorbike' | 'car' | 'taxi' | 'grab' | 'mixed';
+  foodPreferences: string[];
+  allergies: string[];
+  restrictions: string[];
+  travelStyle: 'relax' | 'adventure' | 'family' | 'couple' | 'cultural' | 'foodie';
+  timePreference: {
+    morningStart: 'early' | 'normal' | 'late'; // 6am / 8am / 10am
+    eveningEnd: 'early' | 'normal' | 'late';   // 6pm / 9pm / 11pm
+  };
+}
+
+export interface TravelPlan {
+  id?: string;
+  userId: string;
+  request: TravelPlanRequest;
+  days: DayPlan[];
+  totalEstimatedCost: {
+    accommodation: number;
+    food: number;
+    transportation: number;
+    activities: number;
+    total: number;
+  };
+  weatherForecast: WeatherForecast[];
+  status: 'draft' | 'confirmed' | 'completed';
+  shared: boolean;
+  createdAt: any;
+  updatedAt: any;
+}
+
+export interface DayPlan {
+  day: number;
+  date: string;
+  weather: WeatherForecast;
+  schedule: ActivitySchedule[];
+  mealPlan: MealPlan;
+  estimatedCost: number;
+  notes?: string[];
+}
+
+export interface ActivitySchedule {
+  time: string; // "08:00"
+  duration: number; // minutes
+  activity: Activity;
+  notes?: string;
+  travelTime?: number; // minutes to next location
+  travelDistance?: number; // km
+}
+
+export interface Activity {
+  id: string;
+  name: string;
+  type: 'attraction' | 'restaurant' | 'activity' | 'rest' | 'transport' | 'hotel' | 'cafe';
+  location: {
+    lat: number;
+    lng: number;
+    address: string;
+    placeId?: string;
+  };
+  description: string;
+  estimatedCost: number;
+  rating?: number;
+  photos?: string[];
+  openingHours?: string | string[];
+  contactInfo?: {
+    phone?: string;
+    website?: string;
+  };
+  tips?: string[];
+  category?: string;
+  // Additional fields from database
+  duration?: number; // minutes
+  bestTime?: string[]; // ['morning', 'afternoon', 'evening']
+  weather?: string[]; // ['sunny', 'cloudy', 'rainy']
+  suitable?: string[]; // ['family', 'couple', 'friends', 'adventure']
+  cuisine?: string; // for restaurants
+  dishes?: string[]; // for restaurants/cafes
+  priceRange?: string; // 'cheap' | 'medium' | 'expensive'
+  amenities?: string[]; // for hotels
+}
+
+export interface MealPlan {
+  breakfast?: Activity;
+  lunch?: Activity;
+  dinner?: Activity;
+  snacks?: Activity[];
+}
+
+export interface WeatherForecast {
+  date: string;
+  temp: {
+    min: number;
+    max: number;
+    morning: number;
+    afternoon: number;
+    evening: number;
+  };
+  condition: string;
+  description: string;
+  humidity: number;
+  windSpeed: number;
+  rainfall?: number;
+  icon?: string;
+  recommendation: string; // "Tốt cho hoạt động ngoài trời" / "Nên mang ô"
+}
+
+export interface ChatConversation {
+  id?: string;
+  userId: string;
+  messages: ChatMessage[];
+  planRequest?: Partial<TravelPlanRequest>;
+  currentStep: number;
+  completed: boolean;
+  travelPlanId?: string;
+  createdAt: any;
+  updatedAt: any;
+}
+
 export const INCIDENT_TYPES = {
   flooding: {
     label: 'Flooding',

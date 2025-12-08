@@ -241,14 +241,26 @@ export default function HomePage() {
                 onMapClick={handleMapClick}
               />
               
-              <button
-                onClick={() => setShowReportForm(true)}
-                className="absolute bottom-3 right-3 sm:bottom-6 sm:right-6 bg-grab-green text-white px-3 py-2 sm:px-6 sm:py-3 rounded-full shadow-lg hover:bg-green-600 transition-all hover:scale-105 font-semibold flex items-center gap-1 sm:gap-2 z-[1000] text-sm sm:text-base"
-              >
-                <span className="text-lg sm:text-xl">📍</span>
-                <span className="hidden sm:inline">Report Incident</span>
-                <span className="sm:hidden">Report</span>
-              </button>
+              {/* Quick Action Buttons */}
+              <div className="absolute bottom-3 right-3 sm:bottom-6 sm:right-6 flex flex-col gap-2 z-[1000]">
+                <button
+                  onClick={() => router.push('/travel-planner')}
+                  className="bg-blue-600 text-white px-3 py-2 sm:px-6 sm:py-3 rounded-full shadow-lg hover:bg-blue-700 transition-all hover:scale-105 font-semibold flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
+                >
+                  <span className="text-lg sm:text-xl">🗺️</span>
+                  <span className="hidden sm:inline">Travel Planner</span>
+                  <span className="sm:hidden">Plan</span>
+                </button>
+                
+                <button
+                  onClick={() => setShowReportForm(true)}
+                  className="bg-grab-green text-white px-3 py-2 sm:px-6 sm:py-3 rounded-full shadow-lg hover:bg-green-600 transition-all hover:scale-105 font-semibold flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
+                >
+                  <span className="text-lg sm:text-xl">📍</span>
+                  <span className="hidden sm:inline">Report Incident</span>
+                  <span className="sm:hidden">Report</span>
+                </button>
+              </div>
 
               {/* Switch to Chat button (mobile only) */}
               <button
