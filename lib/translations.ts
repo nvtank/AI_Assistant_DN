@@ -40,7 +40,6 @@ export const translations = {
   'Di chuyển': 'Transportation',
   'Chỗ ở': 'Accommodation',
   'Lưu ý:': 'Notes:',
-  'Chi phí ước tính': 'Estimated cost',
   'Miễn phí': 'Free',
   'phút đến điểm tiếp theo': 'mins to next location',
   'Chưa có lịch trình chi tiết cho ngày này': 'No detailed schedule for this day yet',

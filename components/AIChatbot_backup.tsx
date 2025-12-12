@@ -177,53 +177,52 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
           aiResponse = await callGeminiAI(userInput, {
             userLocation,
             weather,
-              nearbyIncidents,
-            });
-          } catch (e) {
-            aiResponse = await callServerAI();
-          }
-        } else {
+            nearbyIncidents,
+          });
+        } catch (e) {
           aiResponse = await callServerAI();
         }
+      } else {
+        aiResponse = await callServerAI();
+      }
 
-        setMessages((prev) => [
-          ...prev,
-          { role: 'assistant', content: aiResponse, timestamp: new Date() },
-        ]);
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: aiResponse, timestamp: new Date() },
+      ]);
 
-        // Only suggest places if user is asking about places/locations
-        const messageLower = userInput.toLowerCase();
-        const isAskingAboutPlaces = 
-          messageLower.includes('where') ||
-          messageLower.includes('recommend') ||
-          messageLower.includes('suggest') ||
-          messageLower.includes('place') ||
-          messageLower.includes('coffee') ||
-          messageLower.includes('cafe') ||
-          messageLower.includes('restaurant') ||
-          messageLower.includes('food') ||
-          messageLower.includes('beach') ||
-          messageLower.includes('visit') ||
-          messageLower.includes('go to') ||
-          messageLower.includes('đâu') ||
-          messageLower.includes('quán') ||
-          messageLower.includes('nhà hàng') ||
-          messageLower.includes('địa điểm');
+      // Only suggest places if user is asking about places/locations
+      const messageLower = userInput.toLowerCase();
+      const isAskingAboutPlaces = 
+        messageLower.includes('where') ||
+        messageLower.includes('recommend') ||
+        messageLower.includes('suggest') ||
+        messageLower.includes('place') ||
+        messageLower.includes('coffee') ||
+        messageLower.includes('cafe') ||
+        messageLower.includes('restaurant') ||
+        messageLower.includes('food') ||
+        messageLower.includes('beach') ||
+        messageLower.includes('visit') ||
+        messageLower.includes('go to') ||
+        messageLower.includes('đâu') ||
+        messageLower.includes('quán') ||
+        messageLower.includes('nhà hàng') ||
+        messageLower.includes('địa điểm');
 
-        const isAskingWeatherOnly = 
-          (messageLower.includes('weather') || 
-           messageLower.includes('thời tiết') || 
-           messageLower.includes('temperature') ||
-           messageLower.includes('nhiệt độ')) &&
-          !isAskingAboutPlaces;
+      const isAskingWeatherOnly = 
+        (messageLower.includes('weather') || 
+         messageLower.includes('thời tiết') || 
+         messageLower.includes('temperature') ||
+         messageLower.includes('nhiệt độ')) &&
+        !isAskingAboutPlaces;
 
-        if (isAskingAboutPlaces && !isAskingWeatherOnly) {
-          suggestPlacesBasedOnContext(userInput);
-          setShowSuggestions(true);
-        } else {
-          setSuggestedPlaces([]);
-          setShowSuggestions(false);
-        }
+      if (isAskingAboutPlaces && !isAskingWeatherOnly) {
+        suggestPlacesBasedOnContext(userInput);
+        setShowSuggestions(true);
+      } else {
+        setSuggestedPlaces([]);
+        setShowSuggestions(false);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -404,7 +403,7 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
       </div>
 
       {/* QUICK QUESTIONS (only in normal mode when chat is empty) */}
-      {chatMode === 'normal' && normalMessages.length === 1 && (
+      {chatMode === 'normal' && messages.length === 1 && (
         <div className="px-3 sm:px-5 pb-2 flex gap-2 flex-wrap">
           {quickQuestions.map((q, idx) => (
             <button
@@ -427,7 +426,7 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
             placeholder={
-              chatMode === 'planner' && isCollectingPlanInfo
+              chatMode === 'planner'
                 ? 'Type your answer...'
                 : 'Ask me anything about Da Nang...'
             }
