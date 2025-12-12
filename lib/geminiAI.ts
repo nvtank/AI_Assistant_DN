@@ -4,8 +4,6 @@ const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
-
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 export function initGeminiAI() {
   if (!GEMINI_API_KEY) {
     console.error('❌ Gemini API key not found');
