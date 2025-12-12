@@ -1,267 +1,259 @@
-# Grab The Beyond 🚗🌟
+# AI Assistant 
+> **Smart Tourism Platform for Da Nang, Vietnam**  
+> Real-time Incident Reporting • Context-Aware AI Assistant • Seamless Grab Integration
 
-**Real-time Incident Map + Context-Aware AI Chatbot + Grab Integration**
+[![Next.js](https://img.shields.io/badge/Next.js-14.0-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-10.14-orange?logo=firebase)](https://firebase.google.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Dự án MVP hoàn chỉnh cho hackathon Grab, tích hợp 3 tính năng cốt lõi:
+A comprehensive MVP platform built for Grab Hackathon 2025, combining real-time incident management, intelligent AI recommendations, and seamless ride-hailing integration to enhance the tourism experience in Da Nang.
 
-## 🎯 Tính năng chính
 
-### 1. 🗺️ Bản đồ Sự cố Thời gian thực (Real-time Incident Map)
-- Hiển thị các sự cố: Ngập lụt 🌊, Ổ gà 🕳️, Thi công 🚧, Kẹt xe 🚗
-- User báo cáo sự cố kèm ảnh chụp
-- Admin xác nhận → Đẩy thông báo realtime qua Socket.IO
-- Công nghệ: **Leaflet**, **Socket.IO**, **Firebase**
+## 🚀 Quick Start
 
-### 2. 🤖 Chatbot AI "Thổ địa" (Context-Aware AI)
-- Hiểu ngữ cảnh: Vị trí GPS + Thời tiết + Sự cố gần đó
-- Gợi ý địa điểm thông minh dựa trên điều kiện thực tế
-- Công nghệ: **Puter AI** (GPT, Claude, Gemini - MIỄN PHÍ!), **Prompt Engineering**
+### Prerequisites
 
-### 3. 🚗 Điều hướng thông minh tích hợp Grab
-- Card địa điểm với nút [Đặt GrabCar]
-- Tự động mở app Grab với điểm đi/đến đã điền
-- Deep linking: `grab://open?...`
+Before you begin, ensure you have the following installed:
+- **Node.js** 18.x or higher
+- **npm** or **yarn** package manager
+- **Git** for version control
 
-## 🚀 Cài đặt & Chạy
+### Installation
 
-### 1. Cài đặt dependencies
-```bash
-npm install
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/GrabTheBeyond.git
+   cd GrabTheBeyond
+   ```
 
-### 2. Cấu hình Environment Variables
-Sao chép `.env.example` thành `.env` và điền thông tin:
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-```bash
-cp .env.example .env
-```
+3. **Environment Configuration**
 
-Cần cấu hình:
-- **Firebase**: Tạo project tại [console.firebase.google.com](https://console.firebase.google.com)
-- **Puter AI**: MIỄN PHÍ - không cần API key! (tích hợp sẵn)
-- **OpenWeatherMap**: Lấy API key tại [openweathermap.org](https://openweathermap.org/api)
+   Create a `.env` file in the root directory:
+   ```bash
+   cp .env
+   ```
 
-### 3. Chạy dự án
+   Configure the following environment variables:
 
-#### Chạy development mode (Frontend + Backend cùng lúc):
-```bash
-npm run dev:all
-```
+   ```env
+   # Firebase Configuration (Required)
+   NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
-Hoặc chạy riêng:
+   # Firebase Admin SDK (Server-side - Required)
+   FIREBASE_ADMIN_PROJECT_ID=your_project_id
+   FIREBASE_ADMIN_CLIENT_EMAIL=firebase-adminsdk@your_project.iam.gserviceaccount.com
+   FIREBASE_ADMIN_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 
-**Frontend (Next.js):**
+   # Gemini AI API Key (Required for AI Chatbot)
+   # Note: Must have NEXT_PUBLIC_ prefix for client-side access
+   NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+
+   # Weather API (Required)
+   OPENWEATHER_API_KEY=your_openweather_api_key
+
+   # Google Places API (Required for venue search)
+   NEXT_PUBLIC_GOOGLE_PLACES_API_KEY=your_google_places_api_key
+
+   # Backend Server Configuration
+   PORT=3001
+   NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
+
+   # Grab Deep Link Scheme
+   GRAB_DEEP_LINK_SCHEME=grab://
+   ```
+
+### Running the Application
+
+#### Development Mode (Recommended)
+
+Run both frontend and backend simultaneously:
 ```bash
 npm run dev
 ```
 
-**Backend (Node.js + Socket.IO):**
+This starts:
+- **Frontend** (Next.js): http://localhost:3000
+- **Backend** (Express + Socket.IO): http://localhost:3001
+
+#### Or Run Separately
+
+**Frontend only:**
+```bash
+npm run dev
+```
+
+**Backend only:**
 ```bash
 npm run server
 ```
 
-### 4. Truy cập ứng dụng
-- Frontend: [http://localhost:3000](http://localhost:3000)
-- Backend API: [http://localhost:3001](http://localhost:3001)
+### Building for Production
+
+```bash
+# Build the Next.js application
+npm run build
+
+# Start production server
+npm start
+```
+
+---
 
 ## 📁 Project Structure
 
 ```
 GrabTheBeyond/
-├── app/                          # Next.js 14 App Router
-│   ├── layout.tsx               # Root layout with providers
-│   ├── page.tsx                 # Home page
-│   ├── login/                   # Authentication pages
-│   │   └── page.tsx
+├── 📱 app/                           # Next.js 14 App Router
+│   ├── layout.tsx                   # Root layout with AuthProvider
+│   ├── page.tsx                     # Home page (Map + Chatbot)
+│   ├── login/
+│   │   └── page.tsx                 # Login page (Email, Google, Facebook)
 │   ├── signup/
-│   │   └── page.tsx
+│   │   └── page.tsx                 # Registration page
 │   ├── profile/
-│   │   └── page.tsx
-│   └── globals.css              # Global styles
-├── components/                   # React Components
-│   ├── AIChatbot.tsx            # Context-aware AI chatbot
-│   ├── AuthProvider.tsx         # Authentication context
-│   ├── IncidentMap.tsx          # Interactive Leaflet map
-│   ├── PlaceCard.tsx            # Destination card with Grab button
-│   ├── ProtectedRoute.tsx       # Route protection wrapper
-│   ├── ReportIncidentForm.tsx   # Incident reporting form
-│   └── UserMenu.tsx             # User profile menu
-├── lib/                          # Core libraries & utilities
-│   ├── authService.ts           # Firebase authentication
-│   ├── firebase.ts              # Firebase configuration
-│   ├── placesAPI.ts             # Google Places integration
-│   ├── puterAI.ts               # Puter AI service
-│   ├── socket.ts                # Socket.IO client
-│   ├── types.ts                 # TypeScript definitions
-│   └── utils.ts                 # Helper functions
-├── server/                       # Backend API
-│   └── index.js                 # Express + Socket.IO server
-├── uploads/                      # User-uploaded files
-│   └── incidents/               # Incident photos
-└── public/                       # Static assets
+│   │   └── page.tsx                 # User profile (Protected route)
+│   └── globals.css                  # Global styles & Tailwind imports
+│
+├── 🧩 components/                    # Reusable React Components
+│   ├── AIChatbot.tsx                # Context-aware AI assistant
+│   ├── AuthProvider.tsx             # Firebase Auth context provider
+│   ├── IncidentMap.tsx              # Interactive Leaflet map
+│   ├── PlaceCard.tsx                # Venue card with Grab integration
+│   ├── ProtectedRoute.tsx           # Authentication guard HOC
+│   ├── ReportIncidentForm.tsx       # Incident reporting modal
+│   └── UserMenu.tsx                 # User dropdown menu
+│
+├── 📚 lib/                           # Core Libraries & Services
+│   ├── authService.ts               # Firebase Auth functions
+│   ├── firebase.ts                  # Firebase initialization
+│   ├── geminiAI.ts                  # Gemini AI service
+│   ├── placesAPI.ts                 # Google Places integration
+│   ├── socket.ts                    # Socket.IO client
+│   ├── types.ts                     # TypeScript type definitions
+│   └── utils.ts                     # Utility functions (location, distance)
+│
+├── 🖥️ server/                        # Backend API Server
+│   └── index.js                     # Express + Socket.IO + Multer
+│
+├── 📤 uploads/                       # User-uploaded files (gitignored)
+│   └── incidents/                   # Incident photos
+│
+├── 📄 Documentation Files
+│   ├── FIREBASE_AUTH_SETUP.md       # Firebase authentication guide
+│   ├── FACEBOOK_LOGIN_CHECKLIST.md  # Facebook OAuth setup
+│   ├── GEMINI_API_KEY_FIX.md        # Gemini API troubleshooting
+│   └── IP_GEOLOCATION_UPDATE.md     # Location fallback guide
+│
+└── ⚙️ Configuration Files
+    ├── next.config.js               # Next.js configuration
+    ├── tailwind.config.js           # Tailwind CSS configuration
+    ├── tsconfig.json                # TypeScript configuration
+    ├── package.json                 # Dependencies & scripts
+    └── .env                         # Environment variables (not in git)
 ```
-
-## �️ Technology Stack
-
-### Frontend
-| Technology | Purpose | Version |
-|-----------|---------|---------|
-| [Next.js](https://nextjs.org/) | React framework with App Router | 14.0.4 |
-| [TypeScript](https://www.typescriptlang.org/) | Type-safe JavaScript | 5.3.3 |
-| [Tailwind CSS](https://tailwindcss.com/) | Utility-first CSS framework | 3.4.0 |
-| [Leaflet](https://leafletjs.com/) | Interactive map library | 1.9.4 |
-| [React Leaflet](https://react-leaflet.js.org/) | React wrapper for Leaflet | 4.2.1 |
-| [Socket.IO Client](https://socket.io/) | Real-time WebSocket client | 4.6.1 |
-
-### Backend
-| Technology | Purpose | Version |
-|-----------|---------|---------|
-| [Node.js](https://nodejs.org/) | JavaScript runtime | - |
-| [Express](https://expressjs.com/) | Web application framework | 4.18.2 |
-| [Socket.IO](https://socket.io/) | Real-time bidirectional communication | 4.6.1 |
-| [Multer](https://github.com/expressjs/multer) | File upload middleware | 1.4.5-lts.1 |
-| [CORS](https://github.com/expressjs/cors) | Cross-origin resource sharing | 2.8.5 |
-
-### Database & Authentication
-| Technology | Purpose | Version |
-|-----------|---------|---------|
-| [Firebase](https://firebase.google.com/) | Backend-as-a-Service | 10.14.1 |
-| [Firebase Admin](https://firebase.google.com/docs/admin/setup) | Server-side Firebase SDK | 12.0.0 |
-| [Firestore](https://firebase.google.com/docs/firestore) | NoSQL cloud database | - |
-| [Firebase Auth](https://firebase.google.com/docs/auth) | Authentication service | - |
-| [Firebase Storage](https://firebase.google.com/docs/storage) | File storage service | - |
-
-### External APIs
-| Service | Purpose | Documentation |
-|---------|---------|---------------|
-| [Puter AI](https://puter.com/) | Multi-model AI (GPT-5 nano, Claude, Gemini) | [Docs](https://docs.puter.com/) |
-| [OpenWeatherMap](https://openweathermap.org/) | Real-time weather data | [API Docs](https://openweathermap.org/api) |
-| [Google Places](https://developers.google.com/maps/documentation/places) | Location search and details | [API Docs](https://developers.google.com/maps/documentation) |
-| [Nominatim](https://nominatim.org/) | Reverse geocoding | [API Docs](https://nominatim.org/release-docs/develop/api/Overview/) |
-
-### Integrations
-- **Grab Deep Linking**: Native app integration via custom URL scheme (`grab://`)
-- **Google OAuth**: Social authentication via Firebase
-- **Facebook OAuth**: Social authentication via Firebase
-
-## 🎯 Core Functionalities
-
-### 1. Real-time Incident Management ⚡
-```typescript
-// Features:
-- Live incident broadcasting via WebSocket
-- Photo upload with Firebase Storage
-- Map marker clustering for better UX
-- Admin verification workflow
-- Online user counter
-- Automatic notifications for nearby incidents
-```
-
-### 2. Context-Aware AI Assistant 🧠
-```typescript
-// AI considers:
-- User's current GPS coordinates
-- Real-time weather conditions
-- Nearby reported incidents
-- Time of day
-- User preferences
-
-// Provides:
-- Intelligent venue recommendations
-- Weather-appropriate suggestions
-- Incident-aware routing advice
-- Local insights and tips
-```
-
-### 3. Seamless Grab Integration �
-```typescript
-// Functionality:
-- One-tap booking with deep linking
-- Pre-filled origin and destination
-- Automatic app detection
-- Web fallback for non-app users
-- Distance and ETA calculation
-```
-
-### 4. User Authentication & Management 🔐
-```typescript
-// Supported methods:
-- Email/Password registration
-- Google OAuth 2.0
-- Facebook OAuth 2.0
-- Session persistence
-- Protected routes
-- User profile management
-```
-
-## 🎨 UI/UX Features
-
-- ✨ **Modern Design**: Clean interface with Grab's brand identity
-- 📱 **Fully Responsive**: Mobile-first design, works on all devices
-- 🗺️ **Interactive Maps**: Smooth pan, zoom, and marker interactions
-- 💬 **Natural Conversations**: AI chatbot with conversational UI
-- 🚀 **Performance Optimized**: Code splitting and lazy loading
-- ♿ **Accessible**: WCAG 2.1 compliant design principles
-- 🌓 **Visual Feedback**: Loading states, animations, and transitions
-
-## � Security & Best Practices
-
-### Authentication & Authorization
-- ✅ Firebase Authentication with email verification
-- ✅ OAuth 2.0 for social logins
-- ✅ JWT-based session management
-- ✅ Protected API endpoints
-- ✅ Route guards for authenticated pages
-
-### Data Security
-- ✅ Environment variables for sensitive data
-- ✅ Firebase Security Rules for Firestore
-- ✅ Server-side validation with Firebase Admin SDK
-- ✅ Input sanitization and validation
-- ✅ HTTPS-only in production
-
-### Code Quality
-- ✅ TypeScript for type safety
-- ✅ ESLint for code linting
-- ✅ Error boundaries for graceful error handling
-- ✅ Comprehensive error logging
-- ✅ CORS configuration for API security
-
-## 📝 Notes cho Hackathon
-
-### MVP Focus
-Dự án tập trung vào 3 tính năng cốt lõi hoạt động mượt mà, thay vì làm nhiều tính năng nhưng chưa hoàn thiện.
-
-### Demo Scenarios
-1. **User reports incident** → Real-time broadcast → AI suggests alternatives
-2. **User asks "Where to go in rain?"** → AI analyzes weather + incidents → Suggests indoor places
-3. **User clicks "Book Grab"** → Opens Grab app with pre-filled destination
-
-### Potential Extensions
-- [ ] Admin dashboard để verify incidents
-- [ ] Historical data & analytics
-- [ ] User authentication & profiles
-- [ ] Rating system cho địa điểm
-- [ ] Push notifications (FCM)
-- [ ] Offline mode với Service Workers
-
-## 🤝 Contributing
-
-Dự án mở cho contributions. Tạo PR hoặc mở issue nếu có ý tưởng!
-
-## 📄 License
-
-MIT License - Free to use for hackathon & learning purposes
-
-## 🙏 Credits
-
-- **Grab** - Branding & inspiration
-- **OpenStreetMap** - Map data
-- **Puter** - AI capabilities
-- **Firebase** - Backend infrastructure
 
 ---
 
-**Built with ❤️ for Grab Hackathon 2025**
+## 🛠️ Technology Stack
 
-🚗 *"Beyond Transportation, Beyond Limits"* 🌟
+### Frontend Technologies
+
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| [Next.js](https://nextjs.org/) | 14.0.4 | React framework with App Router & Server Components |
+| [React](https://react.dev/) | 18.2.0 | UI library for building interactive interfaces |
+| [TypeScript](https://www.typescriptlang.org/) | 5.3.3 | Type-safe JavaScript with static typing |
+| [Tailwind CSS](https://tailwindcss.com/) | 3.4.0 | Utility-first CSS framework |
+| [Leaflet](https://leafletjs.com/) | 1.9.4 | Open-source interactive maps |
+| [React Leaflet](https://react-leaflet.js.org/) | 4.2.1 | React components for Leaflet |
+| [Socket.IO Client](https://socket.io/) | 4.6.1 | Real-time WebSocket communication |
+
+### Backend Technologies
+
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| [Node.js](https://nodejs.org/) | 18+ | JavaScript runtime environment |
+| [Express](https://expressjs.com/) | 4.18.2 | Minimal web application framework |
+| [Socket.IO](https://socket.io/) | 4.6.1 | Real-time bidirectional event-based communication |
+| [Multer](https://github.com/expressjs/multer) | 1.4.5 | Middleware for handling `multipart/form-data` |
+| [CORS](https://github.com/expressjs/cors) | 2.8.5 | Cross-Origin Resource Sharing middleware |
+
+### Database & Authentication
+
+| Service | Purpose | Features |
+|---------|---------|----------|
+| [Firebase](https://firebase.google.com/) | Backend-as-a-Service | Complete backend infrastructure |
+| [Firestore](https://firebase.google.com/docs/firestore) | NoSQL database | Real-time data synchronization |
+| [Firebase Auth](https://firebase.google.com/docs/auth) | Authentication | Email, Google, Facebook login |
+| [Firebase Storage](https://firebase.google.com/docs/storage) | File storage | Image upload for incidents |
+| [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup) | Server-side operations | Secure backend administration |
+
+### External APIs & Services
+
+| Service | Purpose | Rate Limits | Documentation |
+|---------|---------|-------------|---------------|
+| [Google Gemini AI](https://ai.google.dev/) | Conversational AI | Varies by tier | [Docs](https://ai.google.dev/docs) |
+| [Google Places API](https://developers.google.com/maps/documentation/places) | Venue search & details | Varies by plan | [API Docs](https://developers.google.com/maps/documentation) |
+| [OpenWeatherMap](https://openweathermap.org/) | Real-time weather data | 1,000 calls/day (free) | [API Docs](https://openweathermap.org/api) |
+| [ip-api.com](https://ip-api.com/) | IP geolocation | 45 req/min (free) | [Docs](https://ip-api.com/docs) |
+| [Nominatim](https://nominatim.org/) | Reverse geocoding | 1 req/sec | [Usage Policy](https://operations.osmfoundation.org/policies/nominatim/) |
+
+---
+
+### Testing Tools
+```bash
+# Check environment variables
+node check-env-gemini.js
+
+# Lint code
+npm run lint
+
+# Type check
+npm run type-check
+```
+
+---
+
+## 📚 Documentation
+
+Comprehensive guides available:
+
+| Guide | Description |
+|-------|-------------|
+| [FIREBASE_AUTH_SETUP.md](./FIREBASE_AUTH_SETUP.md) | Complete Firebase authentication setup |
+| [FACEBOOK_LOGIN_CHECKLIST.md](./FACEBOOK_LOGIN_CHECKLIST.md) | Facebook OAuth configuration steps |
+| [GEMINI_API_KEY_FIX.md](./GEMINI_API_KEY_FIX.md) | Troubleshooting Gemini API issues |
+| [IP_GEOLOCATION_UPDATE.md](./IP_GEOLOCATION_UPDATE.md) | Location fallback implementation |
+
+
+## 🙏 Acknowledgments
+
+### Technologies & Services
+- **Google** - Gemini AI, Places API, OAuth
+- **Firebase** - Complete backend infrastructure
+- **OpenStreetMap** - Map data via Leaflet
+- **OpenWeatherMap** - Real-time weather data
+
+
+## 📧 Contact & Support
+
+**Project Repository:** [GitHub](https://github.com/yourusername/GrabTheBeyond)
+
+**Issues & Bugs:** [GitHub Issues](https://github.com/yourusername/GrabTheBeyond/issues)
+
+**Questions:** Open a discussion on GitHub
+
+---
+
+

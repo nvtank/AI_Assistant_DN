@@ -1,10 +1,11 @@
 // Gemini API Configuration
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-// Use Gemini 1.5 Flash instead of 2.5 for better quota
+
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
 
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 export function initGeminiAI() {
   if (!GEMINI_API_KEY) {
     console.error('❌ Gemini API key not found');
@@ -24,23 +25,31 @@ export async function callGeminiAI(
     realTimePlaces?: any[];
   }
 ): Promise<string> {
-  try {
-    // Analyze user intent and keywords
-    const messageLower = message.toLowerCase();
-    const keywords = {
-      coffee: ['coffee', 'cafe', 'cà phê', 'café', 'caphe'],
-      restaurant: ['restaurant', 'food', 'eat', 'quán ăn', 'nhà hàng', 'ăn'],
-      salon: ['salon', 'hair', 'cut', 'cắt tóc', 'tiệm tóc'],
-      spa: ['spa', 'massage', 'mát-xa'],
-      gym: ['gym', 'fitness', 'phòng tập'],
-      bar: ['bar', 'drink', 'beer', 'quán bar'],
-      shopping: ['shop', 'mall', 'shopping', 'mua sắm', 'siêu thị'],
-      beach: ['beach', 'sea', 'biển'],
-      hotel: ['hotel', 'stay', 'khách sạn'],
-      pharmacy: ['pharmacy', 'medicine', 'hiệu thuốc', 'thuốc'],
-    };
+  // Analyze user intent and keywords
+  const messageLower = message.toLowerCase();
+  const keywords = {
+    coffee: ['coffee', 'cafe', 'cà phê', 'café', 'caphe'],
+    restaurant: ['restaurant', 'food', 'eat', 'quán ăn', 'nhà hàng', 'ăn'],
+    salon: ['salon', 'hair', 'cut', 'cắt tóc', 'tiệm tóc'],
+    spa: ['spa', 'massage', 'mát-xa'],
+    gym: ['gym', 'fitness', 'phòng tập'],
+    bar: ['bar', 'drink', 'beer', 'quán bar'],
+    shopping: ['shop', 'mall', 'shopping', 'mua sắm', 'siêu thị'],
+    beach: ['beach', 'sea', 'biển'],
+    hotel: ['hotel', 'stay', 'khách sạn'],
+    pharmacy: ['pharmacy', 'medicine', 'hiệu thuốc', 'thuốc'],
+  };
 
-    let placeType = '';
+  let placeType = '';
+
+  try {
+    console.log('🔍 Gemini AI called with message:', message);
+    console.log('📍 Context received:', {
+      location: context.userLocation?.address,
+      weather: context.weather?.description,
+      temp: context.weather?.temp,
+      incidents: context.nearbyIncidents?.length
+    });
     for (const [type, words] of Object.entries(keywords)) {
       if (words.some(word => messageLower.includes(word))) {
         placeType = type;
@@ -177,12 +186,26 @@ Now provide specific recommendations matching user's intent:`;
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ Gemini API error:', errorText);
+      console.error('❌ Gemini API error status:', response.status);
+      console.error('❌ Gemini API error response:', errorText);
+      
+      // Handle rate limit (429) and quota errors
+      if (response.status === 429 || response.status === 403) {
+        console.warn('⚠️ API quota exceeded or rate limited - using fallback response');
+        return getFallbackResponse(message, context, placeType, isRaining);
+      }
+      
       throw new Error(`Gemini API error: ${response.status}`);
     }
 
     const data = await response.json();
     console.log('🔍 Raw Gemini AI response:', data);
+
+    // Check for API errors
+    if (data.error) {
+      console.error('❌ Gemini API returned error:', data.error);
+      throw new Error(`Gemini API error: ${data.error.message || 'Unknown error'}`);
+    }
 
     // Extract text from Gemini response with better error handling
     if (data.candidates && Array.isArray(data.candidates) && data.candidates.length > 0) {
@@ -219,7 +242,9 @@ Now provide specific recommendations matching user's intent:`;
       
       if (text && typeof text === 'string' && text.trim()) {
         console.log('✅ Gemini AI response extracted successfully');
-        return weatherResponse + text;
+        const finalResponse = weatherResponse + text;
+        console.log('📝 Final response:', finalResponse.substring(0, 200) + '...');
+        return finalResponse;
       }
       
       // If no text but finish reason is STOP, it might be empty response
@@ -235,6 +260,13 @@ Now provide specific recommendations matching user's intent:`;
 
   } catch (error: any) {
     console.error('❌ Gemini AI error:', error);
+    
+    // Check if error is quota-related
+    if (error.message?.includes('429') || error.message?.includes('quota')) {
+      console.warn('⚠️ API quota exceeded - using fallback response');
+      return getFallbackResponse(message, context, placeType, false);
+    }
+    
     return getFallbackResponse(message, context, '', false);
   }
 }

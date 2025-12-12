@@ -16,6 +16,7 @@ interface AIChatbotProps {
 }
 
 type ChatMode = 'normal' | 'planner';
+type Language = 'en' | 'vi';
 
 export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AIChatbotProps) {
   const { user } = useAuth();
@@ -23,6 +24,14 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
   
   // Mode management
   const [chatMode, setChatMode] = useState<ChatMode>('normal');
+  const [language, setLanguage] = useState<Language>('en');
+  
+  // Voice chat states
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -61,6 +70,58 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
     if (initGeminiAI()) setGeminiReady(true);
   }, []);
 
+  // Initialize Web Speech API
+  useEffect(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const speechSynthesis = window.speechSynthesis;
+    
+    if (SpeechRecognition && speechSynthesis) {
+      setVoiceSupported(true);
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = language === 'en' ? 'en-US' : 'vi-VN';
+
+      recognitionRef.current.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onresult = (event: any) => {
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            // Auto-send when speech is finalized
+            setTimeout(() => {
+              setInput(transcript);
+            }, 100);
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+        if (interimTranscript) {
+          setInput(interimTranscript);
+        }
+      };
+
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+      window.speechSynthesis.cancel();
+    };
+  }, [language]);
+
   const handleSend = async () => {
     if (!input.trim() || loading) return;
 
@@ -79,22 +140,35 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
 
       if (geminiReady) {
         try {
+          console.log('📤 Calling Gemini AI with message:', input);
           aiResponse = await callGeminiAI(input, {
             userLocation,
             weather,
             nearbyIncidents,
           });
+          console.log('✅ Gemini AI response received:', aiResponse);
         } catch (e) {
+          console.error('❌ Gemini AI failed, error:', e);
+          console.error('Error details:', (e as Error).message);
           aiResponse = await callServerAI();
         }
       } else {
+        console.warn('⚠️ Gemini not ready, using server AI');
         aiResponse = await callServerAI();
+      }
+
+      if (!aiResponse || aiResponse.trim() === '') {
+        console.error('❌ Empty response received!');
+        aiResponse = "I'm having trouble processing your request. Please try again.";
       }
 
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: aiResponse, timestamp: new Date() },
       ]);
+
+      // Auto-speak AI response if voice is enabled
+      speakText(aiResponse);
 
       // Only suggest places if user is asking about places/locations
       const messageLower = input.toLowerCase();
@@ -144,6 +218,52 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
     // Fallback to simple response when Gemini fails
     // In production, this should call your API route if you have one
     return "I'm having trouble processing your request right now. Please try again in a moment.";
+  };
+
+  // Voice functions
+  const startListening = () => {
+    if (recognitionRef.current && !isListening) {
+      recognitionRef.current.start();
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.abort();
+      setIsListening(false);
+    }
+  };
+
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language === 'en' ? 'en-US' : 'vi-VN';
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+
+      utterance.onstart = () => {
+        setIsSpeaking(true);
+      };
+
+      utterance.onend = () => {
+        setIsSpeaking(false);
+      };
+
+      utterance.onerror = () => {
+        setIsSpeaking(false);
+      };
+
+      speechUtteranceRef.current = utterance;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const stopSpeaking = () => {
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
   };
 
   const suggestPlacesBasedOnContext = () => {
@@ -217,9 +337,23 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
             </p>
           </div>
 
-          {geminiReady && chatMode === 'normal' && (
-            <div className="text-[10px] sm:text-xs bg-white/30 px-2 sm:px-3 py-1 rounded-full shadow-sm">✓ AI</div>
-          )}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Language selector */}
+            {voiceSupported && chatMode === 'normal' && (
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as Language)}
+                className="text-xs sm:text-sm bg-white/20 text-white px-2 py-1 rounded-lg border border-white/30 hover:bg-white/30"
+              >
+                <option value="en">🇬🇧 English</option>
+                <option value="vi">🇻🇳 Tiếng Việt</option>
+              </select>
+            )}
+
+            {geminiReady && chatMode === 'normal' && (
+              <div className="text-[10px] sm:text-xs bg-white/30 px-2 sm:px-3 py-1 rounded-full shadow-sm">✓ AI</div>
+            )}
+          </div>
         </div>
         
         {/* MODE TOGGLE */}
@@ -368,10 +502,28 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Ask about Da Nang…"
+            placeholder={language === 'en' ? "Ask about Da Nang…" : "Hỏi về Đà Nẵng…"}
             disabled={loading}
             className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-grab-green focus:border-transparent outline-none shadow-sm disabled:bg-gray-100"
           />
+          
+          {/* Voice input button */}
+          {voiceSupported && (
+            <button
+              onClick={isListening ? stopListening : startListening}
+              disabled={loading || isSpeaking}
+              className={`px-3 sm:px-4 py-2 sm:py-3 rounded-xl shadow-md transition-all text-sm sm:text-base ${
+                isListening
+                  ? 'bg-red-500 text-white hover:bg-red-600'
+                  : 'bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-40'
+              }`}
+              title={language === 'en' ? 'Click to speak' : 'Bấm để nói'}
+            >
+              {isListening ? '🎙️⏹' : '🎤'}
+            </button>
+          )}
+
+          {/* Send button */}
           <button
             onClick={handleSend}
             disabled={loading || !input.trim()}
