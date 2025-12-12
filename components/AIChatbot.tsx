@@ -5,6 +5,9 @@ import { ChatMessage, Location, WeatherData, Incident, Place, MOCK_PLACES } from
 import { calculateDistance } from '@/lib/utils';
 import { callGeminiAI, initGeminiAI } from '@/lib/geminiAI';
 import PlaceCard from './PlaceCard';
+import TravelPlannerForm from './TravelPlannerForm';
+import { useAuth } from './AuthProvider';
+import { useRouter } from 'next/navigation';
 
 interface AIChatbotProps {
   userLocation: Location;
@@ -12,11 +15,19 @@ interface AIChatbotProps {
   nearbyIncidents: Incident[];
 }
 
+type ChatMode = 'normal' | 'planner';
+
 export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AIChatbotProps) {
+  const { user } = useAuth();
+  const router = useRouter();
+  
+  // Mode management
+  const [chatMode, setChatMode] = useState<ChatMode>('normal');
+  
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: '👋 Hello! I am your AI assistant. Ask me anything about Da Nang!',
+      content: '👋 Hello! I am your AI assistant. Ask me anything about Da Nang!\n\n💡 Tip: Switch to Planner mode to create your travel plan.',
       timestamp: new Date(),
     },
   ]);
@@ -27,6 +38,20 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [geminiReady, setGeminiReady] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Switch between modes
+  const switchToPlannerMode = () => {
+    if (!user) {
+      alert('Please login to create a travel plan');
+      router.push('/login');
+      return;
+    }
+    setChatMode('planner');
+  };
+  
+  const switchToNormalMode = () => {
+    setChatMode('normal');
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -184,18 +209,53 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
       <div className="bg-gradient-to-br from-grab-green to-emerald-600 text-white p-3 sm:p-5 rounded-t-2xl shadow-md flex-shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg sm:text-2xl font-bold tracking-wide">AI Assistant</h1>
-            <p className="text-xs sm:text-sm text-white/80 mt-1 hidden sm:block">Your smart travel companion 🌍</p>
+            <h1 className="text-lg sm:text-2xl font-bold tracking-wide">
+              {chatMode === 'normal' ? 'AI Assistant' : '🗺️ Travel Planner'}
+            </h1>
+            <p className="text-xs sm:text-sm text-white/80 mt-1 hidden sm:block">
+              {chatMode === 'normal' ? 'Your smart travel companion 🌍' : 'Create your perfect Da Nang trip'}
+            </p>
           </div>
 
-          {geminiReady && (
+          {geminiReady && chatMode === 'normal' && (
             <div className="text-[10px] sm:text-xs bg-white/30 px-2 sm:px-3 py-1 rounded-full shadow-sm">✓ AI</div>
           )}
         </div>
+        
+        {/* MODE TOGGLE */}
+        <div className="mt-3 flex gap-2">
+          <button
+            onClick={switchToNormalMode}
+            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+              chatMode === 'normal'
+                ? 'bg-white text-grab-green shadow-md'
+                : 'bg-white/20 text-white hover:bg-white/30'
+            }`}
+          >
+            💬 Chat
+          </button>
+          <button
+            onClick={switchToPlannerMode}
+            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+              chatMode === 'planner'
+                ? 'bg-white text-grab-green shadow-md'
+                : 'bg-white/20 text-white hover:bg-white/30'
+            }`}
+          >
+            🗺️ Planner
+          </button>
+        </div>
       </div>
 
-      {/* CHAT BOX */}
-      <div className="flex-1 overflow-y-scroll p-3 sm:p-5 space-y-3 sm:space-y-4 bg-gray-50 scrollbar-thin scrollbar-thumb-gray-300">
+      {/* CONTENT AREA - Chat or Form based on mode */}
+      {chatMode === 'planner' ? (
+        <div className="flex-1 overflow-hidden">
+          <TravelPlannerForm embedded={true} onBack={switchToNormalMode} />
+        </div>
+      ) : (
+        <>
+          {/* CHAT BOX */}
+          <div className="flex-1 overflow-y-scroll p-3 sm:p-5 space-y-3 sm:space-y-4 bg-gray-50 scrollbar-thin scrollbar-thumb-gray-300">
         {messages.map((message, index) => (
           <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
@@ -321,6 +381,8 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
           </button>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }

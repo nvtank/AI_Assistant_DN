@@ -16,24 +16,24 @@ interface Question {
 const QUESTIONS: Question[] = [
   {
     id: 'welcome',
-    question: '👋 Xin chào! Tôi là trợ lý du lịch AI của bạn.\n\nTôi sẽ giúp bạn lên kế hoạch chi tiết cho chuyến đi Đà Nẵng. Hãy trả lời một vài câu hỏi để tôi có thể tạo lịch trình tốt nhất cho bạn nhé!',
+    question: '👋 Hello! I\'m your AI Travel Assistant.\n\nI\'ll help you plan a detailed trip to Da Nang. Please answer a few questions so I can create the best itinerary for you!',
     type: 'text',
   },
   {
     id: 'startDate',
-    question: '📅 Bạn muốn bắt đầu chuyến đi vào ngày nào?\n\n(Ví dụ: 2025-12-20)',
+    question: '📅 When would you like to start your trip?\n\n(Example: 2025-12-20)',
     type: 'date',
     validation: (value: string) => {
       const date = new Date(value);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      if (date < today) return 'Ngày bắt đầu phải từ hôm nay trở đi';
+      if (date < today) return 'Start date must be today or later';
       return true;
     },
   },
   {
     id: 'endDate',
-    question: '📅 Và kết thúc vào ngày nào?\n\n(Ví dụ: 2025-12-22)',
+    question: '📅 And when will it end?\n\n(Example: 2025-12-22)',
     type: 'date',
     validation: (value: string) => {
       return true; // Will validate against startDate
@@ -41,83 +41,83 @@ const QUESTIONS: Question[] = [
   },
   {
     id: 'numberOfPeople',
-    question: '👥 Chuyến đi này có bao nhiêu người?\n\nVui lòng cho biết số người lớn và trẻ em (nếu có)',
+    question: '👥 How many people are going on this trip?\n\nPlease specify number of adults and children (if any)',
     type: 'people',
   },
   {
     id: 'budget',
-    question: '💰 Ngân sách dự kiến cho chuyến đi là bao nhiêu?\n\n(Đơn vị: VNĐ, cho toàn bộ chuyến đi)',
+    question: '💰 What is your estimated budget for the trip?\n\n(Currency: VND, for the entire trip)',
     type: 'budget',
   },
   {
     id: 'travelStyle',
-    question: '🎯 Phong cách du lịch bạn thích là gì?',
+    question: '🎯 What\'s your preferred travel style?',
     type: 'select',
     options: [
-      { value: 'relax', label: 'Thư giãn, nghỉ dưỡng', emoji: '🏖️' },
-      { value: 'adventure', label: 'Phiêu lưu, khám phá', emoji: '🏃' },
-      { value: 'family', label: 'Gia đình, vui chơi', emoji: '👨‍👩‍👧‍👦' },
-      { value: 'couple', label: 'Lãng mạn, cặp đôi', emoji: '💑' },
-      { value: 'cultural', label: 'Văn hóa, lịch sử', emoji: '🏛️' },
-      { value: 'foodie', label: 'Ẩm thực, khám phá món ăn', emoji: '🍜' },
+      { value: 'relax', label: 'Relaxation & Resort', emoji: '🏖️' },
+      { value: 'adventure', label: 'Adventure & Exploration', emoji: '🏃' },
+      { value: 'family', label: 'Family Fun', emoji: '👨‍👩‍👧‍👦' },
+      { value: 'couple', label: 'Romantic Getaway', emoji: '💑' },
+      { value: 'cultural', label: 'Culture & History', emoji: '🏛️' },
+      { value: 'foodie', label: 'Food & Culinary', emoji: '🍜' },
     ],
   },
   {
     id: 'transportation',
-    question: '🚗 Bạn muốn di chuyển bằng phương tiện gì?',
+    question: '🚗 How would you like to get around?',
     type: 'select',
     options: [
-      { value: 'motorbike', label: 'Xe máy (tự do, linh hoạt)', emoji: '🏍️' },
-      { value: 'car', label: 'Ô tô (thuê xe tự lái)', emoji: '🚗' },
-      { value: 'taxi', label: 'Taxi (tiện lợi)', emoji: '🚕' },
-      { value: 'grab', label: 'Grab (công nghệ)', emoji: '📱' },
-      { value: 'mixed', label: 'Kết hợp nhiều loại', emoji: '🚦' },
+      { value: 'motorbike', label: 'Motorbike (flexible)', emoji: '🏍️' },
+      { value: 'car', label: 'Car (self-drive rental)', emoji: '🚗' },
+      { value: 'taxi', label: 'Taxi (convenient)', emoji: '🚕' },
+      { value: 'grab', label: 'Grab (ride-hailing)', emoji: '📱' },
+      { value: 'mixed', label: 'Mixed transport', emoji: '🚦' },
     ],
   },
   {
     id: 'accommodation',
-    question: '🏨 Bạn muốn ở loại chỗ nào?',
+    question: '🏨 What type of accommodation do you prefer?',
     type: 'select',
     options: [
-      { value: 'hotel', label: 'Khách sạn (3-4 sao)', emoji: '🏨' },
-      { value: 'resort', label: 'Resort (cao cấp)', emoji: '🏝️' },
-      { value: 'homestay', label: 'Homestay (trải nghiệm địa phương)', emoji: '🏡' },
-      { value: 'hostel', label: 'Hostel (tiết kiệm)', emoji: '🛏️' },
-      { value: 'any', label: 'Không quan trọng', emoji: '✨' },
+      { value: 'hotel', label: 'Hotel (3-4 star)', emoji: '🏨' },
+      { value: 'resort', label: 'Resort (luxury)', emoji: '🏝️' },
+      { value: 'homestay', label: 'Homestay (local experience)', emoji: '🏡' },
+      { value: 'hostel', label: 'Hostel (budget)', emoji: '🛏️' },
+      { value: 'any', label: 'No preference', emoji: '✨' },
     ],
   },
   {
     id: 'timePreference',
-    question: '⏰ Bạn thích khung giờ hoạt động như thế nào?',
+    question: '⏰ What time schedule do you prefer?',
     type: 'select',
     options: [
-      { value: 'early', label: 'Dậy sớm (6-7h), về sớm (18h)', emoji: '🌅' },
-      { value: 'normal', label: 'Bình thường (8-9h), về vừa (20h)', emoji: '☀️' },
-      { value: 'late', label: 'Dậy muộn (10h), về muộn (22h)', emoji: '🌆' },
+      { value: 'early', label: 'Early bird (6-7AM start, 6PM end)', emoji: '🌅' },
+      { value: 'normal', label: 'Normal (8-9AM start, 8PM end)', emoji: '☀️' },
+      { value: 'late', label: 'Night owl (10AM start, 10PM end)', emoji: '🌆' },
     ],
   },
   {
     id: 'foodPreferences',
-    question: '🍜 Bạn thích ăn món gì?\n\n(Có thể chọn nhiều)',
+    question: '🍜 What types of food do you enjoy?\n\n(You can select multiple)',
     type: 'multiselect',
     options: [
-      { value: 'seafood', label: 'Hải sản', emoji: '🦞' },
-      { value: 'vietnamese', label: 'Món Việt truyền thống', emoji: '🍲' },
-      { value: 'bbq', label: 'Nướng/BBQ', emoji: '🍖' },
-      { value: 'vegetarian', label: 'Chay', emoji: '🥗' },
-      { value: 'street-food', label: 'Ăn vặt đường phố', emoji: '🥟' },
-      { value: 'international', label: 'Món quốc tế', emoji: '🍕' },
-      { value: 'cafe', label: 'Cafe, đồ uống', emoji: '☕' },
+      { value: 'seafood', label: 'Seafood', emoji: '🦞' },
+      { value: 'vietnamese', label: 'Traditional Vietnamese', emoji: '🍲' },
+      { value: 'bbq', label: 'BBQ/Grilled', emoji: '🍖' },
+      { value: 'vegetarian', label: 'Vegetarian', emoji: '🥗' },
+      { value: 'street-food', label: 'Street food', emoji: '🥟' },
+      { value: 'international', label: 'International cuisine', emoji: '🍕' },
+      { value: 'cafe', label: 'Cafes & Drinks', emoji: '☕' },
     ],
   },
   {
     id: 'allergies',
-    question: '⚠️ Bạn có dị ứng với món ăn hoặc hoạt động nào không?\n\n(Ví dụ: hải sản, sữa, độ cao...)\n\nNếu không có, gõ "Không"',
+    question: '⚠️ Do you have any food or activity allergies?\n\n(Example: seafood, dairy, heights...)\n\nIf none, type "None"',
     type: 'text',
   },
   {
     id: 'restrictions',
-    question: '🚫 Có điều gì bạn không muốn hoặc không thể làm không?\n\n(Ví dụ: không đi biển, không thích hoạt động mạo hiểm...)\n\nNếu không có, gõ "Không"',
+    question: '🚫 Is there anything you don\'t want to do or can\'t do?\n\n(Example: no beach, no extreme activities...)\n\nIf none, type "None"',
     type: 'text',
   },
 ];
@@ -178,7 +178,7 @@ export default function TravelPlannerChat() {
     if (currentQuestion.validation) {
       const validationResult = currentQuestion.validation(value);
       if (validationResult !== true) {
-        addMessage('assistant', `❌ ${validationResult}\n\nVui lòng thử lại.`);
+        addMessage('assistant', `❌ ${validationResult}\n\nPlease try again.`);
         return;
       }
     }
@@ -212,7 +212,7 @@ export default function TravelPlannerChat() {
       }
     } else if (currentQuestion.type === 'text') {
       if (currentQuestion.id === 'allergies' || currentQuestion.id === 'restrictions') {
-        const items = value.toLowerCase() === 'không' ? [] : value.split(',').map((s: string) => s.trim());
+        const items = value.toLowerCase() === 'none' || value.toLowerCase() === 'không' ? [] : value.split(',').map((s: string) => s.trim());
         setPlanRequest((prev) => ({
           ...prev,
           [currentQuestion.id]: items,
@@ -224,7 +224,7 @@ export default function TravelPlannerChat() {
         const startDate = new Date(planRequest.startDate);
         const endDate = new Date(value);
         if (endDate < startDate) {
-          addMessage('assistant', '❌ Ngày kết thúc phải sau ngày bắt đầu!\n\nVui lòng thử lại.');
+          addMessage('assistant', '❌ End date must be after start date!\n\nPlease try again.');
           return;
         }
       }
@@ -263,20 +263,20 @@ export default function TravelPlannerChat() {
     }
     if (question.type === 'multiselect') {
       const selected = question.options?.filter((opt) => value.includes(opt.value));
-      return selected?.map((opt) => `${opt.emoji} ${opt.label}`).join(', ') || 'Không có';
+      return selected?.map((opt) => `${opt.emoji} ${opt.label}`).join(', ') || 'None';
     }
     if (question.type === 'people') {
-      return `${planRequest.numberOfPeople?.adults} người lớn, ${planRequest.numberOfPeople?.children} trẻ em`;
+      return `${planRequest.numberOfPeople?.adults} adults, ${planRequest.numberOfPeople?.children} children`;
     }
     if (question.type === 'budget') {
-      return `${planRequest.budget?.min.toLocaleString()} - ${planRequest.budget?.max.toLocaleString()} VNĐ`;
+      return `${planRequest.budget?.min.toLocaleString()} - ${planRequest.budget?.max.toLocaleString()} VND`;
     }
     return value;
   };
 
   const generatePlan = async () => {
     setIsGenerating(true);
-    addMessage('assistant', '🤖 Đang phân tích thông tin và tạo kế hoạch chi tiết cho bạn...\n\n⏳ Quá trình này có thể mất 20-30 giây. Vui lòng đợi nhé!');
+    addMessage('assistant', '🤖 Analyzing information and creating detailed plan for you...\n\n⏳ This may take 20-30 seconds. Please wait!');
 
     try {
       console.log('📤 Sending request with:', {
@@ -307,23 +307,23 @@ export default function TravelPlannerChat() {
       setGeneratedPlan(data.plan);
       addMessage(
         'assistant',
-        `✅ Kế hoạch của bạn đã sẵn sàng!\n\n📋 Tổng chi phí ước tính: ${data.plan.totalEstimatedCost.total.toLocaleString()} VNĐ\n\nBạn có thể xem chi tiết và chỉnh sửa kế hoạch bên dưới.`
+        `✅ Your plan is ready!\n\n📋 Total estimated cost: ${data.plan.totalEstimatedCost.total.toLocaleString()} VND\n\nYou can view details and edit your plan below.`
       );
     } catch (error: any) {
       console.error('❌ Generate plan error:', error);
       const errorMessage = error.message || 'Unknown error';
       addMessage(
         'assistant', 
-        `❌ Có lỗi xảy ra khi tạo kế hoạch:\n\n${errorMessage}\n\n` +
+        `❌ Error generating plan:\n\n${errorMessage}\n\n` +
         `Debug info:\n` +
         `- User ID: ${user?.uid || 'guest'}\n` +
         `- Dates: ${planRequest.startDate} - ${planRequest.endDate}\n` +
         `- People: ${planRequest.numberOfPeople?.adults || 0} adults\n\n` +
-        `Vui lòng kiểm tra:\n` +
-        `1. API keys trong .env\n` +
+        `Please check:\n` +
+        `1. API keys in .env\n` +
         `2. Internet connection\n` +
         `3. Firebase setup\n\n` +
-        `Hoặc thử lại sau.`
+        `Or try again later.`
       );
     } finally {
       setIsGenerating(false);
@@ -369,12 +369,12 @@ export default function TravelPlannerChat() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Vui lòng đăng nhập</h2>
+          <h2 className="text-2xl font-bold mb-4">Please login</h2>
           <button
             onClick={() => router.push('/login')}
             className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
           >
-            Đăng nhập
+            Login
           </button>
         </div>
       </div>
@@ -394,11 +394,11 @@ export default function TravelPlannerChat() {
             </button>
             <div>
               <h1 className="text-xl font-bold text-gray-900">🗺️ AI Travel Planner</h1>
-              <p className="text-sm text-gray-600">Lên kế hoạch du lịch Đà Nẵng</p>
+              <p className="text-sm text-gray-600">Plan your Da Nang trip</p>
             </div>
           </div>
           <div className="text-sm text-gray-600">
-            Bước {currentStep}/{QUESTIONS.length - 1}
+            Step {currentStep}/{QUESTIONS.length - 1}
           </div>
         </div>
       </div>
@@ -424,7 +424,7 @@ export default function TravelPlannerChat() {
               <div className="bg-white p-4 rounded-2xl shadow-md">
                 <div className="flex items-center gap-2">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-600"></div>
-                  <span>Đang tạo kế hoạch...</span>
+                  <span>Generating plan...</span>
                 </div>
               </div>
             </div>
@@ -441,7 +441,7 @@ export default function TravelPlannerChat() {
               onClick={() => router.push(`/travel-plan/${generatedPlan.id}`)}
               className="w-full bg-green-600 text-white py-4 rounded-xl font-semibold hover:bg-green-700 transition-colors"
             >
-              📋 Xem kế hoạch chi tiết →
+              📋 View Detailed Plan →
             </button>
           </div>
         </div>
@@ -511,7 +511,7 @@ export default function TravelPlannerChat() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && canProceed && handleNext()}
-                placeholder="Nhập câu trả lời..."
+                placeholder="Enter your answer..."
                 className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-green-600 focus:outline-none mb-4"
                 autoFocus
               />
@@ -526,7 +526,7 @@ export default function TravelPlannerChat() {
                   : 'bg-gray-200 text-gray-400 cursor-not-allowed'
               }`}
             >
-              {currentStep === 0 ? 'Bắt đầu' : currentStep === QUESTIONS.length - 1 ? 'Tạo kế hoạch' : 'Tiếp tục'}
+              {currentStep === 0 ? 'Start' : currentStep === QUESTIONS.length - 1 ? 'Generate Plan' : 'Continue'}
             </button>
           </div>
         </div>
@@ -548,7 +548,7 @@ function PeopleInput({
   return (
     <div className="space-y-4 mb-4">
       <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-        <span className="font-medium">👨 Người lớn</span>
+        <span className="font-medium">👨 Adults</span>
         <div className="flex items-center gap-3">
           <button
             onClick={() => onChange(Math.max(1, adults - 1), children)}
@@ -566,7 +566,7 @@ function PeopleInput({
         </div>
       </div>
       <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-        <span className="font-medium">👶 Trẻ em</span>
+        <span className="font-medium">👶 Children</span>
         <div className="flex items-center gap-3">
           <button
             onClick={() => onChange(adults, Math.max(0, children - 1))}
@@ -589,11 +589,11 @@ function PeopleInput({
 
 function BudgetInput({ min, max, onChange }: { min: number; max: number; onChange: (min: number, max: number) => void }) {
   const presets = [
-    { label: '2-3 triệu', min: 2000000, max: 3000000 },
-    { label: '3-5 triệu', min: 3000000, max: 5000000 },
-    { label: '5-7 triệu', min: 5000000, max: 7000000 },
-    { label: '7-10 triệu', min: 7000000, max: 10000000 },
-    { label: 'Trên 10 triệu', min: 10000000, max: 20000000 },
+    { label: '2-3 million', min: 2000000, max: 3000000 },
+    { label: '3-5 million', min: 3000000, max: 5000000 },
+    { label: '5-7 million', min: 5000000, max: 7000000 },
+    { label: '7-10 million', min: 7000000, max: 10000000 },
+    { label: 'Over 10 million', min: 10000000, max: 20000000 },
   ];
 
   return (
@@ -614,10 +614,10 @@ function BudgetInput({ min, max, onChange }: { min: number; max: number; onChang
         ))}
       </div>
       <div className="p-4 bg-gray-50 rounded-xl">
-        <div className="text-sm text-gray-600 mb-2">Hoặc tùy chỉnh:</div>
+        <div className="text-sm text-gray-600 mb-2">Or customize:</div>
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-gray-600">Tối thiểu (VNĐ)</label>
+            <label className="text-xs text-gray-600">Minimum (VND)</label>
             <input
               type="number"
               value={min}
@@ -627,7 +627,7 @@ function BudgetInput({ min, max, onChange }: { min: number; max: number; onChang
             />
           </div>
           <div>
-            <label className="text-xs text-gray-600">Tối đa (VNĐ)</label>
+            <label className="text-xs text-gray-600">Maximum (VND)</label>
             <input
               type="number"
               value={max}

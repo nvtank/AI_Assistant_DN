@@ -1,7 +1,8 @@
 // Gemini API Configuration
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent';;
+// Use Gemini 1.5 Flash instead of 2.5 for better quota
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 
 export function initGeminiAI() {

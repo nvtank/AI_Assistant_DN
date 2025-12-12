@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { TravelPlan, DayPlan, ActivitySchedule } from '@/lib/types';
 import { getTravelPlan, updatePlanStatus } from '@/lib/travelPlanService';
 import { useAuth } from '@/components/AuthProvider';
+import { ActivityCard } from '@/components/ActivityCard';
 
 export default function TravelPlanDetailPage() {
   const params = useParams();
@@ -25,7 +26,7 @@ export default function TravelPlanDetailPage() {
       setPlan(data);
     } catch (error) {
       console.error('Error loading plan:', error);
-      alert('Không thể tải kế hoạch');
+      alert('Unable to load plan');
     } finally {
       setLoading(false);
     }
@@ -36,7 +37,7 @@ export default function TravelPlanDetailPage() {
     try {
       await updatePlanStatus(plan.id, 'confirmed');
       setPlan({ ...plan, status: 'confirmed' });
-      alert('✅ Đã xác nhận kế hoạch!');
+      alert('✅ Plan confirmed!');
     } catch (error) {
       console.error('Error confirming plan:', error);
     }
@@ -47,7 +48,7 @@ export default function TravelPlanDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Đang tải kế hoạch...</p>
+          <p className="text-gray-600">Loading plan...</p>
         </div>
       </div>
     );
@@ -57,12 +58,12 @@ export default function TravelPlanDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Không tìm thấy kế hoạch</h2>
+          <h2 className="text-2xl font-bold mb-4">Plan not found</h2>
           <button
             onClick={() => router.push('/travel-planner')}
             className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
           >
-            Tạo kế hoạch mới
+            Create new plan
           </button>
         </div>
       </div>
@@ -88,10 +89,10 @@ export default function TravelPlanDetailPage() {
               </button>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  🗺️ Kế hoạch du lịch Đà Nẵng
+                  🗺️ Da Nang Travel Plan
                 </h1>
                 <p className="text-sm text-gray-600">
-                  {plan.request.startDate} đến {plan.request.endDate} • {plan.days.length} ngày
+                  {plan.request.startDate} to {plan.request.endDate} • {plan.days.length} days
                 </p>
               </div>
             </div>
@@ -101,12 +102,12 @@ export default function TravelPlanDetailPage() {
                   onClick={handleConfirm}
                   className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-semibold"
                 >
-                  ✓ Xác nhận kế hoạch
+                  ✓ Confirm Plan
                 </button>
               )}
               {plan.status === 'confirmed' && (
                 <span className="bg-green-100 text-green-700 px-4 py-2 rounded-lg font-semibold">
-                  ✓ Đã xác nhận
+                  ✓ Confirmed
                 </span>
               )}
             </div>
@@ -120,36 +121,36 @@ export default function TravelPlanDetailPage() {
           <div className="lg:col-span-1 space-y-6">
             {/* Cost Summary */}
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-bold mb-4">💰 Tổng quan chi phí</h3>
+              <h3 className="text-lg font-bold mb-4">💰 Cost Overview</h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">🏨 Chỗ ở</span>
+                  <span className="text-gray-600">🏨 Accommodation</span>
                   <span className="font-semibold">
-                    {plan.totalEstimatedCost.accommodation.toLocaleString()} đ
+                    {plan.totalEstimatedCost.accommodation.toLocaleString()} VND
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">🍜 Ăn uống</span>
+                  <span className="text-gray-600">🍜 Food</span>
                   <span className="font-semibold">
-                    {plan.totalEstimatedCost.food.toLocaleString()} đ
+                    {plan.totalEstimatedCost.food.toLocaleString()} VND
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">🚗 Di chuyển</span>
+                  <span className="text-gray-600">🚗 Transportation</span>
                   <span className="font-semibold">
-                    {plan.totalEstimatedCost.transportation.toLocaleString()} đ
+                    {plan.totalEstimatedCost.transportation.toLocaleString()} VND
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">🎯 Hoạt động</span>
+                  <span className="text-gray-600">🎯 Activities</span>
                   <span className="font-semibold">
-                    {plan.totalEstimatedCost.activities.toLocaleString()} đ
+                    {plan.totalEstimatedCost.activities.toLocaleString()} VND
                   </span>
                 </div>
                 <div className="border-t pt-3 flex justify-between">
-                  <span className="font-bold text-lg">Tổng cộng</span>
+                  <span className="font-bold text-lg">Total</span>
                   <span className="font-bold text-lg text-green-600">
-                    {plan.totalEstimatedCost.total.toLocaleString()} đ
+                    {plan.totalEstimatedCost.total.toLocaleString()} VND
                   </span>
                 </div>
               </div>
@@ -157,7 +158,7 @@ export default function TravelPlanDetailPage() {
 
             {/* Weather Forecast */}
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-bold mb-4">🌤️ Dự báo thời tiết</h3>
+              <h3 className="text-lg font-bold mb-4">🌤️ Weather Forecast</h3>
               <div className="space-y-3">
                 {plan.weatherForecast.map((weather, idx) => (
                   <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -180,24 +181,24 @@ export default function TravelPlanDetailPage() {
 
             {/* Trip Info */}
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-bold mb-4">ℹ️ Thông tin chuyến đi</h3>
+              <h3 className="text-lg font-bold mb-4">ℹ️ Trip Information</h3>
               <div className="space-y-3 text-sm">
                 <div>
-                  <p className="text-gray-600">Số người</p>
+                  <p className="text-gray-600">Number of people</p>
                   <p className="font-semibold">
-                    {plan.request.numberOfPeople.adults} người lớn, {plan.request.numberOfPeople.children} trẻ em
+                    {plan.request.numberOfPeople.adults} adults, {plan.request.numberOfPeople.children} children
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-600">Phong cách</p>
+                  <p className="text-gray-600">Travel style</p>
                   <p className="font-semibold capitalize">{plan.request.travelStyle}</p>
                 </div>
                 <div>
-                  <p className="text-gray-600">Di chuyển</p>
+                  <p className="text-gray-600">Transportation</p>
                   <p className="font-semibold capitalize">{plan.request.transportation}</p>
                 </div>
                 <div>
-                  <p className="text-gray-600">Chỗ ở</p>
+                  <p className="text-gray-600">Accommodation</p>
                   <p className="font-semibold capitalize">{plan.request.accommodation}</p>
                 </div>
               </div>
@@ -219,10 +220,10 @@ export default function TravelPlanDetailPage() {
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
-                    Ngày {day.day}
+                    Day {day.day}
                     <br />
                     <span className="text-xs">
-                      {new Date(day.date).toLocaleDateString('vi-VN', { month: 'short', day: 'numeric' })}
+                      {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </span>
                   </button>
                 ))}
@@ -234,21 +235,23 @@ export default function TravelPlanDetailPage() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-2xl font-bold">
-                    Ngày {currentDay.day} - {new Date(currentDay.date).toLocaleDateString('vi-VN', {
+                    Day {currentDay.day} - {new Date(currentDay.date).toLocaleDateString('en-US', {
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
                     })}
                   </h2>
-                  <p className="text-gray-600 mt-1">
-                    {currentDay.weather.condition} • {Math.round(currentDay.weather.temp.min)}° - {Math.round(currentDay.weather.temp.max)}°
-                  </p>
+                  {currentDay.weather && (
+                    <p className="text-gray-600 mt-1">
+                      {currentDay.weather.condition} • {Math.round(currentDay.weather.temp.min)}° - {Math.round(currentDay.weather.temp.max)}°
+                    </p>
+                  )}
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600">Chi phí ước tính</p>
+                  <p className="text-sm text-gray-600">Estimated cost</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {currentDay.estimatedCost.toLocaleString()} đ
+                    {currentDay.estimatedCost.toLocaleString()} VND
                   </p>
                 </div>
               </div>
@@ -262,11 +265,11 @@ export default function TravelPlanDetailPage() {
               <div className="space-y-4">
                 {currentDay.schedule && currentDay.schedule.length > 0 ? (
                   currentDay.schedule.map((item, idx) => (
-                    <ActivityItem key={idx} item={item} />
+                    <ActivityCard key={idx} item={item} />
                   ))
                 ) : (
                   <p className="text-center text-gray-500 py-8">
-                    Chưa có lịch trình chi tiết cho ngày này
+                    No detailed schedule for this day yet
                   </p>
                 )}
               </div>
@@ -274,7 +277,7 @@ export default function TravelPlanDetailPage() {
               {/* Day Notes */}
               {currentDay.notes && currentDay.notes.length > 0 && (
                 <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
-                  <h4 className="font-semibold mb-2">📝 Lưu ý:</h4>
+                  <h4 className="font-semibold mb-2">📝 Notes:</h4>
                   <ul className="list-disc list-inside space-y-1">
                     {currentDay.notes.map((note, idx) => (
                       <li key={idx} className="text-sm text-gray-700">{note}</li>
@@ -308,7 +311,7 @@ function ActivityItem({ item }: { item: ActivitySchedule }) {
       {/* Time */}
       <div className="flex-shrink-0 w-20">
         <p className="font-bold text-lg">{item.time}</p>
-        <p className="text-xs text-gray-600">{item.duration} phút</p>
+        <p className="text-xs text-gray-600">{item.duration} min</p>
       </div>
 
       {/* Icon */}
@@ -336,11 +339,11 @@ function ActivityItem({ item }: { item: ActivitySchedule }) {
           </div>
         )}
 
-        <div className="flex items-center gap-4 mt-3">
+        <div className="flex items-center gap-4 mt-3 flex-wrap">
           <span className="text-sm font-semibold text-green-600">
             {item.activity.estimatedCost > 0 
-              ? `${item.activity.estimatedCost.toLocaleString()} đ`
-              : 'Miễn phí'
+              ? `💰 ${item.activity.estimatedCost.toLocaleString()} VND`
+              : '💰 Free'
             }
           </span>
           
@@ -350,10 +353,53 @@ function ActivityItem({ item }: { item: ActivitySchedule }) {
             </span>
           )}
 
+          {item.travelDistance && (
+            <span className="text-sm text-gray-600">
+              📏 {item.travelDistance.toFixed(1)} km
+            </span>
+          )}
+
           {item.travelTime && (
             <span className="text-sm text-gray-600">
-              🚗 {item.travelTime} phút đến điểm tiếp theo
+              � {item.travelTime} min
             </span>
+          )}
+
+          {item.transportCost && item.transportCost > 0 && (
+            <span className="text-sm font-semibold text-blue-600">
+              🚖 Grab: {item.transportCost.toLocaleString()} VND
+            </span>
+          )}
+
+          {item.activity.googleMapsLink && (
+            <a 
+              href={item.activity.googleMapsLink} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              🗺️ Maps
+            </a>
+          )}
+
+          {item.activity.phone && (
+            <a 
+              href={`tel:${item.activity.phone}`}
+              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              📞 {item.activity.phone}
+            </a>
+          )}
+
+          {item.activity.website && (
+            <a 
+              href={item.activity.website} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              🌐 Website
+            </a>
           )}
         </div>
       </div>

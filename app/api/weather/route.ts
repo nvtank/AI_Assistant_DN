@@ -3,10 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 // Mark route as dynamic to avoid build-time static generation
 export const dynamic = 'force-dynamic';
 
-/**
- * Weather API Proxy
- * GET /api/weather?lat=16.0544&lon=108.2022
- */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

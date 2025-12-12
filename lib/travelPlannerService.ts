@@ -119,10 +119,10 @@ export class TravelPlannerService {
           evening: 26,
         },
         condition: 'Clear',
-        description: 'Trời quang đãng',
+        description: 'Clear sky',
         humidity: 70,
         windSpeed: 3.5,
-        recommendation: 'Thời tiết tốt cho du lịch',
+        recommendation: 'Good weather for traveling',
       });
     }
 
@@ -247,61 +247,41 @@ export class TravelPlannerService {
   private getFamousDaNangPlaces(): Activity[] {
     const places: Activity[] = [];
     
-    // Convert attractions from JSON to Activity format
-    danangPlacesData.attractions.forEach((place: any) => {
-      places.push({
-        id: place.id,
-        name: place.name,
-        type: place.type,
-        location: place.location,
-        description: place.description,
-        estimatedCost: place.estimatedCost,
-        rating: place.rating,
-        category: place.category,
-        tips: place.tips,
-        openingHours: place.openingHours,
-        duration: place.duration,
-        bestTime: place.bestTime,
-        suitable: place.suitable
-      });
-    });
-
-    // Convert restaurants from JSON to Activity format
-    danangPlacesData.restaurants.forEach((place: any) => {
-      places.push({
-        id: place.id,
-        name: place.name,
-        type: place.type,
-        location: place.location,
-        description: place.description,
-        estimatedCost: place.estimatedCost,
-        rating: place.rating,
-        category: place.category,
-        tips: place.tips,
-        openingHours: place.openingHours,
-        cuisine: place.cuisine,
-        dishes: place.dishes,
-        priceRange: place.priceRange,
-        suitable: place.suitable
-      });
-    });
-
-    // Convert cafes from JSON to Activity format
-    danangPlacesData.cafes.forEach((place: any) => {
-      places.push({
-        id: place.id,
-        name: place.name,
-        type: place.type,
-        location: place.location,
-        description: place.description,
-        estimatedCost: place.estimatedCost,
-        rating: place.rating,
-        category: place.category,
-        tips: place.tips,
-        openingHours: place.openingHours,
-        dishes: place.dishes,
-        suitable: place.suitable
-      });
+    // Get all categories from the new structure
+    const categories = [
+      'entertainment', 'beauty_health', 'nature_beaches', 'nightlife', 
+      'cafes_checkin', 'spiritual_cultural', 'landmarks_bridges', 
+      'street_food_hidden_gems', 'shopping_markets', 'cafes_chill', 
+      'nature_camping', 'homestay_budget', 'theme_parks_resorts', 
+      'hoi_an_ancient_town', 'cinematic_checkin_spots'
+    ];
+    
+    // Convert all places from JSON to Activity format
+    categories.forEach((category) => {
+      const categoryPlaces = (danangPlacesData as any)[category];
+      if (categoryPlaces && Array.isArray(categoryPlaces)) {
+        categoryPlaces.forEach((place: any) => {
+          places.push({
+            id: place.id,
+            name: place.name,
+            type: place.type || category,
+            location: place.location,
+            description: place.description,
+            estimatedCost: place.estimatedCost || 0,
+            rating: place.rating,
+            category: place.category || category,
+            tips: place.tips,
+            openingHours: place.openingHours,
+            duration: place.experience_duration || place.duration || 60,
+            bestTime: place.bestTime,
+            suitable: place.suitable || [],
+            phone: place.phone || '',
+            website: place.website || '',
+            articleLink: place.articleLink || '',
+            googleMapsLink: place.location ? `https://www.google.com/maps?q=${place.location.lat},${place.location.lng}` : ''
+          });
+        });
+      }
     });
 
     return places;
@@ -313,68 +293,102 @@ export class TravelPlannerService {
   private formatDetailedPlacesInfo(): string {
     let info = '';
     
-    // Format attractions
-    info += '📍 **ĐIỂM THAM QUAN & DU LỊCH:**\n\n';
-    danangPlacesData.attractions.forEach((place: any, index: number) => {
-      info += `${index + 1}. **${place.name}** (ID: ${place.id})\n`;
-      info += `   - Loại: ${place.category}\n`;
-      info += `   - Địa chỉ: ${place.location.address}\n`;
-      info += `   - Tọa độ: ${place.location.lat}, ${place.location.lng}\n`;
-      info += `   - Mô tả: ${place.description}\n`;
-      info += `   - Chi phí: ${place.estimatedCost.toLocaleString()} VNĐ\n`;
-      info += `   - Thời gian: ${place.duration} phút\n`;
-      info += `   - Giờ mở cửa: ${place.openingHours}\n`;
-      info += `   - Thời gian tốt nhất: ${place.bestTime.join(', ')}\n`;
-      info += `   - Thời tiết phù hợp: ${place.weather.join(', ')}\n`;
-      info += `   - Phù hợp: ${place.suitable.join(', ')}\n`;
-      info += `   - Rating: ${place.rating}/5.0\n`;
-      info += `   - Tips: ${place.tips.join('; ')}\n\n`;
-    });
-    
-    // Format restaurants
-    info += '\n🍜 **NHÀ HÀNG & ĐỒ ĂN:**\n\n';
-    danangPlacesData.restaurants.forEach((place: any, index: number) => {
-      info += `${index + 1}. **${place.name}** (ID: ${place.id})\n`;
-      info += `   - Loại: ${place.category} - ${place.cuisine}\n`;
-      info += `   - Địa chỉ: ${place.location.address}\n`;
-      info += `   - Tọa độ: ${place.location.lat}, ${place.location.lng}\n`;
-      info += `   - Mô tả: ${place.description}\n`;
-      info += `   - Chi phí TB: ${place.estimatedCost.toLocaleString()} VNĐ (${place.priceRange})\n`;
-      info += `   - Giờ mở cửa: ${place.openingHours}\n`;
-      info += `   - Món nổi bật: ${place.dishes.join(', ')}\n`;
-      info += `   - Thời gian phù hợp: ${place.bestTime.join(', ')}\n`;
-      info += `   - Phù hợp: ${place.suitable.join(', ')}\n`;
-      info += `   - Rating: ${place.rating}/5.0\n`;
-      info += `   - Tips: ${place.tips.join('; ')}\n\n`;
-    });
-    
-    // Format cafes
-    info += '\n☕ **QUÁN CÀ PHÊ:**\n\n';
-    danangPlacesData.cafes.forEach((place: any, index: number) => {
-      info += `${index + 1}. **${place.name}** (ID: ${place.id})\n`;
-      info += `   - Loại: ${place.category}\n`;
-      info += `   - Địa chỉ: ${place.location.address}\n`;
-      info += `   - Mô tả: ${place.description}\n`;
-      info += `   - Chi phí TB: ${place.estimatedCost.toLocaleString()} VNĐ\n`;
-      info += `   - Giờ mở cửa: ${place.openingHours}\n`;
-      info += `   - Món nổi bật: ${place.dishes.join(', ')}\n`;
-      info += `   - Phù hợp: ${place.suitable.join(', ')}\n`;
-      info += `   - Rating: ${place.rating}/5.0\n`;
-      info += `   - Tips: ${place.tips.join('; ')}\n\n`;
-    });
-    
-    // Format hotels
-    info += '\n🏨 **KHÁCH SẠN GỢI Ý:**\n\n';
-    danangPlacesData.hotels.forEach((place: any, index: number) => {
-      info += `${index + 1}. **${place.name}** (ID: ${place.id})\n`;
-      info += `   - Loại: ${place.category}\n`;
-      info += `   - Địa chỉ: ${place.location.address}\n`;
-      info += `   - Mô tả: ${place.description}\n`;
-      info += `   - Chi phí: ${place.estimatedCost.toLocaleString()} VNĐ/đêm\n`;
-      info += `   - Tiện nghi: ${place.amenities.join(', ')}\n`;
-      info += `   - Phù hợp: ${place.suitable.join(', ')}\n`;
-      info += `   - Rating: ${place.rating}/5.0\n`;
-      info += `   - Tips: ${place.tips.join('; ')}\n\n`;
+    const categories = [
+      'entertainment', 'beauty_health', 'nature_beaches', 'nightlife', 
+      'cafes_checkin', 'spiritual_cultural', 'landmarks_bridges', 
+      'street_food_hidden_gems', 'shopping_markets', 'cafes_chill', 
+      'nature_camping', 'homestay_budget', 'theme_parks_resorts', 
+      'hoi_an_ancient_town', 'cinematic_checkin_spots'
+    ];
+
+    const categoryEmojis: { [key: string]: string } = {
+      'entertainment': '🎭',
+      'beauty_health': '💆',
+      'nature_beaches': '🏖️',
+      'nightlife': '🌙',
+      'cafes_checkin': '📸',
+      'spiritual_cultural': '🏛️',
+      'landmarks_bridges': '🌉',
+      'street_food_hidden_gems': '🍜',
+      'shopping_markets': '🛍️',
+      'cafes_chill': '☕',
+      'nature_camping': '🏕️',
+      'homestay_budget': '🏠',
+      'theme_parks_resorts': '🎢',
+      'hoi_an_ancient_town': '🏮',
+      'cinematic_checkin_spots': '🎬'
+    };
+
+    categories.forEach((category) => {
+      const categoryPlaces = (danangPlacesData as any)[category];
+      if (categoryPlaces && Array.isArray(categoryPlaces) && categoryPlaces.length > 0) {
+        const emoji = categoryEmojis[category] || '📍';
+        const categoryName = category.replace(/_/g, ' ').toUpperCase();
+        info += `${emoji} **${categoryName}:**\n\n`;
+        
+        categoryPlaces.forEach((place: any, index: number) => {
+          info += `${index + 1}. **${place.name}** (ID: ${place.id})\n`;
+          info += `   - Loại: ${place.category || place.type}\n`;
+          info += `   - Địa chỉ: ${place.location.address}\n`;
+          info += `   - Tọa độ: ${place.location.lat}, ${place.location.lng}\n`;
+          info += `   - Mô tả: ${place.description}\n`;
+          info += `   - Chi phí: ${place.estimatedCost.toLocaleString()} VNĐ/người\n`;
+          
+          if (place.experience_duration) {
+            info += `   - Thời gian tham quan: ${place.experience_duration} phút\n`;
+          }
+          
+          info += `   - Giờ mở cửa: ${place.openingHours || '24/24'}\n`;
+          
+          if (place.phone) {
+            info += `   - Điện thoại: ${place.phone}\n`;
+          }
+          
+          if (place.website) {
+            info += `   - Website/Fanpage: ${place.website}\n`;
+          }
+          
+          if (place.articleLink) {
+            info += `   - Bài viết: ${place.articleLink}\n`;
+          }
+          
+          if (place.cuisine) {
+            info += `   - Ẩm thực: ${place.cuisine}\n`;
+          }
+          
+          if (place.dishes && place.dishes.length > 0) {
+            info += `   - Món nổi bật: ${place.dishes.join(', ')}\n`;
+          }
+          
+          if (place.priceRange) {
+            info += `   - Khoảng giá: ${place.priceRange}\n`;
+          }
+          
+          if (place.amenities && place.amenities.length > 0) {
+            info += `   - Tiện nghi: ${place.amenities.join(', ')}\n`;
+          }
+          
+          if (place.suitable && place.suitable.length > 0) {
+            info += `   - Phù hợp: ${place.suitable.join(', ')}\n`;
+          }
+          
+          if (place.rating) {
+            info += `   - Rating: ${place.rating}/5.0\n`;
+          }
+          
+          if (place.tips && place.tips.length > 0) {
+            info += `   - Tips: ${place.tips.join('; ')}\n`;
+          }
+          
+          if (place.reviews && place.reviews.length > 0) {
+            info += `   - Reviews: ${place.reviews.map((r: any) => `"${r.comment}"`).join('; ')}\n`;
+          }
+          
+          info += '\n';
+        });
+        
+        info += '\n';
+      }
     });
     
     return info;
@@ -420,40 +434,160 @@ export class TravelPlannerService {
     // Get detailed place information from database
     const detailedPlaces = this.formatDetailedPlacesInfo();
 
-    return `Bạn là chuyên gia du lịch Đà Nẵng có 10 năm kinh nghiệm. Hãy tạo kế hoạch chi tiết cho chuyến đi ${days} ngày.
+    // Format time preferences
+    const timeSlotMap: { [key: string]: string } = {
+      'early_morning': '🌅 Sáng sớm (5:00-7:00) - Đón bình minh, đi chợ sớm',
+      'morning': '☀️ Buổi sáng (8:00-11:00) - Tham quan, bảo tàng',
+      'lunch': '🍽️ Buổi trưa (12:00-14:00) - Ăn trưa, nghỉ ngơi',
+      'afternoon': '🌤️ Buổi chiều (15:00-17:00) - Bãi biển, công viên',
+      'evening': '🌆 Buổi tối (18:00-21:00) - Ăn tối, phố đi bộ',
+      'night': '🌙 Ban đêm (22:00-24:00) - Quán bar, nightlife'
+    };
+    
+    const timePrefsText = (request as any).timePreferences 
+      ? (request as any).timePreferences.map((slot: string) => timeSlotMap[slot] || slot).join('\n  ')
+      : 'Không có ưu tiên cụ thể';
 
-**THÔNG TIN CHUYẾN ĐI:**
+    // Extract user restrictions from notes
+    const userNotes = (request as any).notes || {};
+    const allNotes = Object.values(userNotes).filter(n => n).join('. ');
+    const specialRequirements = request.specialRequirements || '';
+    const combinedNotes = [allNotes, specialRequirements].filter(n => n).join('. ');
+
+    return `Bạn là AI Travel Planner chuyên nghiệp cho Đà Nẵng với 10 năm kinh nghiệm. Bạn cần PHÂN TÍCH SÂU yêu cầu của khách hàng và tạo kế hoạch TÙY BIẾN, KHÔNG ĐƯỢC sao chép kế hoạch mẫu.
+
+**🎯 QUY TRÌNH LÀM VIỆC CỦA BẠN (BẮT BUỘC THỰC HIỆN TỪNG BƯỚC):**
+
+**BƯỚC 1: PHÂN TÍCH CHÂN DUNG KHÁCH HÀNG (Customer Profiling)**
+Trước khi tạo kế hoạch, hãy TỰ HỎI BẢN THÂN:
+- Khách hàng này là ai? (độ tuổi, nhóm đối tượng từ "suitable" trong database)
+- Họ thích gì? (phân tích từ travelStyle + foodPreferences + timePreferences)
+- Họ KHÔNG thích gì? (allergies + restrictions + notes)
+- Họ có con nhỏ không? Có người già không? → Ảnh hưởng đến lựa chọn địa điểm
+- Ngân sách của họ thuộc phân khúc nào? (budget/mid-range/luxury)
+
+**BƯỚC 2: TÌM KIẾM THÔNG MINH (Smart Search)**
+Từ DATABASE, hãy:
+1. Lọc ra các địa điểm có "suitable" KHỚP với nhóm khách (family/couple/friends/youth)
+2. Lọc theo ngân sách: estimatedCost × số người ≤ ngân sách hàng ngày
+3. Lọc theo phong cách: 
+   - "adventure" → chọn từ categories: nature_beaches, nature_camping, activities_experience
+   - "foodie" → chọn từ: street_food_hidden_gems, cafes_chill
+   - "cultural" → chọn từ: spiritual_cultural, hoi_an_ancient_town
+   - "relax" → chọn từ: theme_parks_resorts, beauty_health, homestay_budget
+4. ĐỐI CHIẾU với khung giờ ưa thích:
+   - Nếu chọn "early_morning" → tìm địa điểm có openingHours bắt đầu từ 5-6h (bãi biển, chợ sáng)
+   - Nếu chọn "night" → PHẢI có hoạt động từ nightlife/nightlife_bars_clubs
+
+**BƯỚC 3: GOM CỤM ĐỊA LÝ THÔNG MINH**
+- Dùng location.lat và location.lng để tính khoảng cách
+- Nhóm các địa điểm gần nhau (≤5km) vào cùng 1 ngày
+- MỖI NGÀY = 1 KHU VỰC DUY NHẤT
+
+**NHIỆM VỤ:** Tạo kế hoạch du lịch ${days} ngày chi tiết từ SÁNG SỚM đến KHUYA (5:00 - 23:00), hợp lý, tối ưu chi phí và thời gian.
+
+**📋 THÔNG TIN CHUYẾN ĐI:**
 - Thời gian: ${request.startDate} đến ${request.endDate} (${days} ngày)
 - Số người: ${request.numberOfPeople.adults} người lớn, ${request.numberOfPeople.children} trẻ em
 - Ngân sách: ${request.budget.min.toLocaleString()} - ${request.budget.max.toLocaleString()} VNĐ
-- Phong cách: ${request.travelStyle}
-- Di chuyển: ${request.transportation}
+- Phong cách: **${request.travelStyle}** → Hãy PHÂN TÍCH xem phong cách này cần loại địa điểm nào từ database
+- Phương tiện di chuyển: ${request.transportation}
 - Loại chỗ ở: ${request.accommodation}
-- Thời gian hoạt động: Bắt đầu ${request.timePreference.morningStart}, kết thúc ${request.timePreference.eveningEnd}
-- Sở thích ẩm thực: ${request.foodPreferences.join(', ') || 'Không có'}
+- Khung giờ ưa thích:
+  ${timePrefsText}
+  **→ HÃY ĐỐI CHIẾU với openingHours trong database để chọn địa điểm phù hợp**
+- Sở thích ẩm thực: ${request.foodPreferences.join(', ') || 'Không có'} 
+  **→ Tìm kiếm trong database các món có cuisine/dishes khớp**
 - Dị ứng/Hạn chế: ${[...request.allergies, ...request.restrictions].join(', ') || 'Không có'}
+  **→ LOẠI BỎ các địa điểm không phù hợp**
+
+**⚠️ GHI CHÚ ĐẶC BIỆT TỪ NGƯỜI DÙNG:**
+${combinedNotes || 'Không có ghi chú đặc biệt'}
 
 **DỰ BÁO THỜI TIẾT:**
 ${weather.map(w => `- ${w.date}: ${w.condition} ${w.description}, ${w.temp.min}°C - ${w.temp.max}°C, ${w.recommendation}`).join('\n')}
+
+**🗺️ QUY TẮC GOM CỤM ĐỊA LÝ (CRITICAL):**
+Đà Nẵng chia làm 4 KHU VỰC chính:
+1. **KHU BÃI BIỂN** (Mỹ Khê, Non Nước, Phạm Văn Đồng): Bãi biển, resort, nhà hàng hải sản
+2. **KHU NÚI** (Bà Nà Hills, Sơn Trà): Núi, đỉnh cao, chùa Linh Ứng
+3. **KHU TRUNG TÂM** (Cầu Rồng, Chợ Hàn, Phố cổ, Hàn Market): Cầu, shopping, street food
+4. **HỘI AN** (Phố cổ Hội An, Cù Lao Chàm): 30km về phía Nam
+
+**⚠️ NGUYÊN TẮC BẮT BUỘC:**
+- MỖI NGÀY = 1 KHU VỰC duy nhất
+- TẤT CẢ hoạt động trong ngày (ăn sáng, tham quan, ăn trưa, cafe, ăn tối) phải ở CÙNG KHU VỰC
+- KHÔNG được nhảy giữa các khu vực trong 1 ngày
+- Ví dụ: Nếu chọn "Khu Bãi biển" → tất cả điểm trong ngày phải gần biển Mỹ Khê
+- Khoảng cách giữa các điểm trong ngày: ≤ 5km
+
+**📍 PHÂN BỔ NGÀY (ví dụ 3 ngày 2 đêm):**
+- Ngày 1: Khu Bãi biển (check-in resort, tắm biển, hải sản, cafe view biển)
+- Ngày 2: Khu Núi (Bà Nà Hills cả ngày HOẶC Sơn Trà + Chùa Linh Ứng)
+- Ngày 3: Khu Trung tâm (Cầu Rồng, chợ Hàn, ăn sáng bún chả cá, shopping) → checkout
 
 **DATABASE ĐỊA ĐIỂM ĐÀ NẴNG (Sử dụng ưu tiên các địa điểm này):**
 
 ${detailedPlaces}
 
-**YÊU CẦU TẠO KẾ HOẠCH:**
+**YÊU CẦU TẠO KẾ HOẠCH (CRITICAL - ĐỌC KỸ):**
 
-1. Tạo lịch trình chi tiết cho ${days} ngày - PHẢI chọn các địa điểm từ database trên
-2. Mỗi ngày bao gồm:
-   - Timeline từng giờ cụ thể (format: HH:mm)
-   - Chọn 3-5 điểm đến từ database phù hợp với: phong cách du lịch, thời tiết, thời gian mở cửa (openingHours)
-   - 3 bữa ăn chính (breakfast, lunch, dinner) - chọn từ restaurants/cafes trong database
-   - Thời gian nghỉ ngơi hợp lý
-   - Thời gian di chuyển giữa các địa điểm (tính từ location.lat/lng)
-   - Chi phí chính xác từ estimatedCost trong database
+1. **CẤU TRÚC MỘT NGÀY HOÀN CHỈNH** (theo triết lý "Golden Skeleton"):
+   
+   **NGÀY 1 (Nhẹ nhàng & Làm quen):**
+   - 08:00-09:00: Ăn sáng món đặc sản gần nơi ở
+   - 09:00-12:00: Tham quan nhẹ nhàng (landmarks, check-in)
+   - 12:00-14:00: Ăn trưa + nghỉ ngơi
+   - 15:00-17:30: Tham quan điểm phụ/cafe view đẹp
+   - 18:00-20:00: Ăn tối món đặc sản
+   - **20:00-22:00: Hoạt động ban đêm** (phố đi bộ, chợ đêm, bar nhẹ nhàng)
+   - **22:00-23:00: Về nghỉ ngơi** (có thể thêm quán ăn khuya nếu thích nightlife)
+   
+   **NGÀY 2 (Trọng tâm & Khám phá - NGÀY QUAN TRỌNG NHẤT):**
+   - 06:00-07:00: Đón bình minh (nếu chọn "early_morning")
+   - 08:00-09:00: Ăn sáng thịnh soạn
+   - 09:00-12:00: Điểm tham quan XA NHẤT hoặc TỐN SỨC NHẤT (Bà Nà Hills, Sơn Trà)
+   - 12:00-14:00: Ăn trưa + ngủ trưa 1-2 tiếng (QUAN TRỌNG)
+   - 15:00-17:30: Các điểm phụ, ngắm hoàng hôn
+   - 18:00-20:00: Bữa ăn tối THỊNH SOẠN NHẤT chuyến đi
+   - **20:00-23:00: Hoạt động ban đêm** (bar, nightclub, sky bar, show diễn)
+   
+   **NGÀY 3 (Thư thả & Mua sắm):**
+   - 08:00-10:00: Ngủ nướng + ăn sáng thong thả
+   - 10:00-12:00: Mua quà lưu niệm, đặc sản
+   - 12:00-14:00: Ăn trưa + check-out
+   - 14:00-18:00: Di chuyển về nhà
+
+2. **⚠️ BẮT BUỘC CÓ HOẠT ĐỘNG BAN ĐÊM (20:00-23:00)**
+   - Nếu khách chọn "night" trong timePreferences → PHẢI có ít nhất 2 hoạt động nightlife
+   - Nếu KHÔNG chọn "night" → Vẫn phải có ít nhất 1 hoạt động tối nhẹ nhàng (phố đi bộ, chợ đêm)
+   - Các lựa chọn từ database:
+     * nightlife categories: sky36, on-the-radio, te-bar
+     * Chợ đêm: helio-center, son-tra-night-market
+     * Show diễn: ky-uc-hoi-an (20:00)
+     * Phố đi bộ: Cầu Rồng (xem phun lửa 21:00)
+
+3. Mỗi ngày bao gồm:
+   - **Timeline từ 06:00/08:00 → 22:00/23:00** (đủ 15-17 tiếng hoạt động)
+   - Chọn 5-7 điểm đến từ database phù hợp với: phong cách du lịch, thời tiết, openingHours, timePreferences
+   - **3 bữa ăn chính + 1-2 bữa phụ** (cafe, ăn vặt, ăn khuya)
+   - Thời gian nghỉ ngơi: 1-2 tiếng sau bữa trưa
+   - **CHI PHÍ: Lấy estimatedCost từ database × SỐ NGƯỜI (${request.numberOfPeople.adults} người lớn + ${request.numberOfPeople.children} trẻ em)**
    
 3. Lưu ý:
+   - **TÍNH CHI PHÍ CHÍNH XÁC:**
+     * Chi phí mỗi activity = estimatedCost × tổng số người (adults + children)
+     * VD: Chè 30k/người × 2 người = 60k
+     * VD: Vé tham quan 100k/người × 4 người = 400k
+     * Trẻ em có thể giảm giá 50% tùy địa điểm
+   - **ƯU TIÊN GỢI Ý CÁC ĐỊA ĐIỂM PHÙ HỢP VỚI KHUNG GIỜ ƯA THÍCH:**
+     * Nếu người dùng chọn "Sáng sớm" (5:00-7:00): Gợi ý Đèo Hải Vân (đón bình minh), chợ Hàn, bãi biển sớm
+     * Nếu chọn "Buổi sáng" (8:00-11:00): Bảo tàng, đền chùa, tour tham quan
+     * Nếu chọn "Buổi chiều" (15:00-17:00): Bãi biển, công viên, cafe view đẹp
+     * Nếu chọn "Buổi tối" (18:00-21:00): Phố đi bộ, nhà hàng, chợ đêm
+     * Nếu chọn "Ban đêm" (22:00+): Quán bar, nightclub, sky bar
    - Ưu tiên các địa điểm gần nhau (dùng location coordinates)
-   - Kiểm tra openingHours trước khi xếp lịch
+   - Kiểm tra openingHours trước khi xếp lịch - **ĐỪNG XẾP LỊCH NGOÀI GIỜ MỞ CỬA**
    - Kiểm tra bestTime (morning/afternoon/evening) để xếp giờ phù hợp
    - Tránh hoạt động ngoài trời khi weather không phù hợp
    - Sử dụng tips từ database cho mỗi địa điểm
@@ -463,10 +597,55 @@ ${detailedPlaces}
 4. Cho mỗi activity, PHẢI bao gồm:
    - name: Lấy chính xác từ database
    - location: Copy y chang từ database (lat, lng, address)
-   - estimatedCost: Lấy từ database
+   - **estimatedCost: Lấy từ database × SỐ NGƯỜI (${request.numberOfPeople.adults + request.numberOfPeople.children} người)**
+   - **googleMapsLink: Tạo link Google Maps từ coordinates: "https://www.google.com/maps?q={lat},{lng}"**
+   - **phone: Số điện thoại (nếu có trong database)**
+   - **website: Link website hoặc fanpage Facebook nếu có**
+   - **articleLink: Link bài báo giới thiệu về địa điểm (nếu có)**
    - duration: Lấy từ database hoặc tính theo bestTime
    - tips: Copy tips từ database
    - openingHours: Copy từ database
+
+5. **TÍNH THỜI GIAN DI CHUYỂN THỰC TẾ:**
+   - Dùng công thức Haversine để tính khoảng cách giữa 2 tọa độ
+   - Thời gian di chuyển = khoảng cách (km) / vận tốc trung bình
+     * Xe máy trong thành phố: ~25 km/h → 10km = 24 phút
+     * Ô tô trong thành phố: ~30 km/h → 10km = 20 phút
+     * Đi xa (đèo, núi): ~40 km/h → 30km = 45 phút
+   - **Lưu ý tắc đường giờ cao điểm (7-9h sáng, 5-7h chiều): Thêm 30-50% thời gian**
+   - **VD: Từ Mỹ Khê đến Bà Nà Hills (30km) = 45 phút xe ô tô**
+
+6. **🚖 TÍNH CHI PHÍ GRAB:**
+   - **GrabBike**: 10,000 - 13,000 VNĐ/km (dùng trung bình: 11,500 VNĐ/km)
+     * VD: 5km = 57,500 VNĐ
+     * VD: 15km = 172,500 VNĐ
+   - **GrabCar 4 chỗ**: 22,000 VNĐ (2km đầu) + 12,000 VNĐ/km (từ km thứ 3)
+     * VD: 5km = 22,000 + (3 × 12,000) = 58,000 VNĐ
+     * VD: 15km = 22,000 + (13 × 12,000) = 178,000 VNĐ
+   - **Phương tiện di chuyển người dùng chọn: ${request.transportation}**
+   - PHẢI thêm "transportCost" vào mỗi schedule item
+
+7. **⚠️ XỬ LÝ GHI CHÚ ĐẶC BIỆT:**
+   - Nếu ghi chú có "không ăn cay" / "no spicy" → TRÁNH món cay, gợi ý món nhẹ
+   - Nếu có "sợ độ cao" / "fear of heights" → KHÔNG chọn Bà Nà Hills, cáp treo, view cao
+   - Nếu có "ăn chay" / "vegetarian" → CHỈ chọn quán có món chay
+   - Nếu có "đi với trẻ nhỏ" → Chọn địa điểm suitable: family-friendly
+   - Nếu có "honeymoon" / "tuần trăng mật" → Ưu tiên địa điểm lãng mạn (beach, sunset, rooftop bar)
+   - **BẮT BUỘC: Tạo phần EXPLANATION ở đầu kế hoạch giải thích cách xử lý ghi chú**
+
+8. **📝 PHẦN GIẢI THÍCH (EXPLANATION):**
+   PHẢI thêm vào đầu response:
+   "explanation": "Dựa vào ghi chú của bạn '${combinedNotes}', tôi đã tạo kế hoạch này với những điều chỉnh sau:
+   - [Liệt kê cách xử lý từng ghi chú]
+   - [Giải thích tại sao chọn các khu vực này]
+   - [Giải thích phân bổ hoạt động theo khung giờ ưa thích]
+   Kế hoạch đảm bảo tất cả hoạt động trong cùng ngày ở gần nhau (≤5km) để tối ưu thời gian di chuyển."
+   
+9. Cho mỗi schedule item, PHẢI có:
+   - **travelTime**: Thời gian di chuyển từ địa điểm trước đó (phút) - TÍNH CHÍNH XÁC
+   - **travelDistance**: Khoảng cách thực tế (km)
+   - **transportCost**: Chi phí Grab (VNĐ) - TÍNH THEO LOẠI XE VÀ KHOẢNG CÁCH
+   - **previousLocation**: Tọa độ địa điểm trước đó để tham khảo
 
 **FORMAT TRẢ VỀ (JSON):**
 Trả về CHÍNH XÁC theo format JSON sau, không thêm text nào khác:
@@ -490,13 +669,18 @@ Trả về CHÍNH XÁC theo format JSON sau, không thêm text nào khác:
               "address": "Hòa Ninh, Hòa Vang, Đà Nẵng"
             },
             "description": "Khu du lịch nghỉ dưỡng cao cấp trên núi",
-            "estimatedCost": 750000,
+            "estimatedCost": 3000000,
+            "googleMapsLink": "https://www.google.com/maps?q=15.9969,107.9971",
+            "phone": "+84 236 3791 999",
+            "website": "https://www.facebook.com/BanahillsDanangVietnam",
+            "articleLink": "https://banahills.sunworld.vn/tin-tuc/",
             "openingHours": "07:00-22:00",
             "tips": ["Đi sớm để tránh đông", "Mang áo ấm"]
           },
-          "notes": "Ghi chú thêm",
-          "travelTime": 15,
-          "travelDistance": 3.5
+          "notes": "Chi phí đã tính cho ${request.numberOfPeople.adults + request.numberOfPeople.children} người. Đi cáp treo lên núi.",
+          "travelTime": 45,
+          "travelDistance": 30.5,
+          "previousLocation": { "lat": 16.0544, "lng": 108.2022 }
         }
       ],
       "mealPlan": {
@@ -504,6 +688,8 @@ Trả về CHÍNH XÁC theo format JSON sau, không thêm text nào khác:
           "id": "mi-quang-ba-mua",
           "name": "Mì Quảng Bà Mua", 
           "location": { "lat": 16.0697, "lng": 108.2239, "address": "..." },
+          "googleMapsLink": "https://www.google.com/maps?q=16.0697,108.2239",
+          "phone": "+84 905 123 456",
           "estimatedCost": 35000,
           "dishes": ["Mì Quảng gà"]
         },
@@ -632,111 +818,307 @@ Hãy tạo kế hoạch chi tiết và thực tế nhất!`;
     const end = new Date(request.endDate);
     let dayCount = 1;
 
+    // Calculate total number of people
+    const totalPeople = request.numberOfPeople.adults + request.numberOfPeople.children;
+
     // Get all places from database
     const allPlaces = this.getFamousDaNangPlaces();
     
-    // Filter places based on budget
+    // Filter places based on budget (consider total people)
     const maxDailyCost = request.budget.max / ((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) + 1);
-    const affordablePlaces = allPlaces.filter(p => p.estimatedCost && p.estimatedCost < maxDailyCost * 0.4);
+    const affordablePlaces = allPlaces.filter(p => {
+      const totalCost = (p.estimatedCost || 0) * totalPeople;
+      return totalCost < maxDailyCost * 0.4;
+    });
     
     // Separate by type
     const attractions = affordablePlaces.filter(p => p.type === 'attraction');
     const restaurants = affordablePlaces.filter(p => p.type === 'restaurant');
     const cafes = affordablePlaces.filter(p => p.type === 'cafe');
 
+    // Shuffle arrays to create random plans each time
+    const shuffleArray = <T,>(array: T[]): T[] => {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    };
+
+    const shuffledAttractions = shuffleArray(attractions);
+    const shuffledRestaurants = shuffleArray(restaurants);
+    const shuffledCafes = shuffleArray(cafes);
+
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       const dayWeather = weather[dayCount - 2] || weather[0];
       const currentDate = d.toISOString().split('T')[0];
       
-      // Select 2-3 attractions for the day
-      const dayAttractions = attractions.slice((dayCount - 1) * 2, (dayCount - 1) * 2 + 3);
-      const dayRestaurants = restaurants.slice((dayCount - 1) * 3, (dayCount - 1) * 3 + 3);
+      // Select 2-3 attractions for the day (now from shuffled arrays)
+      const dayAttractions = shuffledAttractions.slice((dayCount - 1) * 2, (dayCount - 1) * 2 + 3);
+      const dayRestaurants = shuffledRestaurants.slice((dayCount - 1) * 3, (dayCount - 1) * 3 + 3);
       
       const schedule: ActivitySchedule[] = [];
       let currentTime = '08:00';
       let dayCost = 0;
+      let previousLocation = { lat: 16.0544, lng: 108.2022 }; // Start from Da Nang center
       
       // Breakfast
       if (dayRestaurants[0]) {
+        const costPerPerson = dayRestaurants[0].estimatedCost || 0;
+        const totalCost = costPerPerson * totalPeople;
+        
+        // Calculate travel time from previous location
+        const distance = this.calculateDistance(
+          previousLocation.lat,
+          previousLocation.lng,
+          dayRestaurants[0].location.lat,
+          dayRestaurants[0].location.lng
+        );
+        const travelTime = this.calculateTravelTime(distance, request.transportation, currentTime);
+        
+        // Add Google Maps link
+        const activity = {
+          ...dayRestaurants[0],
+          estimatedCost: totalCost,
+          googleMapsLink: `https://www.google.com/maps?q=${dayRestaurants[0].location.lat},${dayRestaurants[0].location.lng}`
+        };
+        
         schedule.push({
           time: currentTime,
           duration: 60,
-          activity: dayRestaurants[0],
-          notes: 'Ăn sáng',
-          travelTime: 15,
-          travelDistance: 2
+          activity: activity,
+          notes: `Ăn sáng - Chi phí cho ${totalPeople} người (${costPerPerson.toLocaleString()}đ/người)`,
+          travelTime: travelTime,
+          travelDistance: distance,
+          transportCost: this.calculateGrabCost(distance, request.transportation)
         });
-        dayCost += dayRestaurants[0].estimatedCost || 0;
-        currentTime = this.addMinutes(currentTime, 75);
+        dayCost += totalCost;
+        previousLocation = dayRestaurants[0].location;
+        currentTime = this.addMinutes(currentTime, 60 + travelTime);
       }
       
       // Morning activity
       if (dayAttractions[0]) {
+        const costPerPerson = dayAttractions[0].estimatedCost || 0;
+        const totalCost = costPerPerson * totalPeople;
+        
+        const distance = this.calculateDistance(
+          previousLocation.lat,
+          previousLocation.lng,
+          dayAttractions[0].location.lat,
+          dayAttractions[0].location.lng
+        );
+        const travelTime = this.calculateTravelTime(distance, request.transportation, currentTime);
+        
+        const activity = {
+          ...dayAttractions[0],
+          estimatedCost: totalCost,
+          googleMapsLink: `https://www.google.com/maps?q=${dayAttractions[0].location.lat},${dayAttractions[0].location.lng}`
+        };
+        
         schedule.push({
           time: currentTime,
           duration: dayAttractions[0].duration || 120,
-          activity: dayAttractions[0],
-          notes: 'Điểm tham quan buổi sáng',
-          travelTime: 20,
-          travelDistance: 5
+          activity: activity,
+          notes: `Điểm tham quan buổi sáng - ${totalPeople} người (${costPerPerson.toLocaleString()}đ/người)`,
+          travelTime: travelTime,
+          travelDistance: distance,
+          transportCost: this.calculateGrabCost(distance, request.transportation)
         });
-        dayCost += dayAttractions[0].estimatedCost || 0;
-        currentTime = this.addMinutes(currentTime, (dayAttractions[0].duration || 120) + 20);
+        dayCost += totalCost;
+        previousLocation = dayAttractions[0].location;
+        currentTime = this.addMinutes(currentTime, (dayAttractions[0].duration || 120) + travelTime);
       }
       
       // Lunch
       if (dayRestaurants[1]) {
+        const costPerPerson = dayRestaurants[1].estimatedCost || 0;
+        const totalCost = costPerPerson * totalPeople;
+        
+        const distance = this.calculateDistance(
+          previousLocation.lat,
+          previousLocation.lng,
+          dayRestaurants[1].location.lat,
+          dayRestaurants[1].location.lng
+        );
+        const travelTime = this.calculateTravelTime(distance, request.transportation, currentTime);
+        
+        const activity = {
+          ...dayRestaurants[1],
+          estimatedCost: totalCost,
+          googleMapsLink: `https://www.google.com/maps?q=${dayRestaurants[1].location.lat},${dayRestaurants[1].location.lng}`
+        };
+        
         schedule.push({
           time: currentTime,
           duration: 90,
-          activity: dayRestaurants[1],
-          notes: 'Ăn trưa',
-          travelTime: 15,
-          travelDistance: 3
+          activity: activity,
+          notes: `Ăn trưa - ${totalPeople} người (${costPerPerson.toLocaleString()}đ/người)`,
+          travelTime: travelTime,
+          travelDistance: distance,
+          transportCost: this.calculateGrabCost(distance, request.transportation)
         });
-        dayCost += dayRestaurants[1].estimatedCost || 0;
-        currentTime = this.addMinutes(currentTime, 105);
+        dayCost += totalCost;
+        previousLocation = dayRestaurants[1].location;
+        currentTime = this.addMinutes(currentTime, 90 + travelTime);
       }
       
       // Afternoon activity
       if (dayAttractions[1]) {
+        const costPerPerson = dayAttractions[1].estimatedCost || 0;
+        const totalCost = costPerPerson * totalPeople;
+        
+        const distance = this.calculateDistance(
+          previousLocation.lat,
+          previousLocation.lng,
+          dayAttractions[1].location.lat,
+          dayAttractions[1].location.lng
+        );
+        const travelTime = this.calculateTravelTime(distance, request.transportation, currentTime);
+        
+        const activity = {
+          ...dayAttractions[1],
+          estimatedCost: totalCost,
+          googleMapsLink: `https://www.google.com/maps?q=${dayAttractions[1].location.lat},${dayAttractions[1].location.lng}`
+        };
+        
         schedule.push({
           time: currentTime,
           duration: dayAttractions[1].duration || 120,
-          activity: dayAttractions[1],
-          notes: 'Điểm tham quan buổi chiều',
-          travelTime: 20,
-          travelDistance: 4
+          activity: activity,
+          notes: `Điểm tham quan buổi chiều - ${totalPeople} người (${costPerPerson.toLocaleString()}đ/người)`,
+          travelTime: travelTime,
+          travelDistance: distance,
+          transportCost: this.calculateGrabCost(distance, request.transportation)
         });
-        dayCost += dayAttractions[1].estimatedCost || 0;
-        currentTime = this.addMinutes(currentTime, (dayAttractions[1].duration || 120) + 20);
+        dayCost += totalCost;
+        previousLocation = dayAttractions[1].location;
+        currentTime = this.addMinutes(currentTime, (dayAttractions[1].duration || 120) + travelTime);
       }
       
       // Coffee break
       if (cafes[0]) {
+        const costPerPerson = cafes[0].estimatedCost || 0;
+        const totalCost = costPerPerson * totalPeople;
+        
+        const distance = this.calculateDistance(
+          previousLocation.lat,
+          previousLocation.lng,
+          cafes[0].location.lat,
+          cafes[0].location.lng
+        );
+        const travelTime = this.calculateTravelTime(distance, request.transportation, currentTime);
+        
+        const activity = {
+          ...cafes[0],
+          estimatedCost: totalCost,
+          googleMapsLink: `https://www.google.com/maps?q=${cafes[0].location.lat},${cafes[0].location.lng}`
+        };
+        
         schedule.push({
           time: currentTime,
           duration: 60,
-          activity: cafes[0],
-          notes: 'Nghỉ ngơi, uống cà phê',
-          travelTime: 10,
-          travelDistance: 2
+          activity: activity,
+          notes: `Nghỉ ngơi, uống cà phê - ${totalPeople} người (${costPerPerson.toLocaleString()}đ/người)`,
+          travelTime: travelTime,
+          travelDistance: distance,
+          transportCost: this.calculateGrabCost(distance, request.transportation)
         });
-        dayCost += cafes[0].estimatedCost || 0;
-        currentTime = this.addMinutes(currentTime, 70);
+        dayCost += totalCost;
+        previousLocation = cafes[0].location;
+        currentTime = this.addMinutes(currentTime, 60 + travelTime);
       }
       
       // Dinner
       if (dayRestaurants[2]) {
+        const costPerPerson = dayRestaurants[2].estimatedCost || 0;
+        const totalCost = costPerPerson * totalPeople;
+        
+        const distance = this.calculateDistance(
+          previousLocation.lat,
+          previousLocation.lng,
+          dayRestaurants[2].location.lat,
+          dayRestaurants[2].location.lng
+        );
+        const travelTime = this.calculateTravelTime(distance, request.transportation, currentTime);
+        
+        const activity = {
+          ...dayRestaurants[2],
+          estimatedCost: totalCost,
+          googleMapsLink: `https://www.google.com/maps?q=${dayRestaurants[2].location.lat},${dayRestaurants[2].location.lng}`
+        };
+        
         schedule.push({
           time: currentTime,
           duration: 90,
-          activity: dayRestaurants[2],
-          notes: 'Ăn tối',
-          travelTime: 0,
-          travelDistance: 0
+          activity: activity,
+          notes: `Ăn tối - ${totalPeople} người (${costPerPerson.toLocaleString()}đ/người)`,
+          travelTime: travelTime,
+          travelDistance: distance,
+          transportCost: this.calculateGrabCost(distance, request.transportation)
         });
-        dayCost += dayRestaurants[2].estimatedCost || 0;
+        dayCost += totalCost;
+        previousLocation = dayRestaurants[2].location;
+        currentTime = this.addMinutes(currentTime, 90 + travelTime);
+      }
+      
+      // Evening/Night activity (20:00-22:00)
+      const nightActivities = affordablePlaces.filter(p => 
+        (p.category && (
+          p.category.includes('night') || 
+          p.category.includes('bar') || 
+          p.category.includes('club') ||
+          p.category === 'nightclub' ||
+          p.category === 'live_music'
+        )) ||
+        (p.name && (
+          p.name.includes('Bar') || 
+          p.name.includes('Chợ Đêm') ||
+          p.name.includes('Night Market')
+        ))
+      );
+      
+      // Shuffle array inline
+      const shuffledNightActivities = [...nightActivities];
+      for (let i = shuffledNightActivities.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledNightActivities[i], shuffledNightActivities[j]] = [shuffledNightActivities[j], shuffledNightActivities[i]];
+      }
+      
+      if (shuffledNightActivities[dayCount - 1] && currentTime < '20:00') {
+        currentTime = '20:00'; // Đảm bảo hoạt động tối bắt đầu từ 8h tối
+        
+        const nightPlace = shuffledNightActivities[dayCount - 1];
+        const costPerPerson = nightPlace.estimatedCost || 0;
+        const totalCost = costPerPerson * totalPeople;
+        
+        const distance = this.calculateDistance(
+          previousLocation.lat,
+          previousLocation.lng,
+          nightPlace.location.lat,
+          nightPlace.location.lng
+        );
+        const travelTime = this.calculateTravelTime(distance, request.transportation, currentTime);
+        
+        const activity = {
+          ...nightPlace,
+          estimatedCost: totalCost,
+          googleMapsLink: `https://www.google.com/maps?q=${nightPlace.location.lat},${nightPlace.location.lng}`
+        };
+        
+        schedule.push({
+          time: currentTime,
+          duration: 120,
+          activity: activity,
+          notes: `Hoạt động ban đêm - ${totalPeople} người (${costPerPerson.toLocaleString()}đ/người)`,
+          travelTime: travelTime,
+          travelDistance: distance,
+          transportCost: this.calculateGrabCost(distance, request.transportation)
+        });
+        dayCost += totalCost;
+        previousLocation = nightPlace.location;
+        currentTime = this.addMinutes(currentTime, 120 + travelTime);
       }
 
       days.push({
@@ -751,9 +1133,9 @@ Hãy tạo kế hoạch chi tiết và thực tế nhất!`;
         },
         estimatedCost: dayCost,
         notes: [
-          '📍 Các địa điểm được chọn từ database Đà Nẵng với đầy đủ thông tin',
-          '💡 Lịch trình đã được tối ưu theo thời gian và khoảng cách',
-          '💰 Chi phí được tính chính xác dựa trên giá thực tế'
+          '📍 Locations selected from Da Nang database with full information',
+          '💡 Schedule optimized by time and distance',
+          '💰 Costs calculated accurately based on actual prices'
         ],
       });
     }
@@ -805,15 +1187,15 @@ Hãy tạo kế hoạch chi tiết và thực tế nhất!`;
 
   private getWeatherRecommendation(condition: string, temp: number): string {
     if (condition.includes('Rain')) {
-      return '🌧️ Có mưa - Nên mang ô và ưu tiên hoạt động trong nhà';
+      return '🌧️ Rain expected - Bring umbrella and prioritize indoor activities';
     }
     if (temp > 35) {
-      return '🌡️ Nắng nóng - Nên mang nón, kem chống nắng';
+      return '🌡️ Hot weather - Bring hat and sunscreen';
     }
     if (condition === 'Clear' || condition === 'Clouds') {
-      return '☀️ Thời tiết tốt - Lý tưởng cho các hoạt động ngoài trời';
+      return '☀️ Good weather - Ideal for outdoor activities';
     }
-    return '✅ Thời tiết ổn định';
+    return '✅ Stable weather';
   }
 
   private mapCategoryToType(category: string): Activity['type'] {
@@ -846,6 +1228,116 @@ Hãy tạo kế hoạch chi tiết và thực tế nhất!`;
     return this.getFamousDaNangPlaces()
       .filter(p => p.category === category)
       .slice(0, limit);
+  }
+
+  /**
+   * Calculate distance between two coordinates using Haversine formula
+   * @returns Distance in kilometers
+   */
+  private calculateDistance(
+    lat1: number,
+    lng1: number,
+    lat2: number,
+    lng2: number
+  ): number {
+    const R = 6371; // Earth's radius in km
+    const dLat = this.toRadians(lat2 - lat1);
+    const dLng = this.toRadians(lng2 - lng1);
+    
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.toRadians(lat1)) *
+        Math.cos(this.toRadians(lat2)) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
+    
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+    
+    return Math.round(distance * 10) / 10; // Round to 1 decimal
+  }
+
+  private toRadians(degrees: number): number {
+    return degrees * (Math.PI / 180);
+  }
+
+  /**
+   * Calculate travel time based on distance and transportation mode
+   * @param distance - Distance in km
+   * @param transportation - Mode of transport
+   * @param time - Current time (HH:mm) to check rush hour
+   * @returns Travel time in minutes
+   */
+  private calculateTravelTime(
+    distance: number,
+    transportation: string = 'motorbike',
+    time: string = '12:00'
+  ): number {
+    // Base speeds (km/h)
+    const speeds: { [key: string]: number } = {
+      walking: 5,
+      bicycle: 15,
+      motorbike: 25,
+      car: 30,
+      taxi: 30,
+      bus: 20,
+    };
+
+    let speed = speeds[transportation] || 25;
+
+    // Check if it's rush hour (7-9 AM or 5-7 PM)
+    const hour = parseInt(time.split(':')[0]);
+    const isRushHour = (hour >= 7 && hour <= 9) || (hour >= 17 && hour <= 19);
+
+    // Reduce speed by 40% during rush hour
+    if (isRushHour) {
+      speed *= 0.6;
+    }
+
+    // For long distances (>20km), assume highway speeds
+    if (distance > 20) {
+      speed = transportation === 'motorbike' ? 40 : 50;
+    }
+
+    const travelTimeMinutes = (distance / speed) * 60;
+    
+    // Add buffer time (5 minutes for every 10km)
+    const bufferTime = Math.ceil(distance / 10) * 5;
+    
+    return Math.ceil(travelTimeMinutes + bufferTime);
+  }
+
+  /**
+   * Calculate Grab transport cost
+   * @param distance - Distance in km
+   * @param transportation - Mode: 'motorbike' (GrabBike) or 'car'/'taxi'/'grab' (GrabCar)
+   * @returns Cost in VND
+   */
+  private calculateGrabCost(distance: number, transportation: string = 'motorbike'): number {
+    if (distance <= 0) return 0;
+
+    // GrabBike: 10,000 - 13,000 VND/km (average: 11,500)
+    if (transportation === 'motorbike' || transportation === 'bicycle') {
+      return Math.round(distance * 11500);
+    }
+
+    // GrabCar: 22,000 VND (base 2km) + 12,000 VND/km after
+    if (transportation === 'car' || transportation === 'taxi' || transportation === 'grab') {
+      if (distance <= 2) {
+        return 22000;
+      }
+      return Math.round(22000 + (distance - 2) * 12000);
+    }
+
+    // Mixed: Use average of bike and car
+    if (transportation === 'mixed') {
+      const bikeCost = distance * 11500;
+      const carCost = distance <= 2 ? 22000 : 22000 + (distance - 2) * 12000;
+      return Math.round((bikeCost + carCost) / 2);
+    }
+
+    // Default to GrabBike
+    return Math.round(distance * 11500);
   }
 }
 

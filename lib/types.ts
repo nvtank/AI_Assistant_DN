@@ -70,6 +70,17 @@ export interface TravelPlanRequest {
     morningStart: 'early' | 'normal' | 'late'; // 6am / 8am / 10am
     eveningEnd: 'early' | 'normal' | 'late';   // 6pm / 9pm / 11pm
   };
+  specialRequirements?: string;
+  notes?: {
+    startDate?: string;
+    endDate?: string;
+    numberOfPeople?: string;
+    budget?: string;
+    tripThemes?: string;
+    timePreferences?: string;
+    hotelStars?: string;
+    priorities?: string;
+  };
 }
 
 export interface TravelPlan {
@@ -108,6 +119,7 @@ export interface ActivitySchedule {
   notes?: string;
   travelTime?: number; // minutes to next location
   travelDistance?: number; // km
+  transportCost?: number; // VND - Grab cost
 }
 
 export interface Activity {
@@ -125,10 +137,14 @@ export interface Activity {
   rating?: number;
   photos?: string[];
   openingHours?: string | string[];
+  googleMapsLink?: string; // Link to Google Maps
+  website?: string; // Website or Facebook page
+  articleLink?: string; // Article/blog about the place
   contactInfo?: {
     phone?: string;
     website?: string;
   };
+  phone?: string; // Quick access to phone number
   tips?: string[];
   category?: string;
   // Additional fields from database

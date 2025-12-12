@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/lib/firebase';
 
-/**
- * POST /api/upload
- * Upload image to Firebase Storage
- */
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
