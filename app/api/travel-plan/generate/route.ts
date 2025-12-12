@@ -3,10 +3,6 @@ import { travelPlannerService } from '@/lib/travelPlannerService';
 import { saveTravelPlan } from '@/lib/travelPlanService';
 import { TravelPlanRequest } from '@/lib/types';
 
-/**
- * API để tạo travel plan
- * POST /api/travel-plan/generate
- */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -29,14 +25,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate dates
-    const startDate = new Date(planRequest.startDate);
-    const endDate = new Date(planRequest.endDate);
-    
-    if (startDate > endDate) {
-      console.error('❌ Invalid dates:', { startDate, endDate });
+    // Validate dates (compare strings to avoid timezone issues)
+    if (planRequest.startDate > planRequest.endDate) {
+      console.error('❌ Invalid dates:', { 
+        startDate: planRequest.startDate, 
+        endDate: planRequest.endDate 
+      });
       return NextResponse.json(
-        { error: 'Start date must be before end date', details: `${startDate} > ${endDate}` },
+        { 
+          error: 'Start date must be before end date', 
+          details: `${planRequest.startDate} > ${planRequest.endDate}` 
+        },
         { status: 400 }
       );
     }
@@ -79,6 +78,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      planId: planId,
       plan: travelPlan,
     });
   } catch (error: any) {

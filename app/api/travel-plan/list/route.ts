@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserTravelPlans } from '@/lib/travelPlanService';
 
-/**
- * API để lấy danh sách travel plans của user
- * GET /api/travel-plan/list?userId=xxx
- */
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
