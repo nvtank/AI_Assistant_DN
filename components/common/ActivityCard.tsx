@@ -1,3 +1,4 @@
+import React from 'react';
 import { ActivitySchedule } from '@/lib/types';
 
 interface ActivityCardProps {
@@ -115,10 +116,12 @@ export function ActivityCard({ item }: ActivityCardProps) {
               href={item.activity.googleMapsLink} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all shadow-md hover:shadow-lg text-sm font-semibold"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-grab-green text-white rounded-full hover:bg-[#009640] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
             >
-              <span className="text-lg">🗺️</span>
-              <span>Xem bản đồ</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              </svg>
+              <span>Maps</span>
             </a>
           )}
 
@@ -126,9 +129,11 @@ export function ActivityCard({ item }: ActivityCardProps) {
           {item.activity.phone && (
             <a 
               href={`tel:${item.activity.phone}`}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 active:bg-green-800 transition-all shadow-md hover:shadow-lg text-sm font-semibold"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-grab-green text-white rounded-full hover:bg-[#009640] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
             >
-              <span className="text-lg">📞</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
               <span>{item.activity.phone}</span>
             </a>
           )}
@@ -139,10 +144,12 @@ export function ActivityCard({ item }: ActivityCardProps) {
               href={item.activity.website} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 active:bg-purple-800 transition-all shadow-md hover:shadow-lg text-sm font-semibold"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-grab-green text-white rounded-full hover:bg-[#009640] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
             >
-              <span className="text-lg">🌐</span>
-              <span>Fanpage</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+              </svg>
+              <span>Website</span>
             </a>
           )}
 
@@ -152,10 +159,12 @@ export function ActivityCard({ item }: ActivityCardProps) {
               href={item.activity.articleLink} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 active:bg-orange-800 transition-all shadow-md hover:shadow-lg text-sm font-semibold"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-grab-green text-white rounded-full hover:bg-[#009640] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
             >
-              <span className="text-lg">📰</span>
-              <span>Read article</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+              </svg>
+              <span>Article</span>
             </a>
           )}
 
@@ -165,9 +174,11 @@ export function ActivityCard({ item }: ActivityCardProps) {
               href={item.activity['tik-tok']} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 active:bg-gray-900 transition-all shadow-md hover:shadow-lg text-sm font-semibold"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-grab-green text-white rounded-full hover:bg-[#009640] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
             >
-              <span className="text-lg">🎵</span>
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
+              </svg>
               <span>TikTok</span>
             </a>
           )}
@@ -178,9 +189,11 @@ export function ActivityCard({ item }: ActivityCardProps) {
               href={item.activity['social-link']} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-800 transition-all shadow-md hover:shadow-lg text-sm font-semibold"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-grab-green text-white rounded-full hover:bg-[#009640] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
             >
-              <span className="text-lg">🔗</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
               <span>More info</span>
             </a>
           )}

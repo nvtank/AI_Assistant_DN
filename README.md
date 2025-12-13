@@ -108,63 +108,6 @@ npm run build
 npm start
 ```
 
----
-
-## 📁 Project Structure
-
-```
-GrabTheBeyond/
-├── 📱 app/                           # Next.js 14 App Router
-│   ├── layout.tsx                   # Root layout with AuthProvider
-│   ├── page.tsx                     # Home page (Map + Chatbot)
-│   ├── login/
-│   │   └── page.tsx                 # Login page (Email, Google, Facebook)
-│   ├── signup/
-│   │   └── page.tsx                 # Registration page
-│   ├── profile/
-│   │   └── page.tsx                 # User profile (Protected route)
-│   └── globals.css                  # Global styles & Tailwind imports
-│
-├── 🧩 components/                    # Reusable React Components
-│   ├── AIChatbot.tsx                # Context-aware AI assistant
-│   ├── AuthProvider.tsx             # Firebase Auth context provider
-│   ├── IncidentMap.tsx              # Interactive Leaflet map
-│   ├── PlaceCard.tsx                # Venue card with Grab integration
-│   ├── ProtectedRoute.tsx           # Authentication guard HOC
-│   ├── ReportIncidentForm.tsx       # Incident reporting modal
-│   └── UserMenu.tsx                 # User dropdown menu
-│
-├── 📚 lib/                           # Core Libraries & Services
-│   ├── authService.ts               # Firebase Auth functions
-│   ├── firebase.ts                  # Firebase initialization
-│   ├── geminiAI.ts                  # Gemini AI service
-│   ├── placesAPI.ts                 # Google Places integration
-│   ├── socket.ts                    # Socket.IO client
-│   ├── types.ts                     # TypeScript type definitions
-│   └── utils.ts                     # Utility functions (location, distance)
-│
-├── 🖥️ server/                        # Backend API Server
-│   └── index.js                     # Express + Socket.IO + Multer
-│
-├── 📤 uploads/                       # User-uploaded files (gitignored)
-│   └── incidents/                   # Incident photos
-│
-├── 📄 Documentation Files
-│   ├── FIREBASE_AUTH_SETUP.md       # Firebase authentication guide
-│   ├── FACEBOOK_LOGIN_CHECKLIST.md  # Facebook OAuth setup
-│   ├── GEMINI_API_KEY_FIX.md        # Gemini API troubleshooting
-│   └── IP_GEOLOCATION_UPDATE.md     # Location fallback guide
-│
-└── ⚙️ Configuration Files
-    ├── next.config.js               # Next.js configuration
-    ├── tailwind.config.js           # Tailwind CSS configuration
-    ├── tsconfig.json                # TypeScript configuration
-    ├── package.json                 # Dependencies & scripts
-    └── .env                         # Environment variables (not in git)
-```
-
----
-
 ## 🛠️ Technology Stack
 
 ### Frontend Technologies
@@ -225,17 +168,6 @@ npm run type-check
 
 ---
 
-## 📚 Documentation
-
-Comprehensive guides available:
-
-| Guide | Description |
-|-------|-------------|
-| [FIREBASE_AUTH_SETUP.md](./FIREBASE_AUTH_SETUP.md) | Complete Firebase authentication setup |
-| [FACEBOOK_LOGIN_CHECKLIST.md](./FACEBOOK_LOGIN_CHECKLIST.md) | Facebook OAuth configuration steps |
-| [GEMINI_API_KEY_FIX.md](./GEMINI_API_KEY_FIX.md) | Troubleshooting Gemini API issues |
-| [IP_GEOLOCATION_UPDATE.md](./IP_GEOLOCATION_UPDATE.md) | Location fallback implementation |
-
 
 ## 🙏 Acknowledgments
 
@@ -246,14 +178,5 @@ Comprehensive guides available:
 - **OpenWeatherMap** - Real-time weather data
 
 
-## 📧 Contact & Support
-
-**Project Repository:** [GitHub](https://github.com/yourusername/GrabTheBeyond)
-
-**Issues & Bugs:** [GitHub Issues](https://github.com/yourusername/GrabTheBeyond/issues)
-
-**Questions:** Open a discussion on GitHub
-
----
 
 

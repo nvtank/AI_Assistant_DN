@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from './AuthProvider';
+import { useAuth } from '../auth/AuthProvider';
 
 interface TravelPlanFormData {
   startDate: string;
