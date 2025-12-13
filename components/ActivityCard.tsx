@@ -122,14 +122,14 @@ export function ActivityCard({ item }: ActivityCardProps) {
             </a>
           )}
 
-          {/* Phone Button */}
+          {/* Phone Number Display */}
           {item.activity.phone && (
             <a 
               href={`tel:${item.activity.phone}`}
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 active:bg-green-800 transition-all shadow-md hover:shadow-lg text-sm font-semibold"
             >
               <span className="text-lg">📞</span>
-              <span>Gọi ngay</span>
+              <span>{item.activity.phone}</span>
             </a>
           )}
 
@@ -155,7 +155,33 @@ export function ActivityCard({ item }: ActivityCardProps) {
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 active:bg-orange-800 transition-all shadow-md hover:shadow-lg text-sm font-semibold"
             >
               <span className="text-lg">📰</span>
-              <span>Đọc bài viết</span>
+              <span>Read article</span>
+            </a>
+          )}
+
+          {/* TikTok Button */}
+          {item.activity['tik-tok'] && (
+            <a 
+              href={item.activity['tik-tok']} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 active:bg-gray-900 transition-all shadow-md hover:shadow-lg text-sm font-semibold"
+            >
+              <span className="text-lg">🎵</span>
+              <span>TikTok</span>
+            </a>
+          )}
+
+          {/* Social Link Button */}
+          {item.activity['social-link'] && (
+            <a 
+              href={item.activity['social-link']} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-800 transition-all shadow-md hover:shadow-lg text-sm font-semibold"
+            >
+              <span className="text-lg">🔗</span>
+              <span>More info</span>
             </a>
           )}
         </div>

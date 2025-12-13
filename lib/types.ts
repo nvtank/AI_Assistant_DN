@@ -65,7 +65,7 @@ export interface TravelPlanRequest {
   foodPreferences: string[];
   allergies: string[];
   restrictions: string[];
-  travelStyle: 'relax' | 'adventure' | 'family' | 'couple' | 'cultural' | 'foodie';
+  travelStyle: string[]; // Can select multiple: adventure, cultural, food, relaxation, photography, nature, nightlife, shopping, family
   timePreference: {
     morningStart: 'early' | 'normal' | 'late'; // 6am / 8am / 10am
     eveningEnd: 'early' | 'normal' | 'late';   // 6pm / 9pm / 11pm
@@ -140,6 +140,8 @@ export interface Activity {
   googleMapsLink?: string; // Link to Google Maps
   website?: string; // Website or Facebook page
   articleLink?: string; // Article/blog about the place
+  'tik-tok'?: string; // TikTok video link
+  'social-link'?: string; // Official website or social media link
   contactInfo?: {
     phone?: string;
     website?: string;
