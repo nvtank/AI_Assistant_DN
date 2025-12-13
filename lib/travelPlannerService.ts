@@ -278,6 +278,8 @@ export class TravelPlannerService {
             phone: place.phone || '',
             website: place.website || '',
             articleLink: place.articleLink || '',
+            'tik-tok': place['tik-tok'] || '',
+            'social-link': place['social-link'] || '',
             googleMapsLink: place.location ? `https://www.google.com/maps?q=${place.location.lat},${place.location.lng}` : ''
           });
         });
@@ -400,20 +402,33 @@ export class TravelPlannerService {
   private determineCategories(request: TravelPlanRequest): string[] {
     const categories = ['tourist_attraction', 'restaurant', 'cafe'];
 
-    if (request.travelStyle === 'adventure') {
+    // travelStyle is now an array, check if it includes specific styles
+    if (request.travelStyle?.includes('adventure')) {
       categories.push('park', 'amusement_park');
     }
 
-    if (request.travelStyle === 'relax') {
+    if (request.travelStyle?.includes('relaxation')) {
       categories.push('spa', 'beach');
     }
 
-    if (request.travelStyle === 'foodie') {
+    if (request.travelStyle?.includes('food')) {
       categories.push('bakery', 'food');
     }
 
-    if (request.travelStyle === 'cultural') {
+    if (request.travelStyle?.includes('cultural')) {
       categories.push('museum', 'art_gallery', 'church');
+    }
+
+    if (request.travelStyle?.includes('nature')) {
+      categories.push('park', 'beach', 'natural_feature');
+    }
+
+    if (request.travelStyle?.includes('nightlife')) {
+      categories.push('night_club', 'bar');
+    }
+
+    if (request.travelStyle?.includes('shopping')) {
+      categories.push('shopping_mall', 'store');
     }
 
     return categories;
@@ -602,6 +617,8 @@ ${detailedPlaces}
    - **phone: Số điện thoại (nếu có trong database)**
    - **website: Link website hoặc fanpage Facebook nếu có**
    - **articleLink: Link bài báo giới thiệu về địa điểm (nếu có)**
+   - **tik-tok: Link TikTok video review (nếu có trong database)**
+   - **social-link: Link website chính thức hoặc social media (nếu có trong database)**
    - duration: Lấy từ database hoặc tính theo bestTime
    - tips: Copy tips từ database
    - openingHours: Copy từ database
@@ -674,6 +691,8 @@ Trả về CHÍNH XÁC theo format JSON sau, không thêm text nào khác:
             "phone": "+84 236 3791 999",
             "website": "https://www.facebook.com/BanahillsDanangVietnam",
             "articleLink": "https://banahills.sunworld.vn/tin-tuc/",
+            "tik-tok": "https://www.tiktok.com/@example/video/123",
+            "social-link": "https://banahills.sunworld.vn/",
             "openingHours": "07:00-22:00",
             "tips": ["Đi sớm để tránh đông", "Mang áo ấm"]
           },
@@ -780,10 +799,21 @@ Hãy tạo kế hoạch chi tiết và thực tế nhất!`;
 
       const parsed = JSON.parse(jsonMatch[0]);
 
+      // Create fallback weather if data is unavailable
+      const fallbackWeather: WeatherForecast = {
+        date: new Date().toISOString().split('T')[0],
+        temp: { min: 22, max: 30, morning: 24, afternoon: 29, evening: 26 },
+        condition: 'Not Available',
+        description: 'Weather forecast unavailable',
+        humidity: 70,
+        windSpeed: 3.5,
+        recommendation: 'Weather forecast is not available for this date. The date may be too far in the future.',
+      };
+
       // Map weather to each day
       const days: DayPlan[] = parsed.days.map((day: any, index: number) => ({
         ...day,
-        weather: weather[index] || weather[0],
+        weather: weather[index] || weather[0] || fallbackWeather,
       }));
 
       return {
@@ -851,8 +881,20 @@ Hãy tạo kế hoạch chi tiết và thực tế nhất!`;
     const shuffledCafes = shuffleArray(cafes);
 
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dayWeather = weather[dayCount - 2] || weather[0];
       const currentDate = d.toISOString().split('T')[0];
+      
+      // Create fallback weather if data is unavailable
+      const fallbackWeather: WeatherForecast = {
+        date: currentDate,
+        temp: { min: 22, max: 30, morning: 24, afternoon: 29, evening: 26 },
+        condition: 'Not Available',
+        description: 'Weather forecast unavailable',
+        humidity: 70,
+        windSpeed: 3.5,
+        recommendation: 'Weather forecast is not available for this date. The date may be too far in the future or weather data could not be retrieved at this time.',
+      };
+      
+      const dayWeather = weather[dayCount - 2] || weather[0] || fallbackWeather;
       
       // Select 2-3 attractions for the day (now from shuffled arrays)
       const dayAttractions = shuffledAttractions.slice((dayCount - 1) * 2, (dayCount - 1) * 2 + 3);

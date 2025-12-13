@@ -6,6 +6,7 @@ import { TravelPlan, DayPlan, ActivitySchedule } from '@/lib/types';
 import { getTravelPlan, updatePlanStatus } from '@/lib/travelPlanService';
 import { useAuth } from '@/components/AuthProvider';
 import { ActivityCard } from '@/components/ActivityCard';
+import { exportTravelPlanToExcel } from '@/lib/excelExport';
 
 export default function TravelPlanDetailPage() {
   const params = useParams();
@@ -40,6 +41,17 @@ export default function TravelPlanDetailPage() {
       alert('✅ Plan confirmed!');
     } catch (error) {
       console.error('Error confirming plan:', error);
+    }
+  };
+
+  const handleExportExcel = () => {
+    if (!plan) return;
+    try {
+      const filename = exportTravelPlanToExcel(plan);
+      alert(`✅ Exported successfully!\nFile: ${filename}`);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      alert('❌ Failed to export to Excel. Please try again.');
     }
   };
 
@@ -97,6 +109,16 @@ export default function TravelPlanDetailPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <button
+                onClick={handleExportExcel}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold flex items-center gap-2"
+                title="Export to Excel"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Excel
+              </button>
               {plan.status === 'draft' && (
                 <button
                   onClick={handleConfirm}
@@ -242,7 +264,7 @@ export default function TravelPlanDetailPage() {
                       day: 'numeric',
                     })}
                   </h2>
-                  {currentDay.weather && (
+                  {currentDay.weather && currentDay.weather.temp && (
                     <p className="text-gray-600 mt-1">
                       {currentDay.weather.condition} • {Math.round(currentDay.weather.temp.min)}° - {Math.round(currentDay.weather.temp.max)}°
                     </p>
@@ -257,9 +279,17 @@ export default function TravelPlanDetailPage() {
               </div>
 
               {/* Weather Recommendation */}
-              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
-                <p className="text-blue-800">{currentDay.weather.recommendation}</p>
-              </div>
+              {currentDay.weather && currentDay.weather.recommendation ? (
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
+                  <p className="text-blue-800">{currentDay.weather.recommendation}</p>
+                </div>
+              ) : (
+                <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6 rounded">
+                  <p className="text-yellow-800">
+                    ⚠️ Weather forecast is not available for this date. The date may be too far in the future or weather data could not be retrieved at this time.
+                  </p>
+                </div>
+              )}
 
               {/* Timeline */}
               <div className="space-y-4">

@@ -5,7 +5,7 @@ import { ChatMessage, Location, WeatherData, Incident, Place, MOCK_PLACES } from
 import { calculateDistance } from '@/lib/utils';
 import { callGeminiAI, initGeminiAI } from '@/lib/geminiAI';
 import PlaceCard from './PlaceCard';
-import TravelPlannerForm from './TravelPlannerForm';
+import TravelPlannerChat from './TravelPlannerChat';
 import { useAuth } from './AuthProvider';
 import { useRouter } from 'next/navigation';
 
@@ -30,6 +30,7 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(false);
+  const [autoSpeak, setAutoSpeak] = useState(false); // Toggle for auto-speak AI responses
   const recognitionRef = useRef<any>(null);
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   
@@ -76,6 +77,7 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
     const speechSynthesis = window.speechSynthesis;
     
     if (SpeechRecognition && speechSynthesis) {
+      console.log('✅ Voice features supported!');
       setVoiceSupported(true);
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = false;
@@ -112,6 +114,8 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
       };
+    } else {
+      console.warn('⚠️ Voice features not supported in this browser. Use Chrome or Edge for voice input.');
     }
 
     return () => {
@@ -167,8 +171,10 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
         { role: 'assistant', content: aiResponse, timestamp: new Date() },
       ]);
 
-      // Auto-speak AI response if voice is enabled
-      speakText(aiResponse);
+      // Auto-speak AI response if autoSpeak is enabled
+      if (autoSpeak) {
+        speakText(aiResponse);
+      }
 
       // Only suggest places if user is asking about places/locations
       const messageLower = input.toLowerCase();
@@ -384,7 +390,7 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
       {/* CONTENT AREA - Chat or Form based on mode */}
       {chatMode === 'planner' ? (
         <div className="flex-1 overflow-hidden">
-          <TravelPlannerForm embedded={true} onBack={switchToNormalMode} />
+          <TravelPlannerChat />
         </div>
       ) : (
         <>
@@ -507,11 +513,22 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
             className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-grab-green focus:border-transparent outline-none shadow-sm disabled:bg-gray-100"
           />
           
+          {/* Stop speaking button (when AI is speaking) */}
+          {voiceSupported && isSpeaking && (
+            <button
+              onClick={stopSpeaking}
+              className="px-3 sm:px-4 py-2 sm:py-3 rounded-xl shadow-md transition-all text-sm sm:text-base bg-red-500 text-white hover:bg-red-600 animate-pulse"
+              title={language === 'en' ? 'Stop speaking' : 'Dừng đọc'}
+            >
+              🔇⏹
+            </button>
+          )}
+
           {/* Voice input button */}
-          {voiceSupported && (
+          {voiceSupported && !isSpeaking && (
             <button
               onClick={isListening ? stopListening : startListening}
-              disabled={loading || isSpeaking}
+              disabled={loading}
               className={`px-3 sm:px-4 py-2 sm:py-3 rounded-xl shadow-md transition-all text-sm sm:text-base ${
                 isListening
                   ? 'bg-red-500 text-white hover:bg-red-600'
@@ -532,6 +549,23 @@ export default function AIChatbot({ userLocation, weather, nearbyIncidents }: AI
             {loading ? '⏳' : '📤'}
           </button>
         </div>
+
+        {/* Auto-speak toggle - below input */}
+        {voiceSupported && (
+          <div className="mt-2 flex items-center justify-center">
+            <button
+              onClick={() => setAutoSpeak(!autoSpeak)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
+                autoSpeak
+                  ? 'bg-grab-green text-white border-grab-green shadow-md'
+                  : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+              }`}
+            >
+              <span className="text-lg">{autoSpeak ? '🔊' : '🔇'}</span>
+              <span>{autoSpeak ? 'Voice ON' : 'Voice OFF'}</span>
+            </button>
+          </div>
+        )}
       </div>
         </>
       )}

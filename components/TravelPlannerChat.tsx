@@ -46,8 +46,14 @@ const QUESTIONS: Question[] = [
   },
   {
     id: 'budget',
-    question: '💰 What is your estimated budget for the trip?\n\n(Currency: VND, for the entire trip)',
+    question: '💰 What is your total budget for the entire trip?\n\n(This will be allocated for transportation, food, activities, and contingencies)',
     type: 'budget',
+    options: [
+      { value: '4000000', label: '4 million VND', emoji: '💵' },
+      { value: '10000000', label: '10 million VND', emoji: '💰' },
+      { value: '20000000', label: '20 million VND', emoji: '💎' },
+      { value: 'custom', label: 'Custom amount', emoji: '✏️' },
+    ],
   },
   {
     id: 'travelStyle',
@@ -88,12 +94,28 @@ const QUESTIONS: Question[] = [
   },
   {
     id: 'timePreference',
-    question: '⏰ What time schedule do you prefer?',
+    question: '⏰ What is your daily activity timeframe?',
     type: 'select',
     options: [
-      { value: 'early', label: 'Early bird (6-7AM start, 6PM end)', emoji: '🌅' },
-      { value: 'normal', label: 'Normal (8-9AM start, 8PM end)', emoji: '☀️' },
-      { value: 'late', label: 'Night owl (10AM start, 10PM end)', emoji: '🌆' },
+      { value: 'early', label: 'Early morning → Afternoon', emoji: '🌅' },
+      { value: 'normal', label: 'Normal hours', emoji: '☀️' },
+      { value: 'late', label: 'Afternoon → Late night', emoji: '🌆' },
+    ],
+  },
+  {
+    id: 'travelStyle',
+    question: '🎨 What is your travel style?\n\n(You can select multiple)',
+    type: 'multiselect',
+    options: [
+      { value: 'adventure', label: 'Adventure & Outdoor', emoji: '🏔️' },
+      { value: 'cultural', label: 'Culture & History', emoji: '🏛️' },
+      { value: 'food', label: 'Food & Culinary', emoji: '🍜' },
+      { value: 'relaxation', label: 'Relaxation & Spa', emoji: '🧘' },
+      { value: 'photography', label: 'Photography & Sightseeing', emoji: '📸' },
+      { value: 'nature', label: 'Nature & Beaches', emoji: '🌴' },
+      { value: 'nightlife', label: 'Nightlife & Entertainment', emoji: '🎉' },
+      { value: 'shopping', label: 'Shopping & Markets', emoji: '🛍️' },
+      { value: 'family', label: 'Family-friendly', emoji: '👨‍👩‍👧' },
     ],
   },
   {
@@ -120,6 +142,17 @@ const QUESTIONS: Question[] = [
     question: '🚫 Is there anything you don\'t want to do or can\'t do?\n\n(Example: no beach, no extreme activities...)\n\nIf none, type "None"',
     type: 'text',
   },
+  {
+    id: 'specialRequirements',
+    question: '❤️ **Please tell me about your preferences & special notes** (REQUIRED)\n\nFor example:\n• Travel interests (food, photography, relaxation, exploration, nature, city tour...)\n• Special considerations:\n  - Budget conscious / comfortable spending\n  - Avoid crowds\n  - Fear of heights\n  - Don\'t like walking much\n  - Traveling with children / elderly\n  - Any other special requests\n\n✨ The more details you provide, the better I can customize your perfect itinerary!',
+    type: 'text',
+    validation: (value: string) => {
+      if (!value || value.trim().length < 10) {
+        return 'Please provide at least a brief description of your preferences (min 10 characters)';
+      }
+      return true;
+    },
+  },
 ];
 
 export default function TravelPlannerChat() {
@@ -131,6 +164,7 @@ export default function TravelPlannerChat() {
     numberOfPeople: { adults: 1, children: 0 },
     budget: { min: 1000000, max: 5000000, currency: 'VND' },
     foodPreferences: [],
+    travelStyle: [],
     allergies: [],
     restrictions: [],
     timePreference: { morningStart: 'normal', eveningEnd: 'normal' },
@@ -588,13 +622,30 @@ function PeopleInput({
 }
 
 function BudgetInput({ min, max, onChange }: { min: number; max: number; onChange: (min: number, max: number) => void }) {
+  const [showCustom, setShowCustom] = useState(false);
+  const [customAmount, setCustomAmount] = useState('');
+  
   const presets = [
-    { label: '2-3 million', min: 2000000, max: 3000000 },
-    { label: '3-5 million', min: 3000000, max: 5000000 },
-    { label: '5-7 million', min: 5000000, max: 7000000 },
-    { label: '7-10 million', min: 7000000, max: 10000000 },
-    { label: 'Over 10 million', min: 10000000, max: 20000000 },
+    { label: '💵 4 million VND', emoji: '💵', amount: 4000000 },
+    { label: '💰 10 million VND', emoji: '💰', amount: 10000000 },
+    { label: '💎 20 million VND', emoji: '💎', amount: 20000000 },
   ];
+  
+  const handlePresetClick = (amount: number) => {
+    onChange(amount, amount);
+    setShowCustom(false);
+  };
+  
+  const handleCustomClick = () => {
+    setShowCustom(true);
+  };
+  
+  const handleCustomSubmit = () => {
+    const amount = parseInt(customAmount);
+    if (amount && amount > 0) {
+      onChange(amount, amount);
+    }
+  };
 
   return (
     <div className="space-y-4 mb-4">
@@ -602,42 +653,55 @@ function BudgetInput({ min, max, onChange }: { min: number; max: number; onChang
         {presets.map((preset) => (
           <button
             key={preset.label}
-            onClick={() => onChange(preset.min, preset.max)}
-            className={`p-3 rounded-xl border-2 transition-all ${
-              min === preset.min && max === preset.max
+            onClick={() => handlePresetClick(preset.amount)}
+            className={`p-4 rounded-xl border-2 transition-all text-left ${
+              min === preset.amount && max === preset.amount
                 ? 'border-green-600 bg-green-50'
-                : 'border-gray-200 hover:border-green-300'
+                : 'border-gray-200 hover:border-green-300 hover:shadow-md'
             }`}
           >
-            {preset.label}
+            <div className="text-2xl mb-2">{preset.emoji}</div>
+            <div className="font-semibold text-sm">{preset.label}</div>
           </button>
         ))}
+        
+        {/* Custom amount button */}
+        <button
+          onClick={handleCustomClick}
+          className={`p-4 rounded-xl border-2 transition-all text-left ${
+            showCustom
+              ? 'border-green-600 bg-green-50'
+              : 'border-gray-200 hover:border-green-300 hover:shadow-md'
+          }`}
+        >
+          <div className="text-2xl mb-2">✏️</div>
+          <div className="font-semibold text-sm">Custom amount</div>
+        </button>
       </div>
-      <div className="p-4 bg-gray-50 rounded-xl">
-        <div className="text-sm text-gray-600 mb-2">Or customize:</div>
-        <div className="space-y-3">
-          <div>
-            <label className="text-xs text-gray-600">Minimum (VND)</label>
+      
+      {showCustom && (
+        <div className="p-4 bg-gray-50 rounded-xl border-2 border-green-600">
+          <div className="text-sm font-semibold text-gray-700 mb-2">💭 Enter your budget:</div>
+          <div className="flex gap-2">
             <input
               type="number"
-              value={min}
-              onChange={(e) => onChange(parseInt(e.target.value) || 0, max)}
-              className="w-full p-2 border border-gray-300 rounded-lg mt-1"
-              step="100000"
+              value={customAmount}
+              onChange={(e) => setCustomAmount(e.target.value)}
+              placeholder="e.g., 15000000"
+              className="flex-1 p-3 border border-gray-300 rounded-lg"
+              step="1000000"
+              autoFocus
             />
-          </div>
-          <div>
-            <label className="text-xs text-gray-600">Maximum (VND)</label>
-            <input
-              type="number"
-              value={max}
-              onChange={(e) => onChange(min, parseInt(e.target.value) || 0)}
-              className="w-full p-2 border border-gray-300 rounded-lg mt-1"
-              step="100000"
-            />
+            <button
+              onClick={handleCustomSubmit}
+              disabled={!customAmount || parseInt(customAmount) <= 0}
+              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+            >
+              Set
+            </button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
