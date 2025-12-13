@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { TravelPlan, DayPlan, ActivitySchedule } from '@/lib/types';
-import { getTravelPlan, updatePlanStatus } from '@/lib/travelPlanService';
-import { useAuth } from '@/components/AuthProvider';
-import { ActivityCard } from '@/components/ActivityCard';
-import { exportTravelPlanToExcel } from '@/lib/excelExport';
+import { motion, AnimatePresence } from 'framer-motion';
+import { TravelPlan, DayPlan } from '@/lib/types';
+import { getTravelPlan } from '@/lib/travelPlanService';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { ActivityCard } from '@/components/common/ActivityCard';
+import TravelPlanHeader from '@/components/travel-plan/TravelPlanHeader';
+import TravelPlanSummary from '@/components/travel-plan/TravelPlanSummary';
+import DaySelector from '@/components/travel-plan/DaySelector';
 
 export default function TravelPlanDetailPage() {
   const params = useParams();
@@ -33,405 +36,231 @@ export default function TravelPlanDetailPage() {
     }
   };
 
-  const handleConfirm = async () => {
-    if (!plan?.id) return;
-    try {
-      await updatePlanStatus(plan.id, 'confirmed');
-      setPlan({ ...plan, status: 'confirmed' });
-      alert('✅ Plan confirmed!');
-    } catch (error) {
-      console.error('Error confirming plan:', error);
-    }
-  };
-
-  const handleExportExcel = () => {
-    if (!plan) return;
-    try {
-      const filename = exportTravelPlanToExcel(plan);
-      alert(`✅ Exported successfully!\nFile: ${filename}`);
-    } catch (error) {
-      console.error('Error exporting to Excel:', error);
-      alert('❌ Failed to export to Excel. Please try again.');
-    }
+  const handlePlanUpdate = (updatedPlan: TravelPlan) => {
+    setPlan(updatedPlan);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading plan...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-16 h-16 border-4 border-grab-green border-t-transparent rounded-full mx-auto mb-4"
+          />
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-gray-600 font-medium"
+          >
+            Loading your travel plan...
+          </motion.p>
+        </motion.div>
       </div>
     );
   }
 
   if (!plan) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Plan not found</h2>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center glass p-8 rounded-3xl shadow-xl border border-white/30"
+        >
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">Plan not found</h2>
           <button
             onClick={() => router.push('/travel-planner')}
-            className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
+            className="group relative px-6 py-3 text-white bg-grab-green rounded-lg hover:bg-[#009640] font-semibold shadow-lg transition-all duration-200 overflow-hidden"
           >
-            Create new plan
+            <span className="relative z-10">Create new plan</span>
+            <span className="absolute inset-0 bg-gradient-to-r from-grab-green to-[#00c85a] opacity-0 group-hover:opacity-100 transition-opacity"></span>
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   const currentDay = plan.days[selectedDay];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+      },
+    },
+  } as const;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-      {/* Header */}
-      <div className="bg-white shadow-md border-b border-gray-200">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => router.push('/')}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-              </button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  🗺️ Da Nang Travel Plan
-                </h1>
-                <p className="text-sm text-gray-600">
-                  {plan.request.startDate} to {plan.request.endDate} • {plan.days.length} days
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleExportExcel}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold flex items-center gap-2"
-                title="Export to Excel"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Excel
-              </button>
-              {plan.status === 'draft' && (
-                <button
-                  onClick={handleConfirm}
-                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-semibold"
-                >
-                  ✓ Confirm Plan
-                </button>
-              )}
-              {plan.status === 'confirmed' && (
-                <span className="bg-green-100 text-green-700 px-4 py-2 rounded-lg font-semibold">
-                  ✓ Confirmed
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50/50">
+      <TravelPlanHeader plan={plan} onPlanUpdate={handlePlanUpdate} />
 
-      <div className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left: Summary */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Cost Summary */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-bold mb-4">💰 Cost Overview</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">🏨 Accommodation</span>
-                  <span className="font-semibold">
-                    {plan.totalEstimatedCost.accommodation.toLocaleString()} VND
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">🍜 Food</span>
-                  <span className="font-semibold">
-                    {plan.totalEstimatedCost.food.toLocaleString()} VND
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">🚗 Transportation</span>
-                  <span className="font-semibold">
-                    {plan.totalEstimatedCost.transportation.toLocaleString()} VND
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">🎯 Activities</span>
-                  <span className="font-semibold">
-                    {plan.totalEstimatedCost.activities.toLocaleString()} VND
-                  </span>
-                </div>
-                <div className="border-t pt-3 flex justify-between">
-                  <span className="font-bold text-lg">Total</span>
-                  <span className="font-bold text-lg text-green-600">
-                    {plan.totalEstimatedCost.total.toLocaleString()} VND
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Weather Forecast */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-bold mb-4">🌤️ Weather Forecast</h3>
-              <div className="space-y-3">
-                {plan.weatherForecast.map((weather, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-semibold">{new Date(weather.date).toLocaleDateString('vi-VN')}</p>
-                      <p className="text-sm text-gray-600">{weather.description}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-lg">
-                        {Math.round(weather.temp.max)}°
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {Math.round(weather.temp.min)}°
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Trip Info */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-bold mb-4">ℹ️ Trip Information</h3>
-              <div className="space-y-3 text-sm">
-                <div>
-                  <p className="text-gray-600">Number of people</p>
-                  <p className="font-semibold">
-                    {plan.request.numberOfPeople.adults} adults, {plan.request.numberOfPeople.children} children
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-600">Travel style</p>
-                  <p className="font-semibold capitalize">{plan.request.travelStyle}</p>
-                </div>
-                <div>
-                  <p className="text-gray-600">Transportation</p>
-                  <p className="font-semibold capitalize">{plan.request.transportation}</p>
-                </div>
-                <div>
-                  <p className="text-gray-600">Accommodation</p>
-                  <p className="font-semibold capitalize">{plan.request.accommodation}</p>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6"
+        >
+          <TravelPlanSummary plan={plan} currentDay={currentDay} />
 
           {/* Right: Day by Day Schedule */}
           <div className="lg:col-span-2">
-            {/* Day Selector */}
-            <div className="bg-white rounded-xl shadow-md p-4 mb-6">
-              <div className="flex gap-2 overflow-x-auto">
-                {plan.days.map((day, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedDay(idx)}
-                    className={`px-6 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${
-                      selectedDay === idx
-                        ? 'bg-green-600 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    Day {day.day}
-                    <br />
-                    <span className="text-xs">
-                      {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
+            <DaySelector days={plan.days} selectedDay={selectedDay} onSelectDay={setSelectedDay} />
 
             {/* Day Schedule */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold">
-                    Day {currentDay.day} - {new Date(currentDay.date).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </h2>
-                  {currentDay.weather && currentDay.weather.temp && (
-                    <p className="text-gray-600 mt-1">
-                      {currentDay.weather.condition} • {Math.round(currentDay.weather.temp.min)}° - {Math.round(currentDay.weather.temp.max)}°
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedDay}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-200/50"
+              >
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center justify-between mb-6 flex-wrap gap-4 pb-6 border-b border-white/20"
+                >
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+                      Day {currentDay.day} - {new Date(currentDay.date).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </h2>
+                    {currentDay.weather && currentDay.weather.temp && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                        className="text-gray-600 text-sm flex items-center gap-2"
+                      >
+                        <span>{currentDay.weather.condition}</span>
+                        <span>•</span>
+                        <span>{Math.round(currentDay.weather.temp.min)}° - {Math.round(currentDay.weather.temp.max)}°</span>
+                      </motion.p>
+                    )}
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="text-right bg-gray-50 px-4 py-3 rounded-xl border border-gray-200/50"
+                  >
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Estimated cost</p>
+                    <p className="text-xl sm:text-2xl font-bold text-grab-green">
+                      {currentDay.estimatedCost.toLocaleString()} VND
                     </p>
+                  </motion.div>
+                </motion.div>
+
+                {/* Weather Recommendation */}
+                <AnimatePresence>
+                  {currentDay.weather && currentDay.weather.recommendation ? (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      className="bg-blue-50/80 backdrop-blur-sm border-l-4 border-blue-500 p-4 mb-6 rounded-xl"
+                    >
+                      <p className="text-blue-800 text-sm">{currentDay.weather.recommendation}</p>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      className="bg-yellow-50/80 backdrop-blur-sm border-l-4 border-yellow-500 p-4 mb-6 rounded-xl"
+                    >
+                      <p className="text-yellow-800 text-sm">
+                        ⚠️ Weather forecast is not available for this date. The date may be too far in the future or weather data could not be retrieved at this time.
+                      </p>
+                    </motion.div>
                   )}
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-600">Estimated cost</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {currentDay.estimatedCost.toLocaleString()} VND
-                  </p>
-                </div>
-              </div>
+                </AnimatePresence>
 
-              {/* Weather Recommendation */}
-              {currentDay.weather && currentDay.weather.recommendation ? (
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
-                  <p className="text-blue-800">{currentDay.weather.recommendation}</p>
-                </div>
-              ) : (
-                <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6 rounded">
-                  <p className="text-yellow-800">
-                    ⚠️ Weather forecast is not available for this date. The date may be too far in the future or weather data could not be retrieved at this time.
-                  </p>
-                </div>
-              )}
+                {/* Timeline */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="space-y-4"
+                >
+                  {currentDay.schedule && currentDay.schedule.length > 0 ? (
+                    currentDay.schedule.map((item, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.6 + idx * 0.1 }}
+                      >
+                        <ActivityCard item={item} />
+                      </motion.div>
+                    ))
+                  ) : (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center text-gray-500 py-12 bg-gray-50 rounded-xl border border-gray-200/50"
+                    >
+                      No detailed schedule for this day yet
+                    </motion.p>
+                  )}
+                </motion.div>
 
-              {/* Timeline */}
-              <div className="space-y-4">
-                {currentDay.schedule && currentDay.schedule.length > 0 ? (
-                  currentDay.schedule.map((item, idx) => (
-                    <ActivityCard key={idx} item={item} />
-                  ))
-                ) : (
-                  <p className="text-center text-gray-500 py-8">
-                    No detailed schedule for this day yet
-                  </p>
+                {/* Day Notes */}
+                {currentDay.notes && currentDay.notes.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 }}
+                    className="mt-6 bg-yellow-50/80 backdrop-blur-sm border-l-4 border-yellow-500 p-4 rounded-xl"
+                  >
+                    <h4 className="font-semibold mb-2 text-gray-800">📝 Notes:</h4>
+                    <ul className="list-disc list-inside space-y-1">
+                      {currentDay.notes.map((note, idx) => (
+                        <motion.li
+                          key={idx}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.9 + idx * 0.05 }}
+                          className="text-sm text-gray-700"
+                        >
+                          {note}
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </motion.div>
                 )}
-              </div>
-
-              {/* Day Notes */}
-              {currentDay.notes && currentDay.notes.length > 0 && (
-                <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
-                  <h4 className="font-semibold mb-2">📝 Notes:</h4>
-                  <ul className="list-disc list-inside space-y-1">
-                    {currentDay.notes.map((note, idx) => (
-                      <li key={idx} className="text-sm text-gray-700">{note}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ActivityItem({ item }: { item: ActivitySchedule }) {
-  const getTypeIcon = (type: string) => {
-    const icons: Record<string, string> = {
-      attraction: '🏛️',
-      restaurant: '🍽️',
-      activity: '🎯',
-      rest: '😴',
-      transport: '🚗',
-      hotel: '🏨',
-    };
-    return icons[type] || '📍';
-  };
-
-  return (
-    <div className="flex gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-      {/* Time */}
-      <div className="flex-shrink-0 w-20">
-        <p className="font-bold text-lg">{item.time}</p>
-        <p className="text-xs text-gray-600">{item.duration} min</p>
-      </div>
-
-      {/* Icon */}
-      <div className="flex-shrink-0 w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-md">
-        {getTypeIcon(item.activity.type)}
-      </div>
-
-      {/* Content */}
-      <div className="flex-1">
-        <h4 className="font-bold text-lg mb-1">{item.activity.name}</h4>
-        <p className="text-gray-600 text-sm mb-2">{item.activity.description}</p>
-        
-        {item.notes && (
-          <p className="text-sm text-gray-500 italic mb-2">💡 {item.notes}</p>
-        )}
-
-        {item.activity.tips && item.activity.tips.length > 0 && (
-          <div className="mt-2">
-            <p className="text-xs font-semibold text-gray-700 mb-1">Tips:</p>
-            <ul className="text-xs text-gray-600 space-y-1">
-              {item.activity.tips.map((tip, idx) => (
-                <li key={idx}>• {tip}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <div className="flex items-center gap-4 mt-3 flex-wrap">
-          <span className="text-sm font-semibold text-green-600">
-            {item.activity.estimatedCost > 0 
-              ? `💰 ${item.activity.estimatedCost.toLocaleString()} VND`
-              : '💰 Free'
-            }
-          </span>
-          
-          {item.activity.rating && (
-            <span className="text-sm text-gray-600">
-              ⭐ {item.activity.rating}
-            </span>
-          )}
-
-          {item.travelDistance && (
-            <span className="text-sm text-gray-600">
-              📏 {item.travelDistance.toFixed(1)} km
-            </span>
-          )}
-
-          {item.travelTime && (
-            <span className="text-sm text-gray-600">
-              � {item.travelTime} min
-            </span>
-          )}
-
-          {item.transportCost && item.transportCost > 0 && (
-            <span className="text-sm font-semibold text-blue-600">
-              🚖 Grab: {item.transportCost.toLocaleString()} VND
-            </span>
-          )}
-
-          {item.activity.googleMapsLink && (
-            <a 
-              href={item.activity.googleMapsLink} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              🗺️ Maps
-            </a>
-          )}
-
-          {item.activity.phone && (
-            <a 
-              href={`tel:${item.activity.phone}`}
-              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              📞 {item.activity.phone}
-            </a>
-          )}
-
-          {item.activity.website && (
-            <a 
-              href={item.activity.website} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              🌐 Website
-            </a>
-          )}
-        </div>
+        </motion.div>
       </div>
     </div>
   );

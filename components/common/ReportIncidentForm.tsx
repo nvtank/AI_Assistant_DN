@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Incident, INCIDENT_TYPES, Location, SEVERITY_LEVELS } from '@/lib/types';
 import { reportIncident } from '@/lib/incidentService';
-import { useAuth } from './AuthProvider';
+import { useAuth } from '../auth/AuthProvider';
 
 interface ReportIncidentFormProps {
   location: Location;
@@ -82,13 +82,13 @@ export default function ReportIncidentForm({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-grab-dark">
+    <div className="glass rounded-3xl shadow-2xl p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto border border-white/30 backdrop-blur-xl">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-900">
         📍 Report Incident
       </h2>
 
       {/* Demo Notice */}
-      <div className="mb-3 sm:mb-4 bg-blue-50 border border-blue-200 rounded-lg p-2 sm:p-3">
+      <div className="mb-3 sm:mb-4 bg-blue-50/80 backdrop-blur-sm border border-blue-200/50 rounded-xl p-2 sm:p-3">
         <div className="flex items-start space-x-2">
           <span className="text-sm sm:text-base">💡</span>
           <div className="flex-1">
@@ -112,14 +112,14 @@ export default function ReportIncidentForm({
                 key={key}
                 type="button"
                 onClick={() => setType(key as keyof typeof INCIDENT_TYPES)}
-                className={`p-2 sm:p-3 rounded-lg border-2 transition-all ${
+                className={`p-2 sm:p-3 rounded-xl border-2 transition-all ${
                   type === key
-                    ? 'border-grab-green bg-green-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-grab-green bg-grab-green/10 shadow-md'
+                    : 'glass border-white/30 hover:border-grab-green/50 hover:bg-white/60'
                 }`}
               >
                 <div className="text-xl sm:text-2xl mb-1">{value.icon}</div>
-                <div className="text-xs sm:text-sm font-medium">{value.label}</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-800">{value.label}</div>
               </button>
             ))}
           </div>
@@ -136,17 +136,17 @@ export default function ReportIncidentForm({
                 key={key}
                 type="button"
                 onClick={() => setSeverity(key as 'low' | 'medium' | 'high')}
-                className={`flex-1 p-2 rounded-lg border-2 transition-all ${
+                className={`flex-1 p-2 rounded-xl border-2 transition-all ${
                   severity === key
-                    ? `border-2`
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? `shadow-md`
+                    : 'glass border-white/30 hover:bg-white/60'
                 }`}
                 style={{
                   borderColor: severity === key ? value.color : undefined,
                   backgroundColor: severity === key ? `${value.color}20` : undefined,
                 }}
               >
-                <div className="text-xs sm:text-sm font-medium">{value.label}</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-800">{value.label}</div>
               </button>
             ))}
           </div>
@@ -162,7 +162,7 @@ export default function ReportIncidentForm({
             onChange={(e) => setDescription(e.target.value)}
             required
             rows={3}
-            className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-grab-green focus:border-transparent"
+            className="w-full px-3 py-2 text-sm sm:text-base glass border border-white/30 rounded-xl focus:ring-2 focus:ring-grab-green focus:border-grab-green outline-none text-gray-800"
             placeholder="Example: Flooded 30cm deep..."
           />
         </div>
@@ -182,10 +182,10 @@ export default function ReportIncidentForm({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-full p-3 sm:p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-grab-green transition-colors"
+            className="w-full p-3 sm:p-4 border-2 border-dashed glass border-white/30 rounded-xl hover:border-grab-green/50 transition-all"
           >
             {imagePreview ? (
-              <img src={imagePreview} alt="Preview" className="max-h-32 sm:max-h-40 mx-auto rounded" />
+              <img src={imagePreview} alt="Preview" className="max-h-32 sm:max-h-40 mx-auto rounded-xl" />
             ) : (
               <div className="text-center">
                 <div className="text-3xl sm:text-4xl mb-2">📸</div>
@@ -196,7 +196,7 @@ export default function ReportIncidentForm({
         </div>
 
         {/* Location Info */}
-        <div className="bg-gray-50 p-2 sm:p-3 rounded-lg text-xs sm:text-sm text-gray-600">
+        <div className="glass p-2 sm:p-3 rounded-xl text-xs sm:text-sm text-gray-600 border border-white/30">
           📍 Location: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
         </div>
 
@@ -207,7 +207,7 @@ export default function ReportIncidentForm({
               type="button"
               onClick={onCancel}
               disabled={loading}
-              className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base glass border border-white/30 rounded-xl hover:bg-white/60 transition-colors disabled:opacity-50 text-gray-700 font-medium"
             >
               Cancel
             </button>
@@ -215,7 +215,7 @@ export default function ReportIncidentForm({
           <button
             type="submit"
             disabled={loading || !description}
-            className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base bg-grab-green text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base bg-grab-green text-white rounded-xl hover:bg-[#009640] transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg"
           >
             {loading ? '⏳ Submitting...' : '✅ Report'}
           </button>

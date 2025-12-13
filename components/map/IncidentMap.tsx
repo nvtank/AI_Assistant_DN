@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Incident, INCIDENT_TYPES, Location } from '@/lib/types';
@@ -175,21 +175,24 @@ export default function IncidentMap({
           const marker = L.marker([incident.location.lat, incident.location.lng], { icon })
             .addTo(mapRef.current)
             .bindPopup(`
-              <div class="incident-popup">
-                <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: bold;">
+              <div class="incident-popup" style="padding: 12px; min-width: 200px;">
+                <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: bold; color: #1f2937;">
                   ${incidentType.icon} ${incidentType.label}
                 </h3>
-                <p style="margin: 0 0 8px 0; font-size: 14px;">
+                <p style="margin: 0 0 10px 0; font-size: 14px; color: #4b5563; line-height: 1.5;">
                   ${incident.description}
                 </p>
                 ${incident.imageUrl ? `
-                  <img src="${incident.imageUrl}" alt="Incident" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 8px;" />
+                  <img src="${incident.imageUrl}" alt="Incident" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
                 ` : ''}
-                <p style="margin: 0; font-size: 12px; color: #666;">
+                <p style="margin: 0; font-size: 12px; color: #6b7280; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.1);">
                   ${formatTimestamp(incident.createdAt)}
                 </p>
               </div>
-            `);
+            `, {
+              className: 'incident-popup-custom',
+              maxWidth: 300,
+            });
 
           if (onIncidentClick) {
             marker.on('click', () => onIncidentClick(incident));

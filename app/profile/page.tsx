@@ -1,7 +1,7 @@
 'use client';
 
-import ProtectedRoute from '@/components/ProtectedRoute';
-import { useAuth } from '@/components/AuthProvider';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
