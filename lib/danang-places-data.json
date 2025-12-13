@@ -17,8 +17,15 @@
       "openingHours": "09:00-19:00",
       "phone": "+84 236 3839 999",
       "website": "https://www.facebook.com/MikazukiDanang/",
-      "suitable": ["family", "kids", "couple"],
-      "tips": ["Mua vé online giảm 10%", "Mang theo đồ bơi và khăn"],
+      "suitable": [
+        "family",
+        "kids",
+        "couple"
+      ],
+      "tips": [
+        "Mua vé online giảm 10%",
+        "Mang theo đồ bơi và khăn"
+      ],
       "reviews": [
         {
           "user": "Minh Khang",
@@ -32,7 +39,9 @@
           "comment": "Khu vui chơi trẻ em rất lớn, sạch sẽ. Cuối tuần hơi đông nên đi sớm.",
           "date": "2025-10-22"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@visit_danang_viet/video/7511165129589902635?q=mikazuki-water-park&t=1765547215716",
+      "social-link": "https://mikazuki.com.vn/en/indoor-water-park.html"
     },
     {
       "id": "helio-center",
@@ -51,8 +60,15 @@
       "openingHours": "17:00-22:30",
       "phone": "+84 236 3888 999",
       "website": "https://www.facebook.com/HelioCenterDanang/",
-      "suitable": ["friends", "family", "foodie"],
-      "tips": ["Chợ đêm có hơn 100 gian hàng ẩm thực", "Khu game tầng 3 rất hiện đại"],
+      "suitable": [
+        "friends",
+        "family",
+        "foodie"
+      ],
+      "tips": [
+        "Chợ đêm có hơn 100 gian hàng ẩm thực",
+        "Khu game tầng 3 rất hiện đại"
+      ],
       "reviews": [
         {
           "user": "Tuấn Hưng",
@@ -66,7 +82,9 @@
           "comment": "Nhạc sống ở sân khấu ngoài trời rất hay, không khí náo nhiệt.",
           "date": "2025-11-15"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@heliocenterdn/video/7244072750061538565",
+      "social-link": "https://helio.vn/vi/"
     },
     {
       "id": "art-in-paradise",
@@ -85,8 +103,15 @@
       "openingHours": "09:00-20:00",
       "phone": "+84 236 3656 111",
       "website": "https://www.facebook.com/ArtInParadiseDanang/",
-      "suitable": ["friends", "kids", "couple"],
-      "tips": ["Sạc đầy pin điện thoại trước khi vào", "Có hướng dẫn viên chỉ góc chụp đẹp"],
+      "suitable": [
+        "friends",
+        "kids",
+        "couple"
+      ],
+      "tips": [
+        "Sạc đầy pin điện thoại trước khi vào",
+        "Có hướng dẫn viên chỉ góc chụp đẹp"
+      ],
       "reviews": [
         {
           "user": "Lan Anh",
@@ -94,7 +119,9 @@
           "comment": "Góc sống ảo cực đỉnh, nhớ sạc đầy pin điện thoại trước khi vào.",
           "date": "2025-09-05"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@3dart_in_paradise_danang/video/7554708040394607879?q=B%E1%BA%A3o%20t%C3%A0ng%20tranh%203D%20Art%20in%20Paradise&t=1765547810477",
+      "social-link": "https://artinparadise.com.vn/"
     }
   ],
   "beauty_health": [
@@ -115,9 +142,18 @@
       "openingHours": "08:30-21:00",
       "phone": "1900 2266",
       "website": "https://www.facebook.com/30shine/",
-      "suitable": ["men"],
-      "features": ["booking_app", "skincare", "modern"],
-      "tips": ["Đặt lịch qua app 30Shine để không phải chờ", "Combo 7 bước giá 100k"],
+      "suitable": [
+        "men"
+      ],
+      "features": [
+        "booking_app",
+        "skincare",
+        "modern"
+      ],
+      "tips": [
+        "Đặt lịch qua app 30Shine để không phải chờ",
+        "Combo 7 bước giá 100k"
+      ],
       "reviews": [
         {
           "user": "Đức Thịnh",
@@ -131,7 +167,9 @@
           "comment": "Hơi đông vào giờ tan tầm, dù đã book lịch vẫn phải chờ 10p.",
           "date": "2025-11-25"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@55atsqnguyenvaloc/video/7570772318012624149?q=30%20shine%20nguy%E1%BB%85n%20v%C4%83n%20linh&t=1765547955191",
+      "social-link": "https://30shine.com/"
     },
     {
       "id": "liem-barber",
@@ -150,8 +188,14 @@
       "openingHours": "09:00-19:00",
       "phone": "+84 905 567 890",
       "website": "https://www.facebook.com/LiemBarberShop/",
-      "suitable": ["men", "style"],
-      "tips": ["Chuyên fade và undercut", "Nên đặt lịch trước"],
+      "suitable": [
+        "men",
+        "style"
+      ],
+      "tips": [
+        "Chuyên fade và undercut",
+        "Nên đặt lịch trước"
+      ],
       "reviews": [
         {
           "user": "Hải Nam",
@@ -168,7 +212,7 @@
       "category": "spa",
       "location": {
         "lat": 16.0399,
-        "lng": 108.2450,
+        "lng": 108.245,
         "address": "102 Dương Đình Nghệ, Sơn Trà, Đà Nẵng"
       },
       "description": "Spa thảo mộc uy tín, chuyên massage trị liệu và thư giãn.",
@@ -178,8 +222,15 @@
       "openingHours": "09:00-22:30",
       "phone": "+84 236 3959 888",
       "website": "https://www.facebook.com/HerbalSpaDanang/",
-      "suitable": ["women", "couple", "relax"],
-      "tips": ["Massage body 90 phút: 400k", "Đặt lịch trước để được phòng VIP"],
+      "suitable": [
+        "women",
+        "couple",
+        "relax"
+      ],
+      "tips": [
+        "Massage body 90 phút: 400k",
+        "Đặt lịch trước để được phòng VIP"
+      ],
       "reviews": [
         {
           "user": "Emily Smith",
@@ -193,7 +244,9 @@
           "comment": "Nhân viên tay nghề cao, không gian yên tĩnh, mùi tinh dầu rất dễ chịu.",
           "date": "2025-11-30"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@herbalspa_danang/video/7582508716683971860?q=herbal%20spa%20%C4%91%C3%A0%20n%E1%BA%B5ng&t=1765548247076",
+      "social-link": "https://herbalspa.vn/en"
     }
   ],
   "nature_beaches": [
@@ -203,8 +256,8 @@
       "type": "attraction",
       "category": "nature",
       "location": {
-        "lat": 16.1150,
-        "lng": 108.2850,
+        "lat": 16.115,
+        "lng": 108.285,
         "address": "Bán đảo Sơn Trà, Đà Nẵng"
       },
       "description": "Bãi đá hoang sơ nước trong vắt, thích hợp lặn ngắm san hô và chụp ảnh check-in.",
@@ -215,8 +268,16 @@
       "phone": "",
       "website": "",
       "articleLink": "https://danangfantasticity.com/kham-pha/bai-da-den-bai-da-obama-da-nang.html",
-      "suitable": ["adventure", "friends", "photography"],
-      "tips": ["Đường đi hơi dốc, nên đi xe số", "Mang theo đồ bơi và kính lặn", "Miễn phí tham quan"],
+      "suitable": [
+        "adventure",
+        "friends",
+        "photography"
+      ],
+      "tips": [
+        "Đường đi hơi dốc, nên đi xe số",
+        "Mang theo đồ bơi và kính lặn",
+        "Miễn phí tham quan"
+      ],
       "reviews": [
         {
           "user": "Thanh Tâm",
@@ -224,7 +285,9 @@
           "comment": "Nước siêu trong, nhìn thấy đáy. Tuy nhiên không có nhiều dịch vụ ăn uống.",
           "date": "2025-08-15"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@thuexemaydanang43hovy/video/7524329903706164487?q=b%C3%A3i%20%C4%91%C3%A1%20obama&t=1765548350348",
+      "social-link": "https://vinwonders.com/vi/wonderpedia/news/bai-da-obama-da-nang/"
     },
     {
       "id": "ghenh-bang",
@@ -232,8 +295,8 @@
       "type": "attraction",
       "category": "nature",
       "location": {
-        "lat": 16.1200,
-        "lng": 108.2900,
+        "lat": 16.12,
+        "lng": 108.29,
         "address": "Bán đảo Sơn Trà, Đà Nẵng"
       },
       "description": "Địa điểm dành cho dân phượt, địa hình đá gập ghềnh sát biển.",
@@ -244,8 +307,14 @@
       "phone": "",
       "website": "",
       "articleLink": "https://danangfantasticity.com/kham-pha/ghenh-bang-da-nang.html",
-      "suitable": ["adventure", "trekking"],
-      "tips": ["Miễn phí", "Đường xuống khá khó đi, cẩn thận"],
+      "suitable": [
+        "adventure",
+        "trekking"
+      ],
+      "tips": [
+        "Miễn phí",
+        "Đường xuống khá khó đi, cẩn thận"
+      ],
       "reviews": [
         {
           "user": "Phượt Đà Nẵng",
@@ -253,7 +322,9 @@
           "comment": "Cảnh đẹp hùng vĩ nhưng đường xuống khá khó đi, phải cẩn thận.",
           "date": "2025-07-20"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@dicungtue.96/video/7513892119128411400?q=gh%E1%BB%81nh%20b%C3%A0ng&t=1765548443387",
+      "social-link": "https://vinpearl.com/vi/ghenh-bang-da-nang-diem-den-moi-cho-team-me-trai-nghiem"
     },
     {
       "id": "dinh-ban-co",
@@ -270,7 +341,10 @@
       "experience_duration": 60,
       "rating": 4.7,
       "openingHours": "06:00-17:00",
-      "suitable": ["sightseeing", "couple"],
+      "suitable": [
+        "sightseeing",
+        "couple"
+      ],
       "reviews": [
         {
           "user": "Hoàng Minh",
@@ -278,7 +352,9 @@
           "comment": "Săn mây ở đây vào sáng sớm là tuyệt vời nhất. View bao trọn thành phố.",
           "date": "2025-11-12"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@thuongodanang/video/7502662672521907464?q=%C4%91%E1%BB%89nh%20b%C3%A0n%20c%E1%BB%9D&t=1765548665195",
+      "social-link": "https://vinwonders.com/vi/wonderpedia/news/dinh-ban-co-ban-dao-son-tra-co-gi-check-in-toa-do-ngam-da-nang-tu-tren-cao/"
     }
   ],
   "nightlife": [
@@ -289,7 +365,7 @@
       "category": "bar",
       "location": {
         "lat": 16.0614,
-        "lng": 108.2230,
+        "lng": 108.223,
         "address": "Tầng 36, Novotel Danang Premier Han River"
       },
       "description": "Skybar cao nhất Đà Nẵng, view sông Hàn về đêm cực đẹp, nhạc DJ sôi động.",
@@ -299,8 +375,16 @@
       "openingHours": "18:00-02:00",
       "phone": "+84 236 3929 999",
       "website": "https://www.facebook.com/Sky36Danang/",
-      "suitable": ["party", "friends", "luxury"],
-      "tips": ["Cocktail từ 200-300k", "Dress code: Smart casual", "Đặt bàn trước vào cuối tuần"],
+      "suitable": [
+        "party",
+        "friends",
+        "luxury"
+      ],
+      "tips": [
+        "Cocktail từ 200-300k",
+        "Dress code: Smart casual",
+        "Đặt bàn trước vào cuối tuần"
+      ],
       "reviews": [
         {
           "user": "Jennifer",
@@ -308,7 +392,9 @@
           "comment": "Expensive drinks but the view is worth every penny.",
           "date": "2025-11-30"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@foodinsoul.vn/video/7526077585550445842?q=sky%2036&t=1765548736604",
+      "social-link": "https://sky36.vn/"
     },
     {
       "id": "on-the-radio",
@@ -316,8 +402,8 @@
       "type": "entertainment",
       "category": "live_music",
       "location": {
-        "lat": 16.0600,
-        "lng": 108.2200,
+        "lat": 16.06,
+        "lng": 108.22,
         "address": "Thái Phiên, Hải Châu, Đà Nẵng"
       },
       "description": "Quán bar Live Music acoustic/rock nổi tiếng lâu đời tại Đà Nẵng.",
@@ -327,8 +413,15 @@
       "openingHours": "19:00-01:00",
       "phone": "+84 905 012 345",
       "website": "https://www.facebook.com/OnTheRadioDanang/",
-      "suitable": ["friends", "music_lover"],
-      "tips": ["Bia chai 50-80k", "Nên đặt bàn trước", "Live music bắt đầu 21h"],
+      "suitable": [
+        "friends",
+        "music_lover"
+      ],
+      "tips": [
+        "Bia chai 50-80k",
+        "Nên đặt bàn trước",
+        "Live music bắt đầu 21h"
+      ],
       "reviews": [
         {
           "user": "Bảo Bảo",
@@ -336,7 +429,9 @@
           "comment": "Ban nhạc chơi cực cháy, không khí rất gần gũi. Nên đặt bàn trước.",
           "date": "2025-12-02"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@ontheradiodanang/video/7530599720197098768?q=on%20the%20radio&t=1765552287377",
+      "social-link": "https://www.tripadvisor.com.vn/Restaurant_Review-g298085-d6452095-Reviews-On_The_Radio_Live_Music_Bar-Da_Nang.html"
     }
   ],
   "cafes_checkin": [
@@ -346,8 +441,8 @@
       "type": "cafe",
       "category": "checkin_spot",
       "location": {
-        "lat": 16.1050,
-        "lng": 108.2550,
+        "lat": 16.105,
+        "lng": 108.255,
         "address": "Đường Hồ Xanh, Sơn Trà"
       },
       "description": "Quán cafe phong cách Santorini thu nhỏ, tông trắng xanh view biển.",
@@ -355,7 +450,10 @@
       "experience_duration": 90,
       "rating": 4.2,
       "openingHours": "07:00-22:00",
-      "suitable": ["photography", "couple"],
+      "suitable": [
+        "photography",
+        "couple"
+      ],
       "reviews": [
         {
           "user": "Trang Miu",
@@ -363,7 +461,9 @@
           "comment": "Đẹp như ở Châu Âu, nhưng nước uống bình thường và giá hơi cao.",
           "date": "2025-11-18"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@amtarplus/video/7539064209309732114?q=s%C6%A1n%20tr%C3%A0%20marina&t=1765552375750",
+      "social-link": "https://www.facebook.com/STMarina/?locale=vi_VN"
     }
   ],
   "spiritual_cultural": [
@@ -382,11 +482,24 @@
       "experience_duration": 90,
       "rating": 4.8,
       "openingHours": "07:00-19:00",
-      "suitable": ["family", "elderly", "photography"],
-      "tips": ["Ăn mặc kín đáo", "Không được chụp ảnh ở chánh điện"],
+      "suitable": [
+        "family",
+        "elderly",
+        "photography"
+      ],
+      "tips": [
+        "Ăn mặc kín đáo",
+        "Không được chụp ảnh ở chánh điện"
+      ],
       "reviews": [
-        { "user": "Minh Thu", "rating": 5, "comment": "Cảnh đẹp như tiên cảnh, rất thanh tịnh." }
-      ]
+        {
+          "user": "Minh Thu",
+          "rating": 5,
+          "comment": "Cảnh đẹp như tiên cảnh, rất thanh tịnh."
+        }
+      ],
+      "tik-tok": "https://www.tiktok.com/@dailangthangart/video/7271218248165641477?q=ch%C3%B9a%20nam%20s%C6%A1n&t=1765552542379",
+      "social-link": "https://vinwonders.com/vi/wonderpedia/news/chua-nam-son-da-nang-du-ngoan-trong-chon-thien-cung-dep-ngat-ngay/"
     },
     {
       "id": "linh-ung-non-nuoc",
@@ -394,8 +507,8 @@
       "type": "attraction",
       "category": "spiritual",
       "location": {
-        "lat": 16.0020,
-        "lng": 108.2630,
+        "lat": 16.002,
+        "lng": 108.263,
         "address": "Ngọn Thủy Sơn, Ngũ Hành Sơn"
       },
       "description": "Ngôi chùa cổ nhất trong 3 chùa Linh Ứng tại Đà Nẵng, nằm trên núi Ngũ Hành Sơn.",
@@ -403,7 +516,12 @@
       "experience_duration": 60,
       "rating": 4.5,
       "openingHours": "07:00-17:30",
-      "suitable": ["cultural", "family"]
+      "suitable": [
+        "cultural",
+        "family"
+      ],
+      "tik-tok": "https://www.tiktok.com/@dilanho.travel/video/7549566147566325010?q=ch%C3%B9a%20linh%20%E1%BB%A9ng&t=1765552591640",
+      "social-link": "https://tinviettravel.com.vn/cam-nang-du-lich/tin-tuc-du-lich/chua-linh-ung-ban-dao-son-tra-bieu-tuong-van-hoa-va-tam-linh-cua-da-nang-213.html"
     },
     {
       "id": "danang-cathedral",
@@ -420,10 +538,19 @@
       "experience_duration": 30,
       "rating": 4.4,
       "openingHours": "06:00-17:00",
-      "suitable": ["photography", "cultural"],
+      "suitable": [
+        "photography",
+        "cultural"
+      ],
       "reviews": [
-        { "user": "John Doe", "rating": 4, "comment": "Pink church, very unique architecture." }
-      ]
+        {
+          "user": "John Doe",
+          "rating": 4,
+          "comment": "Pink church, very unique architecture."
+        }
+      ],
+      "tik-tok": "https://www.tiktok.com/@loc.tour.guide/video/7507866988165811464?q=nh%C3%A0%20th%E1%BB%9D%20con%20g%C3%A0%20%E1%BB%9F%20%C4%91%C3%A0%20n%E1%BA%B5ng&t=1765596931293",
+      "social-link": "https://vinpearl.com/vi/kham-pha-ngay-kien-truc-doc-dao-cua-nha-tho-con-ga-da-nang"
     },
     {
       "id": "museum-fine-arts",
@@ -431,8 +558,8 @@
       "type": "attraction",
       "category": "museum",
       "location": {
-        "lat": 16.0680,
-        "lng": 108.2190,
+        "lat": 16.068,
+        "lng": 108.219,
         "address": "78 Lê Duẩn, Thạch Thang"
       },
       "description": "Nơi lưu giữ hơn 1000 tác phẩm nghệ thuật hiện đại và dân gian.",
@@ -440,7 +567,12 @@
       "experience_duration": 60,
       "rating": 4.3,
       "openingHours": "08:00-17:00",
-      "suitable": ["art_lover", "educational"]
+      "suitable": [
+        "art_lover",
+        "educational"
+      ],
+      "tik-tok": "https://www.tiktok.com/@baongoc.vvo/video/7356588421617356040?q=b%E1%BA%A3o%20t%C3%A0ng%20m%C4%A9%20thu%E1%BA%ADt%20%C4%91%C3%A0%20n%E1%BA%B5ng&t=1765552673253",
+      "social-link": "https://www.facebook.com/baotangmythuatdanang/?locale=vi_VN"
     }
   ],
   "landmarks_bridges": [
@@ -450,8 +582,8 @@
       "type": "attraction",
       "category": "landmark",
       "location": {
-        "lat": 16.0610,
-        "lng": 108.2280,
+        "lat": 16.061,
+        "lng": 108.228,
         "address": "Đường Trần Hưng Đạo, Sơn Trà"
       },
       "description": "Cây cầu lãng mạn với các cột đèn lồng hình tim, nơi các cặp đôi móc khóa tình yêu.",
@@ -459,8 +591,16 @@
       "experience_duration": 45,
       "rating": 4.6,
       "openingHours": "24/24",
-      "suitable": ["couple", "photography"],
-      "tips": ["Nên đi buổi tối khi lên đèn", "Mua ổ khóa ở quầy lưu niệm gần đó"]
+      "suitable": [
+        "couple",
+        "photography"
+      ],
+      "tips": [
+        "Nên đi buổi tối khi lên đèn",
+        "Mua ổ khóa ở quầy lưu niệm gần đó"
+      ],
+      "tik-tok": "https://www.tiktok.com/@kietodanang/video/7569570202292194581?q=c%E1%BA%A7u%20t%C3%ACnh%20y%C3%AAu&t=1765552728826",
+      "social-link": "https://vinpearl.com/vi/cau-tinh-yeu-da-nang-noi-minh-chung-tinh-yeu-doi-lua"
     },
     {
       "id": "carp-dragon-statue",
@@ -476,7 +616,11 @@
       "estimatedCost": 0,
       "experience_duration": 20,
       "rating": 4.3,
-      "suitable": ["all"]
+      "suitable": [
+        "all"
+      ],
+      "tik-tok": "https://www.tiktok.com/@cuocsongdanang1/video/7552706070284684562?q=t%C6%B0%E1%BB%A3ng%20c%C3%A1%20ch%C3%A9p%20h%C3%B3a%20r%E1%BB%93ng%20%C4%91%C3%A0%20n%E1%BA%B5ng&t=1765552779010",
+      "social-link": "https://vinpearl.com/vi/tham-quan-tuong-ca-chep-hoa-rong-da-nang-bieu-tuong-du-lich-da-thanh"
     },
     {
       "id": "apec-park",
@@ -492,10 +636,19 @@
       "estimatedCost": 0,
       "experience_duration": 45,
       "rating": 4.5,
-      "suitable": ["photography", "youth"],
+      "suitable": [
+        "photography",
+        "youth"
+      ],
       "reviews": [
-        { "user": "Bảo Ngọc", "rating": 5, "comment": "Kiến trúc lạ, chụp hình góc rộng siêu đẹp." }
-      ]
+        {
+          "user": "Bảo Ngọc",
+          "rating": 5,
+          "comment": "Kiến trúc lạ, chụp hình góc rộng siêu đẹp."
+        }
+      ],
+      "tik-tok": "https://www.tiktok.com/@gintdg.media/video/7287453214356606209?q=c%C3%B4ng%20vi%C3%AAn%20apec&t=1765552872571",
+      "social-link": "https://www.traveloka.com/vi-vn/explore/destination/cong-vien-apec/434373"
     },
     {
       "id": "han-river-bridge",
@@ -511,8 +664,15 @@
       "estimatedCost": 0,
       "experience_duration": 60,
       "rating": 4.7,
-      "suitable": ["nightlife", "sightseeing"],
-      "bestTime": ["night"]
+      "suitable": [
+        "nightlife",
+        "sightseeing"
+      ],
+      "bestTime": [
+        "night"
+      ],
+      "tik-tok": "https://www.tiktok.com/@vivudanang43danang/video/7509129895671270674?q=c%E1%BA%A7u%20s%C3%B4ng%20hang&t=1765552918081",
+      "social-link": "https://vinpearl.com/vi/cau-song-han-bieu-tuong-da-nang-mang-ve-dep-ao-dieu"
     }
   ],
   "street_food_hidden_gems": [
@@ -524,7 +684,7 @@
       "cuisine": "dessert",
       "location": {
         "lat": 16.0685,
-        "lng": 108.2150,
+        "lng": 108.215,
         "address": "189 Hoàng Diệu / 175 Hải Phòng"
       },
       "description": "Thương hiệu chè thái sầu riêng nổi tiếng nhất Đà Nẵng.",
@@ -533,12 +693,26 @@
       "openingHours": "14:00-23:00",
       "phone": "+84 905 678 901",
       "website": "https://www.facebook.com/CheLienDanang/",
-      "dishes": ["Chè Thái sầu riêng", "Tàu hũ sầu riêng"],
-      "suitable": ["all", "sweet_tooth"],
-      "tips": ["Chè thái size vừa: 30k, size lớn: 40k"],
+      "dishes": [
+        "Chè Thái sầu riêng",
+        "Tàu hũ sầu riêng"
+      ],
+      "suitable": [
+        "all",
+        "sweet_tooth"
+      ],
+      "tips": [
+        "Chè thái size vừa: 30k, size lớn: 40k"
+      ],
       "reviews": [
-        { "user": "FoodieDN", "rating": 5, "comment": "Nước cốt dừa béo ngậy, sầu riêng tươi." }
-      ]
+        {
+          "user": "FoodieDN",
+          "rating": 5,
+          "comment": "Nước cốt dừa béo ngậy, sầu riêng tươi."
+        }
+      ],
+      "tik-tok": "https://www.tiktok.com/@doris281001/video/7520192085136297224?q=ch%C3%A8%20li%C3%AAn&t=1765552973212",
+      "social-link": "https://chelien.com.vn/"
     },
     {
       "id": "banh-mi-ba-lan",
@@ -547,8 +721,8 @@
       "category": "street_food",
       "cuisine": "vietnamese",
       "location": {
-        "lat": 16.0650,
-        "lng": 108.2200,
+        "lat": 16.065,
+        "lng": 108.22,
         "address": "62 Trưng Nữ Vương"
       },
       "description": "Tiệm bánh mì lâu đời, chỉ bán buổi chiều tối, nổi tiếng với pate và chả bò.",
@@ -557,8 +731,15 @@
       "openingHours": "15:30-22:00",
       "phone": "+84 912 345 678",
       "website": "",
-      "suitable": ["takeaway", "snack"],
-      "tips": ["Bánh mì pate: 20k, đặc biệt: 25k"]
+      "suitable": [
+        "takeaway",
+        "snack"
+      ],
+      "tips": [
+        "Bánh mì pate: 20k, đặc biệt: 25k"
+      ],
+      "tik-tok": "https://www.tiktok.com/@ngayvuibattan/video/7560272353385614600?q=b%C3%A1nh%20m%C3%AC%20b%C3%A0%20lan%20%C4%91%C3%A0%20n%E1%BA%B5ng&t=1765553132474",
+      "social-link": "https://www.facebook.com/banhmibalandn/?locale=vi_VN"
     },
     {
       "id": "kem-bo-co-van",
@@ -567,16 +748,27 @@
       "category": "street_food",
       "cuisine": "dessert",
       "location": {
-        "lat": 16.0520,
-        "lng": 108.2100,
+        "lat": 16.052,
+        "lng": 108.21,
         "address": "Chợ Bắc Mỹ An"
       },
       "description": "Huyền thoại kem bơ trong chợ Bắc Mỹ An.",
       "estimatedCost": 20000,
       "rating": 4.7,
-      "dishes": ["Kem bơ", "Kem sầu riêng"],
-      "suitable": ["students", "snack"],
-      "tips": ["Nằm trong khu ăn uống của chợ", "Giá siêu rẻ"]
+      "dishes": [
+        "Kem bơ",
+        "Kem sầu riêng"
+      ],
+      "suitable": [
+        "students",
+        "snack"
+      ],
+      "tips": [
+        "Nằm trong khu ăn uống của chợ",
+        "Giá siêu rẻ"
+      ],
+      "tik-tok": "https://www.tiktok.com/@quanngon.dathanh/video/7501710506445606160?q=kem%20b%C6%A1%20c%C3%B4%20v%C3%A2n%20%C4%91%C3%A0%20n%E1%BA%B5ng&t=1765553211567",
+      "social-link": "https://www.facebook.com/kembocovanbacmyan/?locale=vi_VN"
     },
     {
       "id": "hai-san-nam-danh",
@@ -585,15 +777,24 @@
       "category": "local_food",
       "cuisine": "seafood",
       "location": {
-        "lat": 16.0900,
-        "lng": 108.2500,
+        "lat": 16.09,
+        "lng": 108.25,
         "address": "K139/H59/38 Trần Quang Khải, Thọ Quang"
       },
       "description": "Quán hải sản 'đồng giá' siêu khó tìm đường nhưng cực đông khách vì rẻ và tươi.",
       "estimatedCost": 100000,
       "rating": 4.4,
-      "tips": ["Đường đi rất khó (như mê cung), nên dùng Google Maps cẩn thận", "Không nhận đặt bàn"],
-      "suitable": ["group", "friends", "budget"]
+      "tips": [
+        "Đường đi rất khó (như mê cung), nên dùng Google Maps cẩn thận",
+        "Không nhận đặt bàn"
+      ],
+      "suitable": [
+        "group",
+        "friends",
+        "budget"
+      ],
+      "tik-tok": "https://www.tiktok.com/@littlequanzz/video/7104914590366043418?q=h%E1%BA%A3i%20s%E1%BA%A3n%20n%C4%83m%20%C4%91%E1%BA%A3nh%20&t=1765553319727",
+      "social-link": "https://www.facebook.com/p/H%E1%BA%A2I-S%E1%BA%A2N-N%C4%82M-%C4%90%E1%BA%A2NH-100075994578317/?locale=vi_VN"
     },
     {
       "id": "bun-mam-van",
@@ -602,14 +803,19 @@
       "category": "local_food",
       "cuisine": "vietnamese",
       "location": {
-        "lat": 16.0630,
-        "lng": 108.2180,
+        "lat": 16.063,
+        "lng": 108.218,
         "address": "K23/14 Trần Kế Xương"
       },
       "description": "Bún mắm nêm thịt quay giòn rụm trong con hẻm ẩm thực nổi tiếng.",
       "estimatedCost": 30000,
       "rating": 4.5,
-      "suitable": ["breakfast", "lunch"]
+      "suitable": [
+        "breakfast",
+        "lunch"
+      ],
+      "tik-tok": "https://www.tiktok.com/@inspiringdanangfu/video/7345338261847461122?q=b%C3%BAn%20m%E1%BA%AFm%20v%C3%A2n%20tr%E1%BA%A7n%20k%E1%BA%BF%20x%C6%B0%C6%A1ng%20%C4%91%C3%A0%20n%E1%BA%B5ng&t=1765553413829",
+      "social-link": "https://www.facebook.com/bunmamvandanang/?locale=vi_VN"
     },
     {
       "id": "banh-canh-ruong",
@@ -618,14 +824,19 @@
       "category": "street_food",
       "cuisine": "vietnamese",
       "location": {
-        "lat": 16.0800,
-        "lng": 108.2300,
+        "lat": 16.08,
+        "lng": 108.23,
         "address": "20 Hà Thị Thân (gần cầu Rồng)"
       },
       "description": "Bánh canh cá nướng/chả ghẹ giá bình dân, cháo chờ.",
       "estimatedCost": 25000,
       "rating": 4.2,
-      "suitable": ["dinner", "late_night"]
+      "suitable": [
+        "dinner",
+        "late_night"
+      ],
+      "tik-tok": "https://www.tiktok.com/@chuxjnkne/video/7083496391196069147?q=b%C3%A1nh%20canh%20ru%E1%BB%99ng%2020%20h%C3%A0%20th%E1%BB%8B%20th%C3%A2n&t=1765553475383",
+      "social-link": "https://www.facebook.com/p/B%C3%81NH-CANH-RU%E1%BB%98NG-20-H%C3%A0-Th%E1%BB%8B-Th%C3%A2n-100079585943838/"
     },
     {
       "id": "yaourt-muoi",
@@ -634,14 +845,19 @@
       "category": "street_food",
       "cuisine": "snack",
       "location": {
-        "lat": 16.0600,
-        "lng": 108.2200,
+        "lat": 16.06,
+        "lng": 108.22,
         "address": "Chân cầu Trần Thị Lý (Phố Bùi Thị Xuân)"
       },
       "description": "Khu ăn vặt nổi tiếng của giới trẻ: sữa chua muối, mít trộn, ốc hút.",
       "estimatedCost": 50000,
       "rating": 4.3,
-      "suitable": ["friends", "students"]
+      "suitable": [
+        "friends",
+        "students"
+      ],
+      "tik-tok": "https://www.tiktok.com/@_anchitaa_/video/7330282178573520129?q=Yaourt%20Mu%E1%BB%91i%20%26%20%E1%BB%90c%20H%C3%BAt%20c%E1%BA%A7u%20tr%E1%BA%A7n%20th%E1%BB%8B%20l%C3%BD&t=1765553537628",
+      "social-link": ""
     }
   ],
   "shopping_markets": [
@@ -651,16 +867,23 @@
       "type": "attraction",
       "category": "market",
       "location": {
-        "lat": 16.0690,
-        "lng": 108.2130,
+        "lat": 16.069,
+        "lng": 108.213,
         "address": "290 Hùng Vương"
       },
       "description": "Thiên đường ẩm thực đường phố, mệnh danh là 'cái bụng' của Đà Nẵng.",
       "estimatedCost": 100000,
       "experience_duration": 90,
       "rating": 4.5,
-      "tips": ["Hãy đến khu Food Court tầm 15h-17h là đông vui nhất"],
-      "suitable": ["foodie", "shopping"]
+      "tips": [
+        "Hãy đến khu Food Court tầm 15h-17h là đông vui nhất"
+      ],
+      "suitable": [
+        "foodie",
+        "shopping"
+      ],
+      "tik-tok": "https://www.tiktok.com/@duhidanang43/video/7564423782731992340?q=ch%E1%BB%A3%20c%E1%BB%93n&t=1765553666417",
+      "social-link": "https://danangfantasticity.com/cho-truyen-thong/cho-con-da-nang-2"
     },
     {
       "id": "son-tra-night-market",
@@ -668,15 +891,20 @@
       "type": "attraction",
       "category": "market",
       "location": {
-        "lat": 16.0620,
-        "lng": 108.2290,
+        "lat": 16.062,
+        "lng": 108.229,
         "address": "Mai Hắc Đế, An Hải Trung"
       },
       "description": "Chợ đêm sầm uất ngay đầu cầu Rồng, nổi tiếng với hải sản nướng và quà lưu niệm.",
       "estimatedCost": 150000,
       "experience_duration": 90,
       "openingHours": "18:00-24:00",
-      "suitable": ["nightlife", "tourist"]
+      "suitable": [
+        "nightlife",
+        "tourist"
+      ],
+      "tik-tok": "https://www.tiktok.com/@quankhonggo/video/7258604581343546630?q=ch%E1%BB%A3%20%C4%91%C3%AAm%20s%C6%A1n%20tr%C3%A0&t=1765553748208",
+      "social-link": "https://vinwonders.com/vi/wonderpedia/news/review-cho-dem-son-tra-da-nang-an-gi-mua-gi-choi-gi-vui/"
     },
     {
       "id": "danang-souvenirs",
@@ -684,14 +912,19 @@
       "type": "shopping",
       "category": "souvenir",
       "location": {
-        "lat": 16.0680,
-        "lng": 108.2240,
+        "lat": 16.068,
+        "lng": 108.224,
         "address": "34 Bạch Đằng"
       },
       "description": "Nơi mua quà lưu niệm chất lượng cao kết hợp quán cafe không gian mở.",
       "estimatedCost": 100000,
       "rating": 4.4,
-      "suitable": ["tourist", "chill"]
+      "suitable": [
+        "tourist",
+        "chill"
+      ],
+      "tik-tok": "https://www.tiktok.com/@may_travel1/video/7566627922392419606?q=Danang%20Souvenirs%20%26%20Cafe&t=1765553918545",
+      "social-link": "https://danangsouvenirs.com/"
     }
   ],
   "cafes_chill": [
@@ -701,14 +934,19 @@
       "type": "cafe",
       "category": "checkin_spot",
       "location": {
-        "lat": 16.0650,
-        "lng": 108.2200,
+        "lat": 16.065,
+        "lng": 108.22,
         "address": "96 Trần Phú"
       },
       "description": "Khu phức hợp cafe và mua sắm phong cách tối giản (minimalism).",
       "estimatedCost": 60000,
       "rating": 4.5,
-      "suitable": ["photography", "youth"]
+      "suitable": [
+        "photography",
+        "youth"
+      ],
+      "tik-tok": "https://www.tiktok.com/@thequietdetour/video/7546228939702766855?q=Wonderlust%20Danang&t=1765554127716",
+      "social-link": "https://wonderlust.vn/"
     },
     {
       "id": "nam-house",
@@ -716,14 +954,19 @@
       "type": "cafe",
       "category": "vintage",
       "location": {
-        "lat": 16.0620,
-        "lng": 108.2180,
+        "lat": 16.062,
+        "lng": 108.218,
         "address": "15/1 Lê Hồng Phong"
       },
       "description": "Cafe phong cách bao cấp, đồ cổ, không gian hoài niệm.",
       "estimatedCost": 35000,
       "rating": 4.6,
-      "suitable": ["chill", "vintage_lover"]
+      "suitable": [
+        "chill",
+        "vintage_lover"
+      ],
+      "tik-tok": "https://www.tiktok.com/@nochaididau/video/7436693267896356104?q=Nam%20House%20Cafe&t=1765554471997",
+      "social-link": "https://www.facebook.com/NAMhouseCoffee/?locale=vi_VN"
     },
     {
       "id": "boulevard-gelato",
@@ -731,14 +974,19 @@
       "type": "cafe",
       "category": "dessert",
       "location": {
-        "lat": 16.0590,
-        "lng": 108.2210,
+        "lat": 16.059,
+        "lng": 108.221,
         "address": "77 Trần Quốc Toản"
       },
       "description": "Kem Gelato ngon và không gian decor kiểu Âu.",
       "estimatedCost": 70000,
       "rating": 4.5,
-      "suitable": ["couple", "sweet_tooth"]
+      "suitable": [
+        "couple",
+        "sweet_tooth"
+      ],
+      "tik-tok": "https://www.tiktok.com/@boulevardgelato/video/7503129081089641729?q=Boulevard%20Gelato%20%26%20Coffee&t=1765554517509",
+      "social-link": "https://www.boulevard.vn/"
     },
     {
       "id": "ikigai-garden",
@@ -746,14 +994,20 @@
       "type": "cafe",
       "category": "garden",
       "location": {
-        "lat": 16.0600,
-        "lng": 108.2100,
+        "lat": 16.06,
+        "lng": 108.21,
         "address": "60 Nguyễn Chí Thanh"
       },
       "description": "Quán cafe sân vườn phong cách Nhật Bản yên tĩnh.",
       "estimatedCost": 45000,
       "rating": 4.4,
-      "suitable": ["work", "read", "relax"]
+      "suitable": [
+        "work",
+        "read",
+        "relax"
+      ],
+      "tik-tok": "https://www.tiktok.com/@ikigai.gardencafe/video/7580622327096888583?q=Ikigai%20Garden%20Cafe&t=1765554586929",
+      "social-link": "https://www.facebook.com/ikigai.garden.cafe/?locale=vi_VN"
     }
   ],
   "nature_camping": [
@@ -763,16 +1017,25 @@
       "type": "attraction",
       "category": "nature",
       "location": {
-        "lat": 16.0500,
-        "lng": 108.1000,
+        "lat": 16.05,
+        "lng": 108.1,
         "address": "Hòa Liên, Hòa Vang"
       },
       "description": "Hồ nước nhân tạo với đồng cỏ xanh mướt vào mùa cạn, lý tưởng để cắm trại.",
       "estimatedCost": 0,
       "experience_duration": 300,
       "rating": 4.5,
-      "tips": ["Mang theo lều trại và đồ ăn", "Đẹp nhất vào tháng 10-12"],
-      "suitable": ["camping", "group", "nature"]
+      "tips": [
+        "Mang theo lều trại và đồ ăn",
+        "Đẹp nhất vào tháng 10-12"
+      ],
+      "suitable": [
+        "camping",
+        "group",
+        "nature"
+      ],
+      "tik-tok": "https://www.tiktok.com/@tungnuitravel/video/7378030377111178513?q=h%E1%BB%93%20h%C3%B2a%20trung&t=1765554652177",
+      "social-link": "https://mia.vn/cam-nang-du-lich/ho-hoa-trung-kham-pha-net-dep-thien-nhien-tho-mong-tai-da-nang-1772"
     },
     {
       "id": "gieng-troi",
@@ -780,16 +1043,24 @@
       "type": "attraction",
       "category": "adventure",
       "location": {
-        "lat": 16.0800,
-        "lng": 108.0500,
+        "lat": 16.08,
+        "lng": 108.05,
         "address": "Hòa Ninh, Hòa Vang"
       },
       "description": "Địa điểm trekking nằm sâu trong rừng Bà Nà, có thác nước và hồ tắm tự nhiên.",
       "estimatedCost": 0,
       "experience_duration": 480,
       "rating": 4.7,
-      "tips": ["Cần có thể lực tốt", "Nhiều vắt vào mùa mưa"],
-      "suitable": ["trekking", "adventure"]
+      "tips": [
+        "Cần có thể lực tốt",
+        "Nhiều vắt vào mùa mưa"
+      ],
+      "suitable": [
+        "trekking",
+        "adventure"
+      ],
+      "tik-tok": "https://www.tiktok.com/@hieudilangthang/video/7536833979824033042?q=gi%E1%BA%BFng%20tr%E1%BB%9Di%20h%C3%B2a%20ninh%20%C4%91%C3%A0%20nn%C4%83gx&t=1765554704217",
+      "social-link": "https://vinwonders.com/vi/wonderpedia/news/gieng-troi-da-nang-kham-pha-diem-du-lich-xanh-hot/"
     },
     {
       "id": "bai-but",
@@ -797,31 +1068,41 @@
       "type": "attraction",
       "category": "beach",
       "location": {
-        "lat": 16.1000,
-        "lng": 108.2600,
+        "lat": 16.1,
+        "lng": 108.26,
         "address": "Bán đảo Sơn Trà"
       },
       "description": "Bãi biển hoang sơ dưới chân chùa Linh Ứng, có chòi nghỉ mát.",
       "estimatedCost": 0,
       "rating": 4.3,
-      "suitable": ["picnic", "swimming"]
+      "suitable": [
+        "picnic",
+        "swimming"
+      ],
+      "tik-tok": "https://www.tiktok.com/@ranhladii/video/7379203894762589458?q=b%C3%A3i%20b%E1%BB%A5t&t=1765554783495",
+      "social-link": "https://vinwonders.com/vi/wonderpedia/news/bai-but-da-nang/"
     }
   ],
-   "homestay_budget": [
+  "homestay_budget": [
     {
       "id": "minh-house",
       "name": "Minh House",
       "type": "hotel",
       "category": "homestay",
       "location": {
-        "lat": 16.0450,
-        "lng": 108.2400,
+        "lat": 16.045,
+        "lng": 108.24,
         "address": "K30/H01/03 Hà Bổng"
       },
       "description": "Homestay kiến trúc xanh, hồ cá Koi, yên tĩnh giữa lòng phố.",
       "estimatedCost": 600000,
       "rating": 4.6,
-      "suitable": ["couple", "relax"]
+      "suitable": [
+        "couple",
+        "relax"
+      ],
+      "tik-tok": "https://www.tiktok.com/@minhhouse/video/6907035620040903937?q=Minh%20House%20hotel%20%C4%91%C3%A0%20n%E1%BA%B5ng&t=1765554849441",
+      "social-link": "https://www.tripadvisor.com.vn/Hotel_Review-g298085-d12666898-Reviews-Minh_House-Da_Nang.html"
     },
     {
       "id": "1986-homestay",
@@ -829,14 +1110,19 @@
       "type": "hotel",
       "category": "homestay",
       "location": {
-        "lat": 16.0500,
-        "lng": 108.2300,
+        "lat": 16.05,
+        "lng": 108.23,
         "address": "Chương Dương, Ngũ Hành Sơn"
       },
       "description": "Homestay view sông Hàn, giá rẻ cho sinh viên.",
       "estimatedCost": 300000,
       "rating": 4.2,
-      "suitable": ["backpackers", "students"]
+      "suitable": [
+        "backpackers",
+        "students"
+      ],
+      "tik-tok": "",
+      "social-link": "https://www.facebook.com/1986HomestayDanang/?locale=vi_VN"
     }
   ],
   "theme_parks_resorts": [
@@ -847,7 +1133,7 @@
       "category": "theme_park",
       "location": {
         "lat": 15.7402,
-        "lng": 108.4310,
+        "lng": 108.431,
         "address": "Bình Minh, Thăng Bình, Quảng Nam (Cách ĐN 40km)"
       },
       "description": "Tổ hợp vui chơi giải trí đa văn hóa, nổi bật với River Safari (xem thú trên sông) duy nhất tại Việt Nam.",
@@ -857,9 +1143,20 @@
       "openingHours": "09:00-20:00",
       "phone": "1900 23 23 32",
       "website": "https://www.facebook.com/VinWondersNamHoiAn/",
-      "suitable": ["family", "kids", "adventure"],
-      "features": ["river_safari", "water_park", "cultural_village"],
-      "tips": ["Vé người lớn: 600k, trẻ em 1-1.4m: 500k", "Mua online giảm 100k"],
+      "suitable": [
+        "family",
+        "kids",
+        "adventure"
+      ],
+      "features": [
+        "river_safari",
+        "water_park",
+        "cultural_village"
+      ],
+      "tips": [
+        "Vé người lớn: 600k, trẻ em 1-1.4m: 500k",
+        "Mua online giảm 100k"
+      ],
       "reviews": [
         {
           "user": "Gia Đình Nhỏ",
@@ -867,7 +1164,9 @@
           "comment": "River Safari rất đáng tiền, các bé rất thích xem hươu cao cổ ăn.",
           "date": "2025-06-15"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@vinwonder_namhoian_dvtc/video/7582170220501093640?q=vinwwonder%20nam%20h%E1%BB%99i%20an&t=1765555047452",
+      "social-link": "https://vinwondershoian.com/"
     },
     {
       "id": "ky-uc-hoi-an",
@@ -875,8 +1174,8 @@
       "type": "entertainment",
       "category": "cultural_show",
       "location": {
-        "lat": 15.8790,
-        "lng": 108.3350,
+        "lat": 15.879,
+        "lng": 108.335,
         "address": "Cồn Hến, Cẩm Nam, Hội An"
       },
       "description": "Show diễn thực cảnh đẹp nhất thế giới (Reuters), tái hiện lịch sử thương cảng Faifo 400 năm.",
@@ -886,8 +1185,15 @@
       "openingHours": "17:00-22:00",
       "phone": "+84 235 3666 111",
       "website": "https://www.facebook.com/kyuchoian/",
-      "suitable": ["couple", "family", "culture_lover"],
-      "tips": ["Vé thường: 600k, VIP: 800k-1.2tr", "Show chính bắt đầu lúc 20:00, nên đến sớm để tham quan công viên"],
+      "suitable": [
+        "couple",
+        "family",
+        "culture_lover"
+      ],
+      "tips": [
+        "Vé thường: 600k, VIP: 800k-1.2tr",
+        "Show chính bắt đầu lúc 20:00, nên đến sớm để tham quan công viên"
+      ],
       "reviews": [
         {
           "user": "Art Lover",
@@ -895,7 +1201,9 @@
           "comment": "Choáng ngợp về âm thanh và ánh sáng. Một trải nghiệm không thể quên.",
           "date": "2025-11-20"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@thu.ha1607/video/7513040151082323207?q=k%C3%AD%20%E1%BB%A9c%20h%E1%BB%99i%20an&t=1765555118382",
+      "social-link": "https://hoianmemoriesland.com/en/hoi-an-memories-100-attractive-ticket-prices-latest-offers-copy-d92"
     },
     {
       "id": "rung-dua-bay-mau",
@@ -903,16 +1211,25 @@
       "type": "attraction",
       "category": "nature_activity",
       "location": {
-        "lat": 15.8730,
-        "lng": 108.3750,
+        "lat": 15.873,
+        "lng": 108.375,
         "address": "Cẩm Thanh, Hội An"
       },
       "description": "Trải nghiệm đi thuyền thúng len lỏi trong rừng dừa nước, xem múa thúng cảm giác mạnh.",
       "estimatedCost": 150000,
       "experience_duration": 90,
       "rating": 4.5,
-      "suitable": ["group", "fun", "experience"],
-      "tips": ["Nếu sợ chóng mặt thì bảo người chèo đừng xoay thúng", "Nên đi tầm 16h cho mát"]
+      "suitable": [
+        "group",
+        "fun",
+        "experience"
+      ],
+      "tips": [
+        "Nếu sợ chóng mặt thì bảo người chèo đừng xoay thúng",
+        "Nên đi tầm 16h cho mát"
+      ],
+      "tik-tok": "https://www.tiktok.com/@gowith_we/video/7379254280340966674?q=r%E1%BB%ABng%20d%E1%BB%ABa%20b%E1%BA%A3y%20m%E1%BA%ABu&t=1765555170327",
+      "social-link": "https://rungduabaymau.vn/"
     }
   ],
   "hoi_an_ancient_town": [
@@ -922,16 +1239,23 @@
       "type": "attraction",
       "category": "landmark",
       "location": {
-        "lat": 15.8770,
-        "lng": 108.3260,
+        "lat": 15.877,
+        "lng": 108.326,
         "address": "Nguyễn Thị Minh Khai, Hội An"
       },
       "description": "Biểu tượng của Hội An, in trên tờ tiền 20.000 VNĐ. Kiến trúc giao thoa Nhật - Việt - Hoa.",
       "estimatedCost": 0,
       "experience_duration": 30,
       "rating": 4.6,
-      "suitable": ["all", "photography"],
-      "tips": ["Đã trùng tu xong, lên đèn buổi tối rất đẹp"]
+      "suitable": [
+        "all",
+        "photography"
+      ],
+      "tips": [
+        "Đã trùng tu xong, lên đèn buổi tối rất đẹp"
+      ],
+      "tik-tok": "https://www.tiktok.com/@hoang.bui.qb91/video/7551316567863168264?q=Ch%C3%B9a%20C%E1%BA%A7u%20%28Lai%20Vi%E1%BB%85n%20Ki%E1%BB%81u%29&t=1765555235394",
+      "social-link": "https://en.wikipedia.org/wiki/Japanese_Bridge"
     },
     {
       "id": "mot-hoi-an",
@@ -940,14 +1264,19 @@
       "category": "street_food",
       "cuisine": "beverage",
       "location": {
-        "lat": 15.8780,
-        "lng": 108.3280,
+        "lat": 15.878,
+        "lng": 108.328,
         "address": "150 Trần Phú, Hội An"
       },
       "description": "Quán nước thảo mộc chanh sả trang trí cánh sen, ly nước check-in quốc dân tại Hội An.",
       "estimatedCost": 15000,
       "rating": 4.5,
-      "suitable": ["takeaway", "checkin"]
+      "suitable": [
+        "takeaway",
+        "checkin"
+      ],
+      "tik-tok": "https://www.tiktok.com/@ohueangi75/video/7545739987384274184?q=n%C6%B0%E1%BB%9Bc%20m%C3%B3t&t=1765555286421",
+      "social-link": "https://vinpearl.com/vi/bat-mi-ly-do-nuoc-mot-hoi-an-duoc-du-khach-check-in-ran-ran"
     },
     {
       "id": "banh-mi-phuong",
@@ -956,15 +1285,22 @@
       "category": "street_food",
       "cuisine": "vietnamese",
       "location": {
-        "lat": 15.8790,
-        "lng": 108.3310,
+        "lat": 15.879,
+        "lng": 108.331,
         "address": "2B Phan Châu Trinh, Hội An"
       },
       "description": "Được Anthony Bourdain khen ngợi là 'Bánh mì ngon nhất thế giới'.",
       "estimatedCost": 35000,
       "rating": 4.4,
-      "suitable": ["lunch", "snack"],
-      "tips": ["Luôn phải xếp hàng, chờ khoảng 15-20p"]
+      "suitable": [
+        "lunch",
+        "snack"
+      ],
+      "tips": [
+        "Luôn phải xếp hàng, chờ khoảng 15-20p"
+      ],
+      "tik-tok": "https://www.tiktok.com/@linhbellatravel/video/7372124362004106497?q=b%C3%A1nh%20m%C3%AC%20ph%C6%B0%E1%BB%A3ng%20h%E1%BB%99i%20an&t=1765555334704",
+      "social-link": "https://www.facebook.com/banhmyphuongha/?locale=vi_VN"
     },
     {
       "id": "lantern-street",
@@ -972,15 +1308,19 @@
       "type": "attraction",
       "category": "night_market",
       "location": {
-        "lat": 15.8760,
-        "lng": 108.3250,
+        "lat": 15.876,
+        "lng": 108.325,
         "address": "Nguyễn Hoàng, Hội An"
       },
       "description": "Khu vực check-in đẹp nhất Hội An về đêm với hàng nghìn chiếc đèn lồng rực rỡ.",
       "estimatedCost": 0,
       "experience_duration": 60,
       "rating": 4.7,
-      "suitable": ["nightlife", "photography", "couple"],
+      "suitable": [
+        "nightlife",
+        "photography",
+        "couple"
+      ],
       "reviews": [
         {
           "user": "Lisa",
@@ -988,7 +1328,9 @@
           "comment": "Very magical atmosphere. Good place to buy souvenirs.",
           "date": "2025-10-01"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@anhkhoa.hoian/video/7559785687382281480?q=Ph%E1%BB%91%20%C4%90%C3%A8n%20L%E1%BB%93ng%20%28Ch%E1%BB%A3%20%C4%90%C3%AAm%20Nguy%E1%BB%85n%20Ho%C3%A0ng%29&t=1765555381125",
+      "social-link": "https://mia.vn/cam-nang-du-lich/cho-dem-nguyen-hoang-hoi-an-khu-cho-dem-nhon-nhip-nhat-do-thi-co-176"
     },
     {
       "id": "faifo-coffee",
@@ -997,14 +1339,21 @@
       "category": "checkin_spot",
       "location": {
         "lat": 15.8785,
-        "lng": 108.3290,
+        "lng": 108.329,
         "address": "130 Trần Phú, Hội An"
       },
       "description": "Quán cafe có sân thượng (rooftop) view toàn cảnh mái ngói cổ Hội An.",
       "estimatedCost": 60000,
       "rating": 4.3,
-      "suitable": ["photography", "coffee_lover"],
-      "tips": ["Góc ban công tầng thượng luôn đông người chờ chụp ảnh"]
+      "suitable": [
+        "photography",
+        "coffee_lover"
+      ],
+      "tips": [
+        "Góc ban công tầng thượng luôn đông người chờ chụp ảnh"
+      ],
+      "tik-tok": "https://www.tiktok.com/@faifocoffeehoian/video/7523834229021527303?q=Faifo%20Coffee%20h%E1%BB%99i%20an&t=1765555423327",
+      "social-link": "https://www.facebook.com/Faifocoffee/?locale=vi_VN"
     }
   ],
   "cinematic_checkin_spots": [
@@ -1014,16 +1363,22 @@
       "type": "attraction",
       "category": "nature",
       "location": {
-        "lat": 16.1500,
-        "lng": 108.1200,
+        "lat": 16.15,
+        "lng": 108.12,
         "address": "Chân đèo Hải Vân (Giáp ranh Đà Nẵng - Huế)"
       },
       "description": "Cổng trời dưới chân đèo Hải Vân với đường ray xe lửa và cầu vòm đá cổ kính. Vibe giống phim anime Nhật Bản.",
       "estimatedCost": 0,
       "experience_duration": 120,
       "rating": 4.8,
-      "suitable": ["adventure", "photography", "youth"],
-      "tips": ["Đường xuống hơi khó đi, chú ý tàu hỏa chạy qua"],
+      "suitable": [
+        "adventure",
+        "photography",
+        "youth"
+      ],
+      "tips": [
+        "Đường xuống hơi khó đi, chú ý tàu hỏa chạy qua"
+      ],
       "reviews": [
         {
           "user": "Huy Hoàng",
@@ -1031,7 +1386,9 @@
           "comment": "Chụp hình bao đẹp, cảm giác rất bình yên và tách biệt.",
           "date": "2025-09-12"
         }
-      ]
+      ],
+      "tik-tok": "https://www.tiktok.com/@yuwiii.20/video/7477972896191728914?q=C%E1%BA%A7u%20V%C3%B2m%20%C4%90%E1%BB%93n%20C%E1%BA%A3&t=1765594095892",
+      "social-link": "https://vinpearl.com/vi/kham-pha-nhat-ban-thu-nho-tai-ga-hai-van-bac-cau-vom-don-ca-hue"
     },
     {
       "id": "ho-xanh",
@@ -1039,15 +1396,20 @@
       "type": "attraction",
       "category": "nature",
       "location": {
-        "lat": 16.1020,
-        "lng": 108.2580,
+        "lat": 16.102,
+        "lng": 108.258,
         "address": "Hoàng Sa, Thọ Quang, Sơn Trà"
       },
       "description": "Hồ nước xanh ngắt như ngọc bích, địa điểm chụp ảnh cưới và sống ảo nổi tiếng.",
       "estimatedCost": 0,
       "experience_duration": 45,
       "rating": 4.2,
-      "suitable": ["photography", "couple"]
+      "suitable": [
+        "photography",
+        "couple"
+      ],
+      "tik-tok": "https://www.tiktok.com/@lenrungxuongbiendanang/video/7454950428623523079?q=H%E1%BB%93%20Xanh%20%28H%E1%BB%93%20B%C3%A3i%20B%E1%BB%A5t%29&t=1765594205666",
+      "social-link": "https://vinwonders.com/vi/wonderpedia/news/du-hi-ho-xanh-da-nang-diem-cam-trai-hot-cho-gioi-tre/"
     },
     {
       "id": "yen-retreat",
@@ -1055,16 +1417,24 @@
       "type": "attraction",
       "category": "camping",
       "location": {
-        "lat": 16.0300,
-        "lng": 108.0500,
+        "lat": 16.03,
+        "lng": 108.05,
         "address": "Hòa Bắc, Hòa Vang, Đà Nẵng"
       },
       "description": "Khu cắm trại ven sông Cu Đê, phong cách Mông Cổ, cực chill để 'đi trốn'.",
       "estimatedCost": 500000,
       "experience_duration": 360,
       "rating": 4.6,
-      "suitable": ["group", "team_building", "camping"],
-      "tips": ["Cần đặt lều trước, đường đi cảnh sắc rất đẹp"]
+      "suitable": [
+        "group",
+        "team_building",
+        "camping"
+      ],
+      "tips": [
+        "Cần đặt lều trước, đường đi cảnh sắc rất đẹp"
+      ],
+      "tik-tok": "https://www.tiktok.com/@anchoi_muonnoi/video/7089270330337889563?q=Y%C3%AAn%20Retreat&t=1765594259189",
+      "social-link": "https://www.tiktok.com/@anchoi_muonnoi/video/7089270330337889563?q=Y%C3%AAn%20Retreat&t=1765594259189"
     }
   ],
   "nightlife_bars_clubs": [
@@ -1074,17 +1444,22 @@
       "type": "entertainment",
       "category": "nightclub",
       "location": {
-        "lat": 16.0750,
-        "lng": 108.2150,
+        "lat": 16.075,
+        "lng": 108.215,
         "address": "20 Đống Đa, Hải Châu"
       },
       "description": "Vũ trường lớn nhất và lâu đời nhất Việt Nam, hệ thống âm thanh ánh sáng khủng.",
       "estimatedCost": 1000000,
       "rating": 4.6,
       "openingHours": "20:00-03:00",
-      "suitable": ["party", "group", "luxury"],
-      "social_link": "https://www.facebook.com/newphuongdongnightclub/",
-      "article_link": "https://vinpearl.com/vi/top-10-quan-bar-da-nang-soi-dong-bac-nhat"
+      "suitable": [
+        "party",
+        "group",
+        "luxury"
+      ],
+      "article_link": "https://vinpearl.com/vi/top-10-quan-bar-da-nang-soi-dong-bac-nhat",
+      "tik-tok": "https://www.tiktok.com/@newphuongdongdanang/video/7582108209914137864?q=new%20ph%C6%B0%C6%A1gn%20%C4%91%C3%B4ng&t=1765594303789",
+      "social-link": "https://www.facebook.com/newphuongdongnightclub/"
     },
     {
       "id": "te-bar",
@@ -1092,17 +1467,24 @@
       "type": "entertainment",
       "category": "speakeasy_bar",
       "location": {
-        "lat": 16.0680,
-        "lng": 108.2240,
+        "lat": 16.068,
+        "lng": 108.224,
         "address": "Tầng 3, 39-41 Nguyễn Thái Học"
       },
       "description": "Quán bar 'núp hẻm' (speakeasy) nổi tiếng nhất Đà Nẵng, cocktail ngon, vibe cực chill.",
       "estimatedCost": 250000,
       "rating": 4.7,
       "openingHours": "19:00-01:30",
-      "suitable": ["couple", "cocktail_lover", "chill"],
-      "social_link": "https://www.facebook.com/tebar.vn",
-      "tips": ["Quán không có biển hiệu lớn, đi vào toà nhà và lên tầng 3"]
+      "suitable": [
+        "couple",
+        "cocktail_lover",
+        "chill"
+      ],
+      "tips": [
+        "Quán không có biển hiệu lớn, đi vào toà nhà và lên tầng 3"
+      ],
+      "tik-tok": "https://www.tiktok.com/@cocktailbardanang/video/7390714318460898568?q=t%C3%AA%20bar&t=1765594477032",
+      "social-link": "https://www.facebook.com/tebar.vn"
     },
     {
       "id": "the-craftsman",
@@ -1110,16 +1492,21 @@
       "type": "entertainment",
       "category": "live_music_bar",
       "location": {
-        "lat": 16.0580,
-        "lng": 108.2380,
+        "lat": 16.058,
+        "lng": 108.238,
         "address": "48 Phan Tứ, Ngũ Hành Sơn"
       },
       "description": "Bar chuyên cocktail và nhạc Jazz/Acoustic live mỗi tối, không gian ấm cúng.",
       "estimatedCost": 200000,
       "rating": 4.5,
       "openingHours": "19:30-01:30",
-      "suitable": ["music_lover", "date", "relax"],
-      "social_link": "https://www.facebook.com/thecraftsmancocktailbar"
+      "suitable": [
+        "music_lover",
+        "date",
+        "relax"
+      ],
+      "tik-tok": "https://www.tiktok.com/@the.craftsman.da/video/7582793336755326215?q=The%20Craftsman%20Cocktail%20Bar&t=1765594515998",
+      "social-link": "https://www.facebook.com/thecraftsmancocktailbar"
     },
     {
       "id": "oq-lounge",
@@ -1127,16 +1514,20 @@
       "type": "entertainment",
       "category": "pub",
       "location": {
-        "lat": 16.0690,
-        "lng": 108.2230,
+        "lat": 16.069,
+        "lng": 108.223,
         "address": "18-20 Bạch Đằng"
       },
       "description": "Pub sôi động ngay trung tâm, nhạc DJ hay nhưng không quá ồn ào như vũ trường.",
       "estimatedCost": 300000,
       "rating": 4.4,
       "openingHours": "18:00-02:00",
-      "suitable": ["friends", "party"],
-      "social_link": "https://www.facebook.com/OQ.Lounge.Pub.Dn"
+      "suitable": [
+        "friends",
+        "party"
+      ],
+      "tik-tok": "https://www.tiktok.com/@oq.pub.dn/video/7376267376951610631?q=OQ%20Lounge%20Pub&t=1765594547833",
+      "social-link": "https://www.facebook.com/OQ.Lounge.Pub.Dn"
     },
     {
       "id": "chicland-lounge",
@@ -1144,16 +1535,21 @@
       "type": "entertainment",
       "category": "rooftop_bar",
       "location": {
-        "lat": 16.0650,
-        "lng": 108.2450,
+        "lat": 16.065,
+        "lng": 108.245,
         "address": "Tầng thượng KS Chicland, Võ Nguyên Giáp"
       },
       "description": "Rooftop bar với hồ bơi vô cực view biển Mỹ Khê, kiến trúc xanh độc đáo.",
       "estimatedCost": 150000,
       "rating": 4.6,
       "openingHours": "07:00-23:00",
-      "suitable": ["luxury", "date", "view"],
-      "social_link": "https://chiclandhotel.com/dining/chicland-lounge/"
+      "suitable": [
+        "luxury",
+        "date",
+        "view"
+      ],
+      "tik-tok": "https://www.tiktok.com/@vulamkientruc/video/7513551027535219986?q=Chicland%20Lounge&t=1765594576812",
+      "social-link": "https://chiclandhotel.com/dining/chicland-lounge/"
     }
   ],
   "trending_checkin_cafes": [
@@ -1163,16 +1559,20 @@
       "type": "cafe",
       "category": "checkin_spot",
       "location": {
-        "lat": 16.0600,
-        "lng": 108.2180,
+        "lat": 16.06,
+        "lng": 108.218,
         "address": "20 Lê Hồng Phong"
       },
       "description": "Quán cafe phong cách Hàn Quốc tối giản, tông màu nâu trầm, chụp ảnh rất 'nghệ'.",
       "estimatedCost": 45000,
       "rating": 4.3,
       "openingHours": "07:00-22:00",
-      "suitable": ["youth", "photography"],
-      "social_link": "https://www.facebook.com/Reply1988Cafe/"
+      "suitable": [
+        "youth",
+        "photography"
+      ],
+      "social-link": "https://www.facebook.com/Reply1988Cafe/",
+      "tik-tok": "https://www.tiktok.com/@es.cincauu/video/7534749768879312133?q=Reply%201988%20Cafe&t=1765594608597"
     },
     {
       "id": "puna-coffee",
@@ -1180,15 +1580,20 @@
       "type": "cafe",
       "category": "checkin_spot",
       "location": {
-        "lat": 16.0550,
-        "lng": 108.2300,
+        "lat": 16.055,
+        "lng": 108.23,
         "address": "1C Phan Châu Trinh"
       },
       "description": "Không gian mở, nhiều cây xanh, nổi tiếng với bánh ngọt và decor thay đổi theo mùa.",
       "estimatedCost": 55000,
       "rating": 4.5,
-      "suitable": ["date", "girls", "sweet_tooth"],
-      "social_link": "https://www.facebook.com/punacoffee/"
+      "suitable": [
+        "date",
+        "girls",
+        "sweet_tooth"
+      ],
+      "social-link": "https://www.facebook.com/punacoffee/",
+      "tik-tok": "https://www.tiktok.com/@punacoffeedanang/video/7408758379792895253?q=Puna%20Coffee%20%26%20Cakes&t=1765594655183"
     },
     {
       "id": "ibasho-coffee",
@@ -1196,15 +1601,20 @@
       "type": "cafe",
       "category": "checkin_spot",
       "location": {
-        "lat": 16.0400,
-        "lng": 108.2350,
+        "lat": 16.04,
+        "lng": 108.235,
         "address": "65 An Trung Đông 7"
       },
       "description": "Cafe phong cách Nhật Bản tối giản, yên tĩnh, nhiều góc sống ảo tone trắng.",
       "estimatedCost": 40000,
       "rating": 4.4,
-      "suitable": ["work", "quiet", "photography"],
-      "social_link": "https://www.facebook.com/ibashocoffeeandhostel/"
+      "suitable": [
+        "work",
+        "quiet",
+        "photography"
+      ],
+      "social-link": "https://www.facebook.com/ibashocoffeeandhostel/",
+      "tik-tok": "https://www.tiktok.com/@buanaocafe14/video/7256099133121891590?q=Ibasho%20Coffee%20%26%20Hostel&t=1765594696322"
     }
   ],
   "activities_experience": [
@@ -1214,17 +1624,26 @@
       "type": "activity",
       "category": "water_sport",
       "location": {
-        "lat": 16.0800,
-        "lng": 108.2450,
+        "lat": 16.08,
+        "lng": 108.245,
         "address": "Biển Mân Thái, Sơn Trà"
       },
       "description": "Hoạt động hot nhất buổi sáng: Chèo SUP đón bình minh trên biển.",
       "estimatedCost": 150000,
       "rating": 4.8,
       "openingHours": "04:30-07:00",
-      "suitable": ["youth", "friends", "active"],
-      "tips": ["Phải đặt trước 1 ngày", "Nên đi lúc 5h sáng để thấy mặt trời mọc"],
-      "article_link": "https://danangfantasticity.com/kham-pha/cheo-sup-da-nang-trai-nghiem-thu-vi-khong-the-bo-lo.html"
+      "suitable": [
+        "youth",
+        "friends",
+        "active"
+      ],
+      "tips": [
+        "Phải đặt trước 1 ngày",
+        "Nên đi lúc 5h sáng để thấy mặt trời mọc"
+      ],
+      "article_link": "https://danangfantasticity.com/kham-pha/cheo-sup-da-nang-trai-nghiem-thu-vi-khong-the-bo-lo.html",
+      "tik-tok": "https://www.tiktok.com/@cheosuplanngamsanho/video/7489312317121842438?q=Ch%C3%A8o%20SUP%20Bi%E1%BB%83n%20M%C3%A2n%20Th%C3%A1i&t=1765594737514",
+      "social-link": ""
     },
     {
       "id": "paragliding-son-tra",
@@ -1232,32 +1651,23 @@
       "type": "activity",
       "category": "adventure",
       "location": {
-        "lat": 16.1100,
-        "lng": 108.2700,
+        "lat": 16.11,
+        "lng": 108.27,
         "address": "Đỉnh Bàn Cờ, Bán đảo Sơn Trà"
       },
       "description": "Bay dù lượn ngắm toàn cảnh Đà Nẵng từ trên cao. Cảm giác mạnh.",
       "estimatedCost": 1500000,
       "rating": 4.9,
-      "suitable": ["adventure", "rich_kid"],
-      "social_link": "https://www.facebook.com/DanangParagliding/",
-      "tips": ["Phụ thuộc nhiều vào thời tiết", "Cần đặt trước 3-5 ngày"]
-    },
-    {
-      "id": "skating-rink",
-      "name": "Sân trượt băng Vincom",
-      "type": "activity",
-      "category": "indoor_sport",
-      "location": {
-        "lat": 16.0600,
-        "lng": 108.2250,
-        "address": "Tầng 4, Vincom Center Đà Nẵng"
-      },
-      "description": "Sân trượt băng nghệ thuật đầu tiên tại Đà Nẵng.",
-      "estimatedCost": 120000,
-      "rating": 4.2,
-      "openingHours": "10:00-22:00",
-      "suitable": ["couple", "kids", "fun"]
+      "suitable": [
+        "adventure",
+        "rich_kid"
+      ],
+      "social-link": "https://www.facebook.com/DanangParagliding/",
+      "tips": [
+        "Phụ thuộc nhiều vào thời tiết",
+        "Cần đặt trước 3-5 ngày"
+      ],
+      "tik-tok": "https://www.tiktok.com/@thuongodanang/video/7508688273322151186?q=D%C3%B9%20l%C6%B0%E1%BB%A3n%20S%C6%A1n%20Tr%C3%A0&t=1765594762301"
     }
   ],
   "free_checkin_spots": [
@@ -1267,15 +1677,22 @@
       "type": "attraction",
       "category": "nature",
       "location": {
-        "lat": 16.0950,
-        "lng": 108.2600,
+        "lat": 16.095,
+        "lng": 108.26,
         "address": "Sau lưng chùa Linh Ứng, Sơn Trà"
       },
       "description": "Bãi đất trống với cỏ cháy vàng rực, view biển, lên hình như phim điện ảnh.",
       "estimatedCost": 0,
       "rating": 4.3,
-      "suitable": ["photography", "couple"],
-      "tips": ["Nên đi buổi chiều tầm 16h để có nắng vàng đẹp"]
+      "suitable": [
+        "photography",
+        "couple"
+      ],
+      "tips": [
+        "Nên đi buổi chiều tầm 16h để có nắng vàng đẹp"
+      ],
+      "tik-tok": "https://www.tiktok.com/@enjoydanangcity/video/7280179212290411784?q=B%C3%A3i%20C%E1%BB%8F%20Ch%C3%A1y%20%C4%91%C3%A0%20n%E1%BA%B5ng&t=1765594868545",
+      "social-link": "https://vinwonders.com/vi/wonderpedia/news/bai-co-chay-da-nang/"
     },
     {
       "id": "hai-dang-tien-sa",
@@ -1283,15 +1700,22 @@
       "type": "attraction",
       "category": "landmark",
       "location": {
-        "lat": 16.1400,
-        "lng": 108.2100,
+        "lat": 16.14,
+        "lng": 108.21,
         "address": "Cuối đường Yết Kiêu, Sơn Trà"
       },
       "description": "Một trong những hải đăng cổ và đẹp nhất Việt Nam, phong cách Pháp.",
       "estimatedCost": 20000,
       "rating": 4.4,
-      "tips": ["Phí vào cổng là 'tiền cafe' cho các chú gác đèn"],
-      "suitable": ["photography", "vintage_lover"]
+      "tips": [
+        "Phí vào cổng là 'tiền cafe' cho các chú gác đèn"
+      ],
+      "suitable": [
+        "photography",
+        "vintage_lover"
+      ],
+      "tik-tok": "https://www.tiktok.com/@danangbaophe/video/7578867498502606101?q=H%E1%BA%A3i%20%C4%90%C4%83ng%20Ti%C3%AAn%20Sa&t=1765594913163",
+      "social-link": "https://vinwonders.com/vi/wonderpedia/news/hai-dang-tien-sa-mot-trong-nhung-ngon-hai-dang-co-va-dep-nhat-viet-nam/"
     },
     {
       "id": "thuan-phuoc-bridge",
@@ -1299,31 +1723,23 @@
       "type": "attraction",
       "category": "checkin_spot",
       "location": {
-        "lat": 16.0900,
-        "lng": 108.2200,
+        "lat": 16.09,
+        "lng": 108.22,
         "address": "Đường Lê Đức Thọ (Khu đất trống dưới chân cầu)"
       },
       "description": "Địa điểm ngắm hoàng hôn cực phẩm với background là cầu treo dây võng dài nhất VN.",
       "estimatedCost": 0,
       "rating": 4.5,
-      "suitable": ["chill", "photography", "sunset_lover"],
-      "tips": ["Mang theo ghế xếp và cafe để ngồi chill"]
-    },
-    {
-      "id": "lang-van",
-      "name": "Làng Vân",
-      "type": "attraction",
-      "category": "adventure",
-      "location": {
-        "lat": 16.1300,
-        "lng": 108.1300,
-        "address": "Chân đèo Hải Vân"
-      },
-      "description": "Ngôi làng bị bỏ hoang ven biển, tách biệt hoàn toàn. Chỉ có thể đi bộ hoặc đi thuyền.",
-      "estimatedCost": 0,
-      "rating": 4.7,
-      "suitable": ["camping", "trekking", "adventure"],
-      "tips": ["Cần chuẩn bị kỹ lương thực nước uống vì không có dịch vụ"]
+      "suitable": [
+        "chill",
+        "photography",
+        "sunset_lover"
+      ],
+      "tips": [
+        "Mang theo ghế xếp và cafe để ngồi chill"
+      ],
+      "tik-tok": "https://www.tiktok.com/@checkin_danang/video/7456797079512370450?q=ng%E1%BA%AFm%20ho%C3%A0ng%20h%C3%B4n%20d%C6%B0%E1%BB%9Bi%20ch%C3%A2n%20c%E1%BA%A7u%20thu%E1%BA%ADn%20ph%C6%B0%C6%A1c&t=1765594967390",
+      "social-link": ""
     }
   ],
   "hidden_gems_food": [
@@ -1333,14 +1749,17 @@
       "type": "restaurant",
       "category": "local_food",
       "location": {
-        "lat": 16.0600,
-        "lng": 108.2100,
+        "lat": 16.06,
+        "lng": 108.21,
         "address": "291 Nguyễn Chí Thanh"
       },
       "description": "Món bún 'xấu lạ' nhưng cực ngon, dân nhậu Đà Nẵng rất thích.",
       "estimatedCost": 40000,
       "rating": 4.2,
-      "suitable": ["breakfast", "local_experience"]
+      "suitable": [
+        "breakfast",
+        "local_experience"
+      ]
     },
     {
       "id": "mit-tron-ba-gia",
@@ -1348,15 +1767,22 @@
       "type": "restaurant",
       "category": "street_food",
       "location": {
-        "lat": 16.0620,
-        "lng": 108.2150,
+        "lat": 16.062,
+        "lng": 108.215,
         "address": "K47/25 Lý Thái Tổ"
       },
       "description": "Quán ăn vặt huyền thoại trong hẻm: mít trộn, da heo trộn.",
       "estimatedCost": 20000,
       "rating": 4.6,
-      "suitable": ["snack", "students"],
-      "tips": ["Quán rất nhỏ, nên mua mang về"]
+      "suitable": [
+        "snack",
+        "students"
+      ],
+      "tips": [
+        "Quán rất nhỏ, nên mua mang về"
+      ],
+      "tik-tok": "https://www.tiktok.com/@danangpho.sco/video/7483109296952118536?q=m%C3%ADt%20tr%E1%BB%99n%20b%C3%A0%20gi%C3%A0%20%C4%91%C3%A0%20n%E1%BA%B5ng&t=1765595047179",
+      "social-link": ""
     }
   ]
 }
