@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from './AuthProvider';
 import { logOut } from '@/lib/authService';
 
-export default function UserMenu() {
+interface UserMenuProps {
+  showText?: boolean;
+}
+
+export default function UserMenu({ showText = true }: UserMenuProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -57,7 +61,7 @@ export default function UserMenu() {
             {user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}
           </div>
         )}
-        <span className="hidden md:block font-medium text-white text-sm">
+        <span className={`hidden md:block font-medium text-white text-sm ${!showText ? '!hidden' : ''}`}>
           {user.displayName || user.email?.split('@')[0]}
         </span>
       </button>
