@@ -16,6 +16,13 @@ import TravelPlannerChat from "@/components/travel-plan/TravelPlannerChat";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useVoiceRecognition } from "@/components/chat/useVoiceRecognition";
+import {
+  saveChatConversation,
+  updateChatConversation,
+  getUserActiveConversation,
+  getChatConversation,
+} from "@/lib/travelPlanService";
+import { Timestamp } from "firebase/firestore";
 
 interface AIChatbotProps {
   userLocation: Location;
@@ -64,6 +71,8 @@ export default function AIChatbot({
   const [suggestedPlaces, setSuggestedPlaces] = useState<Place[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [geminiReady, setGeminiReady] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Switch between modes
@@ -80,6 +89,33 @@ export default function AIChatbot({
     setChatMode("normal");
   };
 
+  // Check for restart flag and planner mode switch on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const shouldRestart = sessionStorage.getItem('switchToPlannerAndRestart');
+      if (shouldRestart === 'true') {
+        sessionStorage.removeItem('switchToPlannerAndRestart');
+        // Switch to planner mode first
+        setChatMode("planner");
+        // Then trigger restart after a small delay to ensure component is mounted
+        setTimeout(() => {
+          window.dispatchEvent(new Event('restartPlanner'));
+        }, 300);
+      }
+      
+      // Check if need to switch to planner mode
+      const switchToPlanner = sessionStorage.getItem('switchToPlannerMode');
+      if (switchToPlanner === 'true') {
+        sessionStorage.removeItem('switchToPlannerMode');
+        setChatMode("planner");
+        // Trigger load conversation event after switching mode
+        setTimeout(() => {
+          window.dispatchEvent(new Event('loadPlannerConversation'));
+        }, 300);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -87,6 +123,164 @@ export default function AIChatbot({
   useEffect(() => {
     if (initGeminiAI()) setGeminiReady(true);
   }, []);
+
+  // Load chat history from Firebase when user is logged in
+  useEffect(() => {
+    const loadChatHistory = async () => {
+      if (!user || chatMode !== "normal") {
+        setLoadingHistory(false);
+        return;
+      }
+
+      try {
+        setLoadingHistory(true);
+        
+        // Check if there's a specific conversation to load from sidebar
+        let conversationToLoad = null;
+        if (typeof window !== 'undefined') {
+          const loadConversationId = sessionStorage.getItem('loadConversationId');
+          if (loadConversationId) {
+            console.log('📂 Loading specific conversation:', loadConversationId);
+            conversationToLoad = await getChatConversation(loadConversationId);
+            sessionStorage.removeItem('loadConversationId');
+          }
+        }
+        
+        // If no specific conversation to load, get active one
+        if (!conversationToLoad) {
+          conversationToLoad = await getUserActiveConversation(user.uid);
+        }
+        
+        if (conversationToLoad && conversationToLoad.messages) {
+          // Convert Firestore timestamps to Date objects
+          const loadedMessages = conversationToLoad.messages.map((msg: any) => ({
+            ...msg,
+            timestamp: msg.timestamp?.toDate ? msg.timestamp.toDate() : new Date(msg.timestamp),
+          }));
+          
+          setMessages(loadedMessages);
+          setConversationId(conversationToLoad.id || null);
+          console.log('✅ Loaded chat history from Firebase:', loadedMessages.length, 'messages');
+        } else {
+          // No active conversation, start fresh
+          setConversationId(null);
+          console.log('ℹ️ No previous chat history found');
+        }
+      } catch (error) {
+        console.error('❌ Error loading chat history:', error);
+        // Continue with default messages on error
+      } finally {
+        setLoadingHistory(false);
+      }
+    };
+
+    loadChatHistory();
+    
+    // Listen for load conversation event from sidebar
+    const handleLoadConversation = () => {
+      console.log('📂 Received loadConversation event');
+      loadChatHistory();
+    };
+    
+    // Listen for new chat requested event
+    const handleNewChatRequested = async () => {
+      console.log('🆕 New chat requested, saving current conversation...');
+      
+      // Save current conversation before resetting
+      if (conversationId && messages.length > 1) {
+        // Only save if there are actual messages (more than just welcome message)
+        const hasUserMessages = messages.some(msg => msg.role === 'user');
+        if (hasUserMessages) {
+          try {
+            // Mark current conversation as completed
+            await updateChatConversation(conversationId, {
+              completed: true,
+            });
+            console.log('💾 Saved current conversation before reset');
+          } catch (error) {
+            console.error('❌ Error saving conversation:', error);
+          }
+        }
+      }
+      
+      // Reset chat state
+      setMessages([{
+        role: "assistant",
+        content: "👋 Hello! I am your AI assistant. Ask me anything about Da Nang!\n\n💡 Tip: Switch to Planner mode to create your travel plan.",
+        timestamp: new Date(),
+      }]);
+      setConversationId(null);
+      console.log('🔄 Reset chat to new conversation');
+    };
+    
+    // Listen for conversation deleted event
+    const handleConversationDeleted = (event: CustomEvent) => {
+      const deletedConversationId = event.detail?.conversationId;
+      console.log('🗑️ Conversation deleted event:', deletedConversationId);
+      
+      // If all conversations were deleted or current conversation was deleted, reset state
+      if (deletedConversationId === 'all' || (deletedConversationId && conversationId === deletedConversationId)) {
+        console.log('🔄 Conversation(s) deleted, resetting...');
+        setMessages([{
+          role: "assistant",
+          content: "👋 Hello! I am your AI assistant. Ask me anything about Da Nang!\n\n💡 Tip: Switch to Planner mode to create your travel plan.",
+          timestamp: new Date(),
+        }]);
+        setConversationId(null);
+      }
+    };
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('loadConversation', handleLoadConversation);
+      window.addEventListener('newChatRequested', handleNewChatRequested);
+      window.addEventListener('chatConversationDeleted', handleConversationDeleted as EventListener);
+      return () => {
+        window.removeEventListener('loadConversation', handleLoadConversation);
+        window.removeEventListener('newChatRequested', handleNewChatRequested);
+        window.removeEventListener('chatConversationDeleted', handleConversationDeleted as EventListener);
+      };
+    }
+  }, [user, chatMode, conversationId]);
+
+  // Save chat to Firebase
+  const saveChatToFirebase = async (newMessages: ChatMessage[]) => {
+    if (!user || chatMode !== "normal") return;
+
+    try {
+      // Convert Date objects to Firestore Timestamp
+      const messagesForFirestore = newMessages.map((msg) => ({
+        role: msg.role,
+        content: msg.content,
+        timestamp: msg.timestamp instanceof Date 
+          ? Timestamp.fromDate(msg.timestamp)
+          : Timestamp.fromDate(new Date(msg.timestamp)),
+      }));
+
+      if (conversationId) {
+        // Update existing conversation
+        await updateChatConversation(conversationId, {
+          messages: messagesForFirestore as any,
+          completed: false,
+        });
+        console.log('💾 Updated chat conversation in Firebase');
+      } else {
+        // Create new conversation
+        const newConversationId = await saveChatConversation({
+          userId: user.uid,
+          messages: messagesForFirestore as any,
+          currentStep: 0,
+          completed: false,
+          createdAt: Timestamp.now() as any, // Will be overwritten by saveChatConversation
+          updatedAt: Timestamp.now() as any, // Will be overwritten by saveChatConversation
+        });
+        setConversationId(newConversationId);
+        console.log('💾 Created new chat conversation in Firebase:', newConversationId);
+      }
+    } catch (error) {
+      console.error('❌ Error saving chat to Firebase:', error);
+      // Don't block user experience if save fails
+    }
+  };
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
@@ -97,7 +291,12 @@ export default function AIChatbot({
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => {
+      const updatedMessages = [...prev, userMessage];
+      // Save user message to Firebase immediately
+      saveChatToFirebase(updatedMessages);
+      return updatedMessages;
+    });
     setInput("");
     setLoading(true);
 
@@ -129,10 +328,18 @@ export default function AIChatbot({
           "I'm having trouble processing your request. Please try again.";
       }
 
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: aiResponse, timestamp: new Date() },
-      ]);
+      const assistantMessage: ChatMessage = {
+        role: "assistant",
+        content: aiResponse,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => {
+        const updatedMessages = [...prev, assistantMessage];
+        // Save to Firebase asynchronously (don't block UI)
+        saveChatToFirebase(updatedMessages);
+        return updatedMessages;
+      });
 
       // Auto-speak AI response if autoSpeak is enabled
       if (autoSpeak) {
@@ -339,7 +546,12 @@ export default function AIChatbot({
         <>
           {/* Modern Chat Box */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gradient-to-b from-white/50 to-white">
-            {messages.map((message, index) => (
+            {loadingHistory && (
+              <div className="flex justify-center items-center py-8">
+                <div className="text-sm text-gray-500">Loading chat history...</div>
+              </div>
+            )}
+            {!loadingHistory && messages.map((message, index) => (
               <div
                 key={index}
                 className={`flex ${
@@ -359,10 +571,15 @@ export default function AIChatbot({
                   <p className={`text-[10px] mt-2 ${
                     message.role === "user" ? "opacity-70" : "opacity-50"
                   }`}>
-                    {message.timestamp.toLocaleTimeString("vi-VN", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {message.timestamp instanceof Date
+                      ? message.timestamp.toLocaleTimeString("vi-VN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : new Date(message.timestamp).toLocaleTimeString("vi-VN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                   </p>
                 </div>
               </div>
@@ -485,7 +702,7 @@ export default function AIChatbot({
                 <button
                   onClick={stopSpeaking}
                   className="flex-shrink-0 px-3 sm:px-4 py-2 sm:py-3 rounded-xl shadow-lg transition-all text-sm sm:text-base bg-red-500 text-white hover:bg-red-600 animate-pulse"
-                  title={language === "en" ? "Stop speaking" : "Dừng đọc"}
+                  title="Stop speaking"
                 >
                   🔇⏹
                 </button>
@@ -500,7 +717,7 @@ export default function AIChatbot({
                       ? "bg-red-500 text-white hover:bg-red-600"
                       : "bg-grab-green text-white hover:bg-[#009640] disabled:opacity-40"
                   }`}
-                  title={language === "en" ? "Click to speak" : "Bấm để nói"}
+                  title="Click to speak"
                 >
                   {isListening ? "🎙️⏹" : "🎤"}
                 </button>

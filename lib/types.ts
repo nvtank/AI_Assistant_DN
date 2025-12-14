@@ -193,6 +193,7 @@ export interface ChatConversation {
   currentStep: number;
   completed: boolean;
   travelPlanId?: string;
+  type?: 'normal' | 'planner'; // Type of conversation
   createdAt: any;
   updatedAt: any;
 }

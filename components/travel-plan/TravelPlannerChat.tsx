@@ -7,6 +7,14 @@ import { useRouter } from 'next/navigation';
 import { QUESTIONS, Question } from './TravelPlannerQuestions';
 import PeopleInput from './PeopleInput';
 import BudgetInput from './BudgetInput';
+import {
+  saveChatConversation,
+  updateChatConversation,
+  getUserActiveConversation,
+  getChatConversation,
+  getTravelPlan,
+} from '@/lib/travelPlanService';
+import { Timestamp } from 'firebase/firestore';
 
 export default function TravelPlannerChat() {
   const router = useRouter();
@@ -26,13 +34,238 @@ export default function TravelPlannerChat() {
   const [generatedPlan, setGeneratedPlan] = useState<TravelPlan | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+  const [restartTrigger, setRestartTrigger] = useState(0);
 
+  // Load conversation history from Firebase
   useEffect(() => {
-    // Show welcome message
-    if (messages.length === 0) {
-      addMessage('assistant', QUESTIONS[0].question);
+    if (!user) {
+      setLoadingHistory(false);
+      return;
     }
-  }, []);
+
+    const loadConversationHistory = async () => {
+      try {
+        setLoadingHistory(true);
+        
+        // Check if there's a conversation ID to load from sidebar
+        let conversationToLoad = null;
+        if (typeof window !== 'undefined') {
+          const loadConversationId = sessionStorage.getItem('loadPlannerConversationId');
+          if (loadConversationId) {
+            conversationToLoad = await getChatConversation(loadConversationId);
+            sessionStorage.removeItem('loadPlannerConversationId');
+          }
+        }
+        
+        // If no specific conversation to load, get active planner conversation
+        if (!conversationToLoad) {
+          const activeConversation = await getUserActiveConversation(user.uid);
+          // Only use if it's a planner conversation
+          if (activeConversation && activeConversation.type === 'planner') {
+            conversationToLoad = activeConversation;
+          }
+        }
+        
+        if (conversationToLoad && conversationToLoad.messages) {
+          // Convert Firestore timestamps to Date objects
+          const loadedMessages = conversationToLoad.messages.map((msg: any) => ({
+            ...msg,
+            timestamp: msg.timestamp?.toDate ? msg.timestamp.toDate() : new Date(msg.timestamp),
+          }));
+          
+          setMessages(loadedMessages);
+          setConversationId(conversationToLoad.id || null);
+          setCurrentStep(conversationToLoad.currentStep || 0);
+          if (conversationToLoad.planRequest) {
+            setPlanRequest(conversationToLoad.planRequest);
+          }
+          
+          // If conversation has a travel plan ID and is completed, navigate to plan detail
+          if (conversationToLoad.travelPlanId && conversationToLoad.completed) {
+            try {
+              console.log('📋 Conversation has completed plan, navigating to:', conversationToLoad.travelPlanId);
+              // Navigate directly to the plan detail page
+              router.push(`/travel-plan/${conversationToLoad.travelPlanId}`);
+              return; // Exit early since we're navigating away
+            } catch (error) {
+              console.error('❌ Error navigating to travel plan:', error);
+            }
+          } else if (conversationToLoad.travelPlanId) {
+            // If plan exists but not completed, load it for preview
+            try {
+              console.log('📋 Loading travel plan for preview:', conversationToLoad.travelPlanId);
+              const plan = await getTravelPlan(conversationToLoad.travelPlanId);
+              if (plan) {
+                setGeneratedPlan(plan);
+                console.log('✅ Loaded travel plan:', plan.id);
+              }
+            } catch (error) {
+              console.error('❌ Error loading travel plan:', error);
+            }
+          }
+          
+          console.log('✅ Loaded planner conversation from Firebase:', loadedMessages.length, 'messages');
+        } else {
+          // No active conversation, start fresh
+          setConversationId(null);
+          setMessages([{ role: 'assistant', content: QUESTIONS[0].question, timestamp: new Date() }]);
+          console.log('ℹ️ No previous planner conversation found');
+        }
+      } catch (error) {
+        console.error('❌ Error loading planner conversation:', error);
+        // Start fresh on error
+        setMessages([{ role: 'assistant', content: QUESTIONS[0].question, timestamp: new Date() }]);
+      } finally {
+        setLoadingHistory(false);
+      }
+    };
+
+    loadConversationHistory();
+    
+    // Listen for load conversation event from sidebar
+    const handleLoadConversation = () => {
+      loadConversationHistory();
+    };
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('loadPlannerConversation', handleLoadConversation);
+      return () => {
+        window.removeEventListener('loadPlannerConversation', handleLoadConversation);
+      };
+    }
+  }, [user]);
+
+  // Handle restart planner - separate useEffect
+  useEffect(() => {
+    if (restartTrigger === 0) return;
+
+    const handleRestart = () => {
+      console.log('🔄 Restarting planner...');
+      
+      // Check if there's a specific conversation to restart
+      const restartConversationId = typeof window !== 'undefined' 
+        ? sessionStorage.getItem('restartPlannerConversationId')
+        : null;
+      
+      // Reset state
+      setMessages([{ role: 'assistant', content: QUESTIONS[0].question, timestamp: new Date() }]);
+      setCurrentStep(0);
+      setPlanRequest({
+        numberOfPeople: { adults: 1, children: 0 },
+        budget: { min: 1000000, max: 5000000, currency: 'VND' },
+        foodPreferences: [],
+        allergies: [],
+        restrictions: [],
+        timePreference: { morningStart: 'normal', eveningEnd: 'normal' },
+      });
+      setInput('');
+      setSelectedOptions([]);
+      setGeneratedPlan(null);
+      setConversationId(null);
+      
+      // Clear session storage
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('loadPlannerConversationId');
+        sessionStorage.removeItem('restartPlannerConversationId');
+      }
+      
+      if (restartConversationId) {
+        console.log('🔄 Restarted planning session:', restartConversationId);
+      } else {
+        console.log('🔄 Restarted planning - starting fresh');
+      }
+    };
+
+    handleRestart();
+  }, [restartTrigger]);
+
+  // Listen for restart event from sidebar
+  useEffect(() => {
+    const handleRestartPlanner = () => {
+      console.log('🔄 Received restart event');
+      setRestartTrigger(prev => prev + 1);
+    };
+
+    // Listen for new plan requested event
+    const handleNewPlanRequested = async () => {
+      console.log('🆕 New plan requested, saving current conversation...');
+      
+      // Save current conversation before resetting
+      if (conversationId && messages.length > 1) {
+        // Only save if there are actual messages (more than just welcome message)
+        const hasUserMessages = messages.some(msg => msg.role === 'user');
+        if (hasUserMessages) {
+          try {
+            // Mark current conversation as completed
+            await updateChatConversation(conversationId, {
+              completed: true,
+            });
+            console.log('💾 Saved current planner conversation before reset');
+          } catch (error) {
+            console.error('❌ Error saving planner conversation:', error);
+          }
+        }
+      }
+      
+      // Reset planner state
+      setMessages([{ role: 'assistant', content: QUESTIONS[0].question, timestamp: new Date() }]);
+      setCurrentStep(0);
+      setPlanRequest({
+        numberOfPeople: { adults: 1, children: 0 },
+        budget: { min: 1000000, max: 5000000, currency: 'VND' },
+        foodPreferences: [],
+        allergies: [],
+        restrictions: [],
+        timePreference: { morningStart: 'normal', eveningEnd: 'normal' },
+      });
+      setInput('');
+      setSelectedOptions([]);
+      setGeneratedPlan(null);
+      setConversationId(null);
+      console.log('🔄 Reset planner to new conversation');
+    };
+    
+    // Listen for conversation deleted event
+    const handleConversationDeleted = (event: CustomEvent) => {
+      const deletedConversationId = event.detail?.conversationId;
+      console.log('🗑️ Conversation deleted event:', deletedConversationId);
+      
+      // If all conversations were deleted or current conversation was deleted, reset state
+      if (deletedConversationId === 'all' || (deletedConversationId && conversationId === deletedConversationId)) {
+        console.log('🔄 Conversation(s) deleted, resetting...');
+        setMessages([{ role: 'assistant', content: QUESTIONS[0].question, timestamp: new Date() }]);
+        setCurrentStep(0);
+        setPlanRequest({
+          numberOfPeople: { adults: 1, children: 0 },
+          budget: { min: 1000000, max: 5000000, currency: 'VND' },
+          foodPreferences: [],
+          allergies: [],
+          restrictions: [],
+          timePreference: { morningStart: 'normal', eveningEnd: 'normal' },
+        });
+        setInput('');
+        setSelectedOptions([]);
+        setGeneratedPlan(null);
+        setConversationId(null);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('restartPlanner', handleRestartPlanner);
+      window.addEventListener('newPlanRequested', handleNewPlanRequested);
+      window.addEventListener('plannerConversationDeleted', handleConversationDeleted as EventListener);
+      return () => {
+        window.removeEventListener('restartPlanner', handleRestartPlanner);
+        window.removeEventListener('newPlanRequested', handleNewPlanRequested);
+        window.removeEventListener('plannerConversationDeleted', handleConversationDeleted as EventListener);
+      };
+    }
+  }, [conversationId]);
+
+  // Removed this useEffect to prevent double welcome message
+  // Welcome message is already handled in loadConversationHistory
 
   useEffect(() => {
     scrollToBottom();
@@ -43,13 +276,62 @@ export default function TravelPlannerChat() {
   };
 
   const addMessage = (role: 'user' | 'assistant', content: string) => {
-    setMessages((prev) => [...prev, { role, content, timestamp: new Date() }]);
+    setMessages((prev) => {
+      const newMessages = [...prev, { role, content, timestamp: new Date() }];
+      // Save to Firebase asynchronously
+      savePlannerConversationToFirebase(newMessages);
+      return newMessages;
+    });
+  };
+
+  // Save planner conversation to Firebase
+  const savePlannerConversationToFirebase = async (newMessages: ChatMessage[]) => {
+    if (!user) return;
+
+    try {
+      // Convert Date objects to Firestore Timestamp
+      const messagesForFirestore = newMessages.map((msg) => ({
+        role: msg.role,
+        content: msg.content,
+        timestamp: msg.timestamp instanceof Date 
+          ? Timestamp.fromDate(msg.timestamp)
+          : Timestamp.fromDate(new Date(msg.timestamp)),
+      }));
+
+      if (conversationId) {
+        // Update existing conversation
+        await updateChatConversation(conversationId, {
+          messages: messagesForFirestore as any,
+          currentStep,
+          planRequest,
+          completed: false,
+          type: 'planner',
+        });
+        console.log('💾 Updated planner conversation in Firebase');
+      } else {
+        // Create new conversation
+        const newConversationId = await saveChatConversation({
+          userId: user.uid,
+          messages: messagesForFirestore as any,
+          currentStep,
+          planRequest,
+          completed: false,
+          type: 'planner',
+          createdAt: Timestamp.now() as any,
+          updatedAt: Timestamp.now() as any,
+        });
+        setConversationId(newConversationId);
+        console.log('💾 Created new planner conversation in Firebase:', newConversationId);
+      }
+    } catch (error) {
+      console.error('❌ Error saving planner conversation to Firebase:', error);
+    }
   };
 
   const handleNext = async () => {
     if (currentStep === 0) {
       // Welcome message
-      addMessage('user', 'Bắt đầu nào!');
+      addMessage('user', 'Let\'s start!');
       setCurrentStep(1);
       setTimeout(() => {
         addMessage('assistant', QUESTIONS[1].question);
@@ -129,10 +411,11 @@ export default function TravelPlannerChat() {
     setSelectedOptions([]);
 
     // Move to next question
-    if (currentStep < QUESTIONS.length - 1) {
-      setCurrentStep(currentStep + 1);
+    const nextStep = currentStep + 1;
+    if (nextStep < QUESTIONS.length) {
+      setCurrentStep(nextStep);
       setTimeout(() => {
-        addMessage('assistant', QUESTIONS[currentStep + 1].question);
+        addMessage('assistant', QUESTIONS[nextStep].question);
       }, 500);
     } else {
       // All questions answered, generate plan
@@ -195,6 +478,14 @@ export default function TravelPlannerChat() {
         'assistant',
         `✅ Your plan is ready!\n\n📋 Total estimated cost: ${data.plan.totalEstimatedCost.total.toLocaleString()} VND\n\nYou can view details and edit your plan below.`
       );
+      
+      // Update conversation with travel plan ID
+      if (conversationId && data.plan.id) {
+        await updateChatConversation(conversationId, {
+          travelPlanId: data.plan.id,
+          completed: true,
+        });
+      }
     } catch (error: any) {
       console.error('❌ Generate plan error:', error);
       const errorMessage = error.message || 'Unknown error';
@@ -301,7 +592,18 @@ export default function TravelPlannerChat() {
       {/* Generated Plan Preview */}
       {generatedPlan && (
         <div className="border-t border-white/30 glass p-4 flex-shrink-0">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-3xl mx-auto space-y-3">
+            <div className="bg-white/50 rounded-xl p-4 border border-grab-green/20">
+              <h3 className="font-bold text-lg text-gray-900 mb-2">✅ Travel Plan Ready!</h3>
+              <div className="grid grid-cols-2 gap-2 text-sm text-gray-700 mb-3">
+                <div>
+                  <span className="font-semibold">Duration:</span> {generatedPlan.days?.length || 0} days
+                </div>
+                <div>
+                  <span className="font-semibold">Total Cost:</span> {generatedPlan.totalEstimatedCost?.total?.toLocaleString() || 'N/A'} VND
+                </div>
+              </div>
+            </div>
             <button
               onClick={() => router.push(`/travel-plan/${generatedPlan.id}`)}
               className="w-full bg-grab-green text-white py-4 rounded-xl font-semibold hover:bg-[#009640] transition-all shadow-lg flex items-center justify-center gap-2"

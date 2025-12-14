@@ -184,7 +184,7 @@ export class TravelPlannerService {
   }
 
   /**
-   * Tạo kế hoạch du lịch hoàn chỉnh với Gemini AI
+   * Generate complete travel plan with Gemini AI
    */
   async generateTravelPlan(request: TravelPlanRequest, userId: string): Promise<TravelPlan> {
     try {
@@ -226,7 +226,7 @@ export class TravelPlannerService {
   }
 
   /**
-   * Lấy tất cả địa điểm phù hợp với request
+   * Get all places matching the request
    */
   private async getAllRecommendedPlaces(request: TravelPlanRequest): Promise<Activity[]> {
     const categories = this.determineCategories(request);
@@ -314,11 +314,11 @@ export class TravelPlannerService {
         
         categoryPlaces.forEach((place: any, index: number) => {
           info += `${index + 1}. **${place.name}** (ID: ${place.id})\n`;
-          info += `   - Loại: ${place.category || place.type}\n`;
-          info += `   - Địa chỉ: ${place.location.address}\n`;
-          info += `   - Tọa độ: ${place.location.lat}, ${place.location.lng}\n`;
-          info += `   - Mô tả: ${place.description}\n`;
-          info += `   - Chi phí: ${place.estimatedCost.toLocaleString()} VNĐ/người\n`;
+          info += `   - Type: ${place.category || place.type}\n`;
+          info += `   - Address: ${place.location.address}\n`;
+          info += `   - Coordinates: ${place.location.lat}, ${place.location.lng}\n`;
+          info += `   - Description: ${place.description}\n`;
+          info += `   - Cost: ${place.estimatedCost.toLocaleString()} VND/person\n`;
           
           if (place.experience_duration) {
             info += `   - Thời gian tham quan: ${place.experience_duration} phút\n`;
@@ -566,7 +566,7 @@ export class TravelPlannerService {
 
     const timePrefsText = (request as any).timePreferences 
       ? (request as any).timePreferences.map((slot: string) => TIME_SLOT_MAP[slot] || slot).join('\n  ')
-      : 'Không có ưu tiên cụ thể';
+      : 'No specific priority';
 
     // Extract user restrictions from notes
     const userNotes = (request as any).notes || {};
@@ -590,8 +590,8 @@ Trước khi tạo kế hoạch, hãy TỰ HỎI BẢN THÂN:
 - Giờ thức giấc: ${keywords.wakeUpTime}
 - Giờ đi ngủ: ${keywords.sleepTime}
 - Thời gian nghỉ ngơi: ${keywords.restTime}
-- Sở thích: ${keywords.preferences.length > 0 ? keywords.preferences.join(', ') : 'Không có sở thích đặc biệt'}
-- Tránh: ${keywords.avoidances.length > 0 ? keywords.avoidances.join(', ') : 'Không có'}
+- Preferences: ${keywords.preferences.length > 0 ? keywords.preferences.join(', ') : 'No special preferences'}
+- Avoidances: ${keywords.avoidances.length > 0 ? keywords.avoidances.join(', ') : 'None'}
 - Phân khúc ngân sách: ${keywords.budgetLevel}
 - Loại nhóm: ${keywords.groupType}
 
@@ -625,13 +625,13 @@ Từ DATABASE, hãy:
 - Khung giờ ưa thích:
   ${timePrefsText}
   **→ HÃY ĐỐI CHIẾU với openingHours trong database để chọn địa điểm phù hợp**
-- Sở thích ẩm thực: ${request.foodPreferences.join(', ') || 'Không có'} 
-  **→ Tìm kiếm trong database các món có cuisine/dishes khớp**
-- Dị ứng/Hạn chế: ${[...request.allergies, ...request.restrictions].join(', ') || 'Không có'}
-  **→ LOẠI BỎ các địa điểm không phù hợp**
+- Food preferences: ${request.foodPreferences.join(', ') || 'None'} 
+  **→ Search database for dishes with matching cuisine/dishes**
+- Allergies/Restrictions: ${[...request.allergies, ...request.restrictions].join(', ') || 'None'}
+  **→ REMOVE places that are not suitable**
 
-**⚠️ GHI CHÚ ĐẶC BIỆT TỪ NGƯỜI DÙNG:**
-${combinedNotes || 'Không có ghi chú đặc biệt'}
+**⚠️ SPECIAL NOTES FROM USER:**
+${combinedNotes || 'No special notes'}
 
 **DỰ BÁO THỜI TIẾT:**
 ${weather.map(w => `- ${w.date}: ${w.condition} ${w.description}, ${w.temp.min}°C - ${w.temp.max}°C, ${w.recommendation}`).join('\n')}
@@ -647,13 +647,13 @@ ${weather.map(w => `- ${w.date}: ${w.condition} ${w.description}, ${w.temp.min}�
 - MỖI NGÀY = 1 KHU VỰC duy nhất
 - TẤT CẢ hoạt động trong ngày (ăn sáng, tham quan, ăn trưa, cafe, ăn tối) phải ở CÙNG KHU VỰC
 - KHÔNG được nhảy giữa các khu vực trong 1 ngày
-- Ví dụ: Nếu chọn "Khu Bãi biển" → tất cả điểm trong ngày phải gần biển Mỹ Khê
+- Example: If choosing "Beach Area" → all points in the day must be near My Khe Beach
 - Khoảng cách giữa các điểm trong ngày: ≤ 5km
 
-**📍 PHÂN BỔ NGÀY (ví dụ 3 ngày 2 đêm):**
-- Ngày 1: Khu Bãi biển (check-in resort, tắm biển, hải sản, cafe view biển)
-- Ngày 2: Khu Núi (Bà Nà Hills cả ngày HOẶC Sơn Trà + Chùa Linh Ứng)
-- Ngày 3: Khu Trung tâm (Cầu Rồng, chợ Hàn, ăn sáng bún chả cá, shopping) → checkout
+**📍 DAY ALLOCATION (example: 3 days 2 nights):**
+- Day 1: Beach Area (check-in resort, beach, seafood, cafe with beach view)
+- Day 2: Mountain Area (Bà Nà Hills full day OR Son Tra + Linh Ung Pagoda)
+- Day 3: City Center (Dragon Bridge, Han Market, breakfast bun cha ca, shopping) → checkout
 
 **DATABASE ĐỊA ĐIỂM ĐÀ NẴNG (Sử dụng ưu tiên các địa điểm này):**
 
@@ -708,11 +708,11 @@ ${detailedPlaces}
    - **CHI PHÍ: Lấy estimatedCost từ database × SỐ NGƯỜI (${request.numberOfPeople.adults} người lớn + ${request.numberOfPeople.children} trẻ em)**
    
 3. Lưu ý:
-   - **TÍNH CHI PHÍ CHÍNH XÁC:**
-     * Chi phí mỗi activity = estimatedCost × tổng số người (adults + children)
-     * VD: Chè 30k/người × 2 người = 60k
-     * VD: Vé tham quan 100k/người × 4 người = 400k
-     * Trẻ em có thể giảm giá 50% tùy địa điểm
+   - **CALCULATE COST ACCURATELY:**
+     * Cost per activity = estimatedCost × total number of people (adults + children)
+     * Example: Che 30k/person × 2 people = 60k
+     * Example: Admission ticket 100k/person × 4 people = 400k
+     * Children may get 50% discount depending on the place
    - **ƯU TIÊN GỢI Ý CÁC ĐỊA ĐIỂM PHÙ HỢP VỚI KHUNG GIỜ ƯA THÍCH:**
      * Nếu người dùng chọn "Sáng sớm" (5:00-7:00): Gợi ý Đèo Hải Vân (đón bình minh), chợ Hàn, bãi biển sớm
      * Nếu chọn "Buổi sáng" (8:00-11:00): Bảo tàng, đền chùa, tour tham quan
@@ -748,15 +748,15 @@ ${detailedPlaces}
      * Ô tô trong thành phố: ~30 km/h → 10km = 20 phút
      * Đi xa (đèo, núi): ~40 km/h → 30km = 45 phút
    - **Lưu ý tắc đường giờ cao điểm (7-9h sáng, 5-7h chiều): Thêm 30-50% thời gian**
-   - **VD: Từ Mỹ Khê đến Bà Nà Hills (30km) = 45 phút xe ô tô**
+   - **Example: From My Khe to Ba Na Hills (30km) = 45 minutes by car**
 
-6. **🚖 TÍNH CHI PHÍ GRAB:**
-   - **GrabBike**: 10,000 - 13,000 VNĐ/km (dùng trung bình: 11,500 VNĐ/km)
-     * VD: 5km = 57,500 VNĐ
-     * VD: 15km = 172,500 VNĐ
-   - **GrabCar 4 chỗ**: 22,000 VNĐ (2km đầu) + 12,000 VNĐ/km (từ km thứ 3)
-     * VD: 5km = 22,000 + (3 × 12,000) = 58,000 VNĐ
-     * VD: 15km = 22,000 + (13 × 12,000) = 178,000 VNĐ
+6. **🚖 CALCULATE GRAB COST:**
+   - **GrabBike**: 10,000 - 13,000 VND/km (average: 11,500 VND/km)
+     * Example: 5km = 57,500 VND
+     * Example: 15km = 172,500 VND
+   - **GrabCar 4-seater**: 22,000 VND (first 2km) + 12,000 VND/km (from 3rd km)
+     * Example: 5km = 22,000 + (3 × 12,000) = 58,000 VND
+     * Example: 15km = 22,000 + (13 × 12,000) = 178,000 VND
    - **Phương tiện di chuyển người dùng chọn: ${request.transportation}**
    - PHẢI thêm "transportCost" vào mỗi schedule item
 
@@ -797,14 +797,14 @@ ${detailedPlaces}
    
    Kế hoạch đảm bảo tất cả hoạt động trong cùng ngày ở gần nhau (≤5km) để tối ưu thời gian di chuyển và chi phí Grab."
    
-9. Cho mỗi schedule item, PHẢI có:
-   - **travelTime**: Thời gian di chuyển từ địa điểm trước đó (phút) - TÍNH CHÍNH XÁC
-   - **travelDistance**: Khoảng cách thực tế (km)
-   - **transportCost**: Chi phí Grab (VNĐ) - TÍNH THEO LOẠI XE VÀ KHOẢNG CÁCH
-   - **previousLocation**: Tọa độ địa điểm trước đó để tham khảo
+9. For each schedule item, MUST include:
+   - **travelTime**: Travel time from previous location (minutes) - CALCULATE ACCURATELY
+   - **travelDistance**: Actual distance (km)
+   - **transportCost**: Grab cost (VND) - CALCULATE BY VEHICLE TYPE AND DISTANCE
+   - **previousLocation**: Coordinates of previous location for reference
 
 **FORMAT TRẢ VỀ (JSON):**
-Trả về CHÍNH XÁC theo format JSON sau, không thêm text nào khác:
+Return EXACTLY in the following JSON format, do not add any other text:
 
 {
   "explanation": "[PHẦN GIẢI THÍCH NHƯ ĐÃ HƯỚNG DẪN Ở TRÊN]",
@@ -836,7 +836,7 @@ Trả về CHÍNH XÁC theo format JSON sau, không thêm text nào khác:
             "openingHours": "07:00-22:00",
             "tips": ["Đi sớm để tránh đông", "Mang áo ấm"]
           },
-          "notes": "Tôi chọn địa điểm này vì [GIẢI THÍCH DỰA TRÊN KEYWORDS]: ${keywords.preferences.includes('mountain') ? 'Bạn thích núi' : ''} ${keywords.budgetLevel === 'luxury' ? 'Phù hợp với ngân sách cao cấp' : ''}. Chi phí đã tính cho ${request.numberOfPeople.adults + request.numberOfPeople.children} người.",
+          "notes": "I chose this place because [EXPLANATION BASED ON KEYWORDS]: ${keywords.preferences.includes('mountain') ? 'You like mountains' : ''} ${keywords.budgetLevel === 'luxury' ? 'Suitable for luxury budget' : ''}. Cost calculated for ${request.numberOfPeople.adults + request.numberOfPeople.children} people.",
           "travelTime": 45,
           "travelDistance": 30.5,
           "previousLocation": { "lat": 16.0544, "lng": 108.2022 }
@@ -856,7 +856,7 @@ Trả về CHÍNH XÁC theo format JSON sau, không thêm text nào khác:
         "dinner": { "name": "Tên quán từ database", "estimatedCost": 150000 }
       },
       "estimatedCost": 500000,
-      "notes": ["Lưu ý 1", "Lưu ý 2"]
+      "notes": ["Note 1", "Note 2"]
     }
   ],
   "totalEstimatedCost": {
@@ -868,7 +868,7 @@ Trả về CHÍNH XÁC theo format JSON sau, không thêm text nào khác:
   }
 }
 
-Hãy tạo kế hoạch chi tiết và thực tế nhất!`;
+Please create the most detailed and realistic plan!`;
   }
 
   /**
@@ -1440,17 +1440,17 @@ Hãy tạo kế hoạch chi tiết và thực tế nhất!`;
       });
 
       // Create explanation
-      const explanation = `Dựa vào thông tin bạn cung cấp, tôi đã tạo kế hoạch này với những lý do cụ thể:
+      const explanation = `Based on the information you provided, I have created this plan with specific reasons:
 
-**VỀ GIỜ GIẤC:**
-- Giờ thức giấc: ${keywords.wakeUpTime} - ${keywords.wakeUpTime === '06:00' ? 'Bạn thích dậy sớm để đón bình minh' : keywords.wakeUpTime === '09:00' ? 'Bạn thích ngủ nướng và bắt đầu ngày muộn hơn' : 'Giờ thức giấc tiêu chuẩn'}
-- Giờ đi ngủ: ${keywords.sleepTime} - ${keywords.sleepTime === '22:00' ? 'Bạn thích nghỉ ngơi sớm' : keywords.sleepTime === '00:00' ? 'Bạn thích thức khuya và tận hưởng nightlife' : 'Giờ ngủ tiêu chuẩn'}
-- Thời gian nghỉ: ${keywords.restTime === 'none' ? 'Bạn không cần nghỉ trưa, nên tôi sắp xếp hoạt động liên tục' : 'Bạn cần nghỉ trưa ' + keywords.restTime + ', nên tôi đã dành thời gian này để nghỉ ngơi'}
+**ABOUT SCHEDULE:**
+- Wake-up time: ${keywords.wakeUpTime} - ${keywords.wakeUpTime === '06:00' ? 'You like to wake up early to catch the sunrise' : keywords.wakeUpTime === '09:00' ? 'You like to sleep in and start the day later' : 'Standard wake-up time'}
+- Bedtime: ${keywords.sleepTime} - ${keywords.sleepTime === '22:00' ? 'You prefer to rest early' : keywords.sleepTime === '00:00' ? 'You like to stay up late and enjoy nightlife' : 'Standard bedtime'}
+- Rest time: ${keywords.restTime === 'none' ? 'You don\'t need a nap, so I arranged continuous activities' : 'You need a ' + keywords.restTime + ' nap, so I have allocated this time for rest'}
 
 **VỀ PHÂN VÙNG ĐỊA LÝ:**
-- Tất cả địa điểm trong mỗi ngày được chọn từ cùng một khu vực để tối ưu thời gian di chuyển
-- Khoảng cách giữa các điểm trong ngày: ≤5km
-- Ngân sách: ${keywords.budgetLevel} (${request.budget.min.toLocaleString()} - ${request.budget.max.toLocaleString()} VNĐ)`;
+- All places in each day are selected from the same area to optimize travel time
+- Distance between points in the day: ≤5km
+- Budget: ${keywords.budgetLevel} (${request.budget.min.toLocaleString()} - ${request.budget.max.toLocaleString()} VND)`;
 
       days.push({
         day: dayCount++,
@@ -1465,9 +1465,9 @@ Hãy tạo kế hoạch chi tiết và thực tế nhất!`;
         estimatedCost: dayCost,
         notes: [
           explanation,
-          `📍 Tất cả địa điểm trong ngày thuộc ${zoneName} - tối ưu khoảng cách di chuyển`,
-          '💡 Schedule được tối ưu theo giờ giấc cá nhân và khoảng cách',
-          '💰 Chi phí được tính chính xác: estimatedCost × số người'
+          `📍 All places in the day are in ${zoneName} - optimized travel distance`,
+          '💡 Schedule is optimized according to personal schedule and distance',
+          '💰 Cost is calculated accurately: estimatedCost × number of people'
         ],
       });
     }
