@@ -111,57 +111,38 @@ export function getCurrentLocation(): Promise<Location> {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log('✅ GPS success (High accuracy):', position.coords);
+        console.log(`   Coordinates: ${position.coords.latitude}, ${position.coords.longitude}`);
         resolve({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         });
       },
-      (error) => {
-        console.warn('⚠️ GPS failed, trying Stage 2 (Network location)...', error.message);
+      async (error) => {
+        console.warn('⚠️ GPS failed:', error.message);
         
-        // Stage 2: Fallback to low accuracy (WiFi/Network)
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            console.log('✅ Network location success (Low accuracy):', position.coords);
-            resolve({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            });
-          },
-          async (fallbackError) => {
-            console.warn('⚠️ Network location failed, trying Stage 3 (IP location)...');
-            
-            // Stage 3: Fallback to IP Geolocation (already handles fallback to DA_NANG_CENTER)
-            const ipLocation = await getLocationFromIP();
-            
-            // Log detailed error info for debugging
-            switch (fallbackError.code) {
-              case fallbackError.PERMISSION_DENIED:
-                console.warn('📍 Location permission denied. Using IP or default location.');
-                break;
-              case fallbackError.POSITION_UNAVAILABLE:
-                console.warn('📍 Location unavailable (GPS off, no network, or desktop). Using IP or default.');
-                break;
-              case fallbackError.TIMEOUT:
-                console.warn('📍 Location request timed out. Using IP or default location.');
-                break;
-              default:
-                console.warn('📍 Geolocation error:', fallbackError);
-            }
-            
-            // Stage 4: Always resolve (IP location already returns DA_NANG_CENTER on failure)
-            resolve(ipLocation);
-          },
-          {
-            enableHighAccuracy: false,
-            timeout: 8000,
-            maximumAge: 60000,
-          }
-        );
+        // Log detailed error info for debugging
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            console.warn('📍 Location permission denied by user. Please enable location access in browser settings.');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            console.warn('📍 Location unavailable (GPS off, no network, or desktop). Trying IP location...');
+            break;
+          case error.TIMEOUT:
+            console.warn('📍 Location request timed out. Trying IP location...');
+            break;
+          default:
+            console.warn('📍 Geolocation error:', error);
+        }
+        
+        // Fallback to IP location if GPS fails
+        console.log('🌐 Trying IP location as fallback...');
+        const ipLocation = await getLocationFromIP();
+        resolve(ipLocation); // getLocationFromIP() already handles fallback to DA_NANG_CENTER
       },
       {
         enableHighAccuracy: true,
-        timeout: 5000, // Reduced to 5s for faster fallback
+        timeout: 10000, // 10 seconds timeout for GPS
         maximumAge: 0,
       }
     );

@@ -2,7 +2,8 @@
 
 import React, { useState, useRef } from 'react';
 import { Incident, INCIDENT_TYPES, Location, SEVERITY_LEVELS } from '@/lib/types';
-import { reportIncident } from '@/lib/incidentService';
+import { reportIncident } from '@/lib/incidentServiceFirebase';
+import { uploadToCloudinary, fileToBase64 } from '@/lib/cloudinaryService';
 import { useAuth } from '../auth/AuthProvider';
 
 interface ReportIncidentFormProps {
@@ -18,11 +19,12 @@ export default function ReportIncidentForm({
 }: ReportIncidentFormProps) {
   const { user } = useAuth();
   const [type, setType] = useState<keyof typeof INCIDENT_TYPES>('flooding');
-  const [severity, setSeverity] = useState<'low' | 'medium' | 'high'>('medium');
+  const [severity, setSeverity] = useState<'low' | 'medium' | 'critical'>('medium');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,27 +42,39 @@ export default function ReportIncidentForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setUploadProgress(0);
 
     try {
       let imageUrl = '';
 
-      // Convert image to base64 for localStorage
+      // Upload image to Cloudinary if provided
       if (image) {
-        imageUrl = imagePreview; // Use the preview as the stored image
+        setUploadProgress(50);
+        try {
+          imageUrl = await uploadToCloudinary(image);
+        } catch (cloudError) {
+          console.warn('Cloudinary upload failed, using base64 fallback:', cloudError);
+          // Fallback to base64 if Cloudinary fails
+          imageUrl = imagePreview;
+        }
       }
 
-      // Report incident (saves to localStorage as pending)
-      const newIncident = reportIncident({
+      setUploadProgress(75);
+
+      // Report incident to Firebase
+      const newIncident = await reportIncident({
         type,
-        severity,
+        severity_level: severity,
         description,
         location,
         imageUrl,
-        reportedBy: user?.email || 'Anonymous',
+        user: user?.email || 'Anonymous',
+        status: 'pending',
       });
 
+      setUploadProgress(100);
       setLoading(false);
-      
+
       // Show success message
       alert('✅ Report Submitted Successfully!\n\n' +
             '📋 Status: Pending Admin Approval\n' +
@@ -71,13 +85,14 @@ export default function ReportIncidentForm({
             '   • SMS/Email confirmations\n' +
             '   • Report tracking with status updates\n' +
             '   • Integration with city emergency services');
-      
+
       onSuccess?.();
 
     } catch (error: any) {
       console.error('❌ Error reporting incident:', error);
       alert('❌ An error occurred: ' + error.message);
       setLoading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -93,8 +108,7 @@ export default function ReportIncidentForm({
           <span className="text-sm sm:text-base">💡</span>
           <div className="flex-1">
             <p className="text-[10px] sm:text-xs text-blue-800 leading-relaxed">
-              <span className="font-semibold">Demo Mode:</span> Reports are stored locally for admin review. 
-              Once we are in the next round, we will update the website to match the goals we have set out in the plan.
+              <span className="font-semibold">Reports stored in Firebase:</span> Your report will be saved to Firebase Firestore and reviewed by admins in real-time.
             </p>
           </div>
         </div>
@@ -135,7 +149,7 @@ export default function ReportIncidentForm({
               <button
                 key={key}
                 type="button"
-                onClick={() => setSeverity(key as 'low' | 'medium' | 'high')}
+                onClick={() => setSeverity(key as 'low' | 'medium' | 'critical')}
                 className={`flex-1 p-2 rounded-xl border-2 transition-all ${
                   severity === key
                     ? `shadow-md`
@@ -200,6 +214,16 @@ export default function ReportIncidentForm({
           📍 Location: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
         </div>
 
+        {/* Progress Bar */}
+        {loading && uploadProgress > 0 && (
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-grab-green h-2 rounded-full transition-all duration-300"
+              style={{ width: `${uploadProgress}%` }}
+            ></div>
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex gap-2">
           {onCancel && (
@@ -217,7 +241,7 @@ export default function ReportIncidentForm({
             disabled={loading || !description}
             className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base bg-grab-green text-white rounded-xl hover:bg-[#009640] transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg"
           >
-            {loading ? '⏳ Submitting...' : '✅ Report'}
+            {loading ? `⏳ Uploading... ${uploadProgress}%` : '✅ Report'}
           </button>
         </div>
       </form>

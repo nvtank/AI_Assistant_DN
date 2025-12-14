@@ -5,29 +5,48 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Incident, INCIDENT_TYPES, Location } from '@/lib/types';
 import { formatTimestamp } from '@/lib/utils';
+import { listenToVerifiedIncidents } from '@/lib/incidentServiceFirebase';
 
 interface IncidentMapProps {
   center: Location;
-  incidents: Incident[];
+  incidents?: Incident[];
   onIncidentClick?: (incident: Incident) => void;
   onMapClick?: (location: Location) => void;
 }
 
 export default function IncidentMap({
   center,
-  incidents,
+  incidents = [],
   onIncidentClick,
   onMapClick,
 }: IncidentMapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<L.Marker[]>([]);
+  const userMarkerRef = useRef<L.Marker | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [firebaseIncidents, setFirebaseIncidents] = useState<Incident[]>([]);
   const isInitializedRef = useRef(false);
+
+  // Use Firebase incidents if available, otherwise fall back to props
+  const displayIncidents = firebaseIncidents.length > 0 ? firebaseIncidents : incidents;
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // Setup realtime listener for Firebase incidents
+  useEffect(() => {
+    if (!isClient) return;
+
+    const unsubscribe = listenToVerifiedIncidents((incidents) => {
+      setFirebaseIncidents(incidents);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [isClient]);
 
   // Initialize map
   useEffect(() => {
@@ -44,9 +63,16 @@ export default function IncidentMap({
 
       // Define Da Nang bounds
       const daNangBounds = L.latLngBounds(
-        L.latLng(15.9, 107.9),  // Southwest corner (bottom-left)
-        L.latLng(16.2, 108.4)   // Northeast corner (top-right)
+        L.latLng(15.9, 107.9),   // Southwest corner (bottom-left)
+        L.latLng(16.2, 108.4)    // Northeast corner (top-right)
       );
+
+      // Ensure center is within Da Nang bounds
+      let mapCenter = center;
+      if (!daNangBounds.contains([center.lat, center.lng])) {
+        console.log(`📍 Location ${center.lat}, ${center.lng} outside Da Nang, using Da Nang center`);
+        mapCenter = { lat: 16.0544, lng: 108.2022 }; // Da Nang center
+      }
 
       const map = L.map(mapContainerRef.current, {
         zoomControl: true,
@@ -57,7 +83,7 @@ export default function IncidentMap({
         maxBoundsViscosity: 1.0,           // Make bounds completely solid (can't drag outside)
         minZoom: 11,                       // Minimum zoom to see Da Nang area
         maxZoom: 18,                       // Maximum zoom for details
-      }).setView([center.lat, center.lng], 13);
+      }).setView([mapCenter.lat, mapCenter.lng], 13);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
@@ -73,7 +99,13 @@ export default function IncidentMap({
         iconAnchor: [10, 10],
       });
 
-      L.marker([center.lat, center.lng], { icon: userIcon })
+      // Ensure center is within Da Nang bounds for user marker too
+      let userMarkerPos = center;
+      if (!daNangBounds.contains([center.lat, center.lng])) {
+        userMarkerPos = { lat: 16.0544, lng: 108.2022 };
+      }
+
+      userMarkerRef.current = L.marker([userMarkerPos.lat, userMarkerPos.lng], { icon: userIcon })
         .addTo(map)
         .bindPopup('<b>Your Location</b>');
 
@@ -123,6 +155,29 @@ export default function IncidentMap({
     };
   }, [isClient]);
 
+  // Update user location marker when center changes
+  useEffect(() => {
+    if (!mapRef.current || !userMarkerRef.current || !isClient) return;
+
+    try {
+      // Ensure center is within Da Nang bounds
+      const daNangBounds = L.latLngBounds(
+        L.latLng(15.9, 107.9),
+        L.latLng(16.2, 108.4)
+      );
+
+      let markerPos = center;
+      if (!daNangBounds.contains([center.lat, center.lng])) {
+        markerPos = { lat: 16.0544, lng: 108.2022 };
+      }
+
+      userMarkerRef.current.setLatLng([markerPos.lat, markerPos.lng]);
+      mapRef.current.panTo([markerPos.lat, markerPos.lng]);
+    } catch (error) {
+      console.error('Error updating user location:', error);
+    }
+  }, [center, isClient]);
+
   // Update incident markers
   useEffect(() => {
     if (!mapRef.current || !isClient || !isInitializedRef.current) return;
@@ -141,7 +196,7 @@ export default function IncidentMap({
       markersRef.current = [];
 
       // Add new markers
-      incidents.forEach((incident) => {
+      displayIncidents.forEach((incident) => {
         if (!mapRef.current) return;
 
         try {
@@ -206,7 +261,7 @@ export default function IncidentMap({
     } catch (error) {
       console.error('Error updating markers:', error);
     }
-  }, [incidents, isClient, onIncidentClick]);
+  }, [displayIncidents, isClient, onIncidentClick]);
 
   if (!isClient) {
     return (

@@ -9,8 +9,10 @@ import {
   approveIncident, 
   rejectIncident,
   deleteIncident,
-  getIncidentStats 
-} from '@/lib/incidentService';
+  getIncidentStats,
+  listenToPendingIncidents,
+  listenToVerifiedIncidents,
+} from '@/lib/incidentServiceFirebase';
 import { Incident, INCIDENT_TYPES, SEVERITY_LEVELS } from '@/lib/types';
 
 // Helper function to format time
@@ -42,6 +44,7 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'pending' | 'verified'>('pending');
   const [stats, setStats] = useState<any>(null);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
+  const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -52,39 +55,80 @@ export default function AdminPage() {
   useEffect(() => {
     if (user) {
       loadData();
+      setupRealtimeListeners();
     }
   }, [user]);
 
-  const loadData = () => {
-    setPendingIncidents(getPendingIncidents());
-    setVerifiedIncidents(getVerifiedIncidents());
-    setStats(getIncidentStats());
+  const loadData = async () => {
+    try {
+      setDataLoading(true);
+      const pending = await getPendingIncidents();
+      const verified = await getVerifiedIncidents();
+      const statsData = await getIncidentStats();
+
+      setPendingIncidents(pending);
+      setVerifiedIncidents(verified);
+      setStats(statsData);
+      setDataLoading(false);
+    } catch (error) {
+      console.error('Error loading data:', error);
+      setDataLoading(false);
+    }
   };
 
-  const handleApprove = (incidentId: string) => {
+  const setupRealtimeListeners = () => {
+    // Listen to pending incidents changes
+    const unsubscribePending = listenToPendingIncidents((incidents) => {
+      setPendingIncidents(incidents);
+    });
+
+    // Listen to verified incidents changes
+    const unsubscribeVerified = listenToVerifiedIncidents((incidents) => {
+      setVerifiedIncidents(incidents);
+    });
+
+    return () => {
+      unsubscribePending();
+      unsubscribeVerified();
+    };
+  };
+
+  const handleApprove = async (incidentId: string) => {
     if (confirm('Approve this incident?')) {
-      approveIncident(incidentId);
-      loadData();
-      setSelectedIncident(null);
-      alert('✅ Incident approved! It is now displayed on the map.');
+      try {
+        await approveIncident(incidentId);
+        setSelectedIncident(null);
+        alert('✅ Incident approved! It is now displayed on the map.');
+      } catch (error) {
+        console.error('Error approving incident:', error);
+        alert('❌ Error approving incident');
+      }
     }
   };
 
-  const handleReject = (incidentId: string) => {
+  const handleReject = async (incidentId: string) => {
     if (confirm('Reject this incident?')) {
-      rejectIncident(incidentId);
-      loadData();
-      setSelectedIncident(null);
-      alert('✅ Incident rejected!');
+      try {
+        await rejectIncident(incidentId);
+        setSelectedIncident(null);
+        alert('✅ Incident rejected!');
+      } catch (error) {
+        console.error('Error rejecting incident:', error);
+        alert('❌ Error rejecting incident');
+      }
     }
   };
 
-  const handleDelete = (incidentId: string) => {
+  const handleDelete = async (incidentId: string) => {
     if (confirm('Delete this incident from the map?')) {
-      deleteIncident(incidentId);
-      loadData();
-      setSelectedIncident(null);
-      alert('✅ Incident deleted!');
+      try {
+        await deleteIncident(incidentId);
+        setSelectedIncident(null);
+        alert('✅ Incident deleted!');
+      } catch (error) {
+        console.error('Error deleting incident:', error);
+        alert('❌ Error deleting incident');
+      }
     }
   };
 
@@ -273,14 +317,14 @@ export default function AdminPage() {
                         </div>
                         <span
                           className={`px-2 py-1 rounded-full text-[10px] sm:text-xs font-semibold ${
-                            incident.severity === 'high'
+                            incident.severity_level === 'critical'
                               ? 'bg-red-100 text-red-700'
-                              : incident.severity === 'medium'
+                              : incident.severity_level === 'medium'
                               ? 'bg-orange-100 text-orange-700'
                               : 'bg-green-100 text-green-700'
                           }`}
                         >
-                          {SEVERITY_LEVELS[incident.severity].label}
+                          {SEVERITY_LEVELS[incident.severity_level].label}
                         </span>
                       </div>
 
@@ -297,7 +341,7 @@ export default function AdminPage() {
 
                       <div className="flex items-center gap-2 text-[10px] sm:text-xs text-gray-500 mb-3 sm:mb-4">
                         <span>👤</span>
-                        <span className="truncate">{incident.reportedBy || 'Anonymous'}</span>
+                        <span className="truncate">{incident.user || 'Anonymous'}</span>
                       </div>
 
                       {/* Actions */}
@@ -394,14 +438,14 @@ export default function AdminPage() {
                   <label className="text-xs sm:text-sm font-semibold text-gray-700">Severity Level</label>
                   <p
                     className={`inline-block mt-1 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${
-                      selectedIncident.severity === 'high'
+                      selectedIncident.severity_level === 'critical'
                         ? 'bg-red-100 text-red-700'
-                        : selectedIncident.severity === 'medium'
+                        : selectedIncident.severity_level === 'medium'
                         ? 'bg-orange-100 text-orange-700'
                         : 'bg-green-100 text-green-700'
                     }`}
                   >
-                    {SEVERITY_LEVELS[selectedIncident.severity].label}
+                    {SEVERITY_LEVELS[selectedIncident.severity_level].label}
                   </p>
                 </div>
 
@@ -420,7 +464,7 @@ export default function AdminPage() {
 
                 <div>
                   <label className="text-xs sm:text-sm font-semibold text-gray-700">Reported By</label>
-                  <p className="mt-1 text-sm sm:text-base text-gray-900">{selectedIncident.reportedBy || 'Anonymous'}</p>
+                  <p className="mt-1 text-sm sm:text-base text-gray-900">{selectedIncident.user || 'Anonymous'}</p>
                 </div>
               </div>
 

@@ -10,7 +10,7 @@ import ReportIncidentForm from '@/components/common/ReportIncidentForm';
 import SimpleSidebar from '@/components/common/SimpleSidebar';
 import MapLegend from '@/components/map/MapLegend';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { getVerifiedIncidents, subscribeToIncidentUpdates } from '@/lib/incidentService';
+import { listenToVerifiedIncidents } from '@/lib/incidentServiceFirebase';
 
 const IncidentMap = dynamic(() => import('@/components/map/IncidentMap'), {
   ssr: false,
@@ -52,22 +52,16 @@ export default function HomePage() {
     }
   }, [user]);
 
-  // Subscribe to incident updates
+  // Subscribe to Firebase incident updates (realtime)
   useEffect(() => {
-    const unsubscribe = subscribeToIncidentUpdates(() => {
-      loadIncidents();
+    const unsubscribe = listenToVerifiedIncidents((incidents) => {
+      setIncidents(incidents);
+      console.log('✅ Updated incidents from Firebase:', incidents.length);
     });
-    return () => unsubscribe();
-  }, []);
 
-  const loadIncidents = useCallback(() => {
-    try {
-      const verifiedIncidents = getVerifiedIncidents();
-      setIncidents(verifiedIncidents);
-      console.log('✅ Loaded incidents:', verifiedIncidents.length);
-    } catch (error) {
-      console.error('Error loading incidents:', error);
-    }
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const initializeApp = async () => {
@@ -75,8 +69,17 @@ export default function HomePage() {
       // Get user location with better error handling
       try {
         console.log('🔍 Requesting user location...');
-        const location = await getCurrentLocation();
+        let location = await getCurrentLocation();
         console.log('✅ Got location:', location);
+        
+        // Check if location is within Da Nang bounds
+        const isDaNang = location.lat >= 15.9 && location.lat <= 16.2 && 
+                         location.lng >= 107.9 && location.lng <= 108.4;
+        
+        if (!isDaNang) {
+          console.warn('⚠️ Location outside Da Nang, using Da Nang center');
+          location = DA_NANG_CENTER;
+        }
         
         const address = await getAddressFromCoords(location.lat, location.lng);
         console.log('✅ Got address:', address);
@@ -89,9 +92,6 @@ export default function HomePage() {
         const address = await getAddressFromCoords(DA_NANG_CENTER.lat, DA_NANG_CENTER.lng);
         setUserLocation({ ...DA_NANG_CENTER, address });
       }
-
-      // Load verified incidents from localStorage
-      loadIncidents();
 
       // Fetch weather
       await fetchWeather(userLocation);

@@ -11,9 +11,10 @@ export interface Incident {
   description: string;
   imageUrl?: string;
   status: 'pending' | 'verified' | 'rejected';
-  severity: 'low' | 'medium' | 'high';
+  severity_level: 'low' | 'medium' | 'critical';
   createdAt: any;
-  reportedBy?: string;
+  user?: string; // Email of the reporter
+  verified: boolean; // Admin approval status
   verifiedAt?: any;
   verifiedBy?: string;
 }
@@ -229,7 +230,7 @@ export const SEVERITY_LEVELS = {
     label: 'Medium',
     color: '#f59e0b',
   },
-  high: {
+  critical: {
     label: 'Critical',
     color: '#ef4444',
   },
