@@ -151,24 +151,31 @@ export function getCurrentLocation(): Promise<Location> {
 
 /**
  * Reverse geocoding using Nominatim (OpenStreetMap)
+ * Uses Next.js API route to avoid CORS issues
  */
 export async function getAddressFromCoords(
   lat: number,
   lng: number
 ): Promise<string> {
   try {
+    // Use Next.js API route to proxy the request (fixes CORS)
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
+      `/api/geocode?lat=${lat}&lng=${lng}`
     );
+    
+    if (!response.ok) {
+      throw new Error(`Geocode API error: ${response.status}`);
+    }
+    
     const data = await response.json();
     
-    if (data.display_name) {
-      return data.display_name;
+    if (data.address) {
+      return data.address;
     }
-    return 'Địa chỉ không xác định';
+    return 'Address not available';
   } catch (error) {
     console.error('Error getting address:', error);
-    return 'Lỗi lấy địa chỉ';
+    return 'Error getting address';
   }
 }
 
