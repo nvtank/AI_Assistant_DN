@@ -189,15 +189,28 @@ export function generateMockGrabLink(
   toLng: number,
   toName: string
 ): string {
-  // Mock Grab app link (internal demo app)
-  const params = new URLSearchParams({
-    lat: toLat.toString(),
-    lng: toLng.toString(),
-    name: toName,
-    address: toName, // Use name as address for simplicity
-  });
+  // Build AppsFlyer OneLink that opens the Grab app to the destination
+  // Requirements: keep signature, but use only toLat/toLng and toName
 
-  return `/mock-grab?${params.toString()}`;
+  const lat = toLat;
+  const lng = toLng;
+  const name = toName || '';
+
+  // Validate coordinates
+  if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) {
+    console.error('generateMockGrabLink: invalid destination coordinates');
+    return '#';
+  }
+
+  // Step 1: internal deep link (must encode address)
+  const encodedAddress = encodeURIComponent(name);
+  const internalDeepLink = `grab://open?screenType=BOOKING&dropOffLatitude=${lat}&dropOffLongitude=${lng}&dropOffAddress=${encodedAddress}`;
+
+  // Step 2: AppsFlyer OneLink wrapper (encode the entire internal link)
+  const encodedPayload = encodeURIComponent(internalDeepLink);
+  const oneLink = `https://grab.onelink.me/2695613898?pid=hackathon_ai_agent&c=booking_demo&is_retargeting=true&af_dp=${encodedPayload}`;
+
+  return oneLink;
 }
 
 /**
