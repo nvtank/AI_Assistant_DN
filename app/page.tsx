@@ -11,6 +11,7 @@ import SimpleSidebar from '@/components/common/SimpleSidebar';
 import MapLegend from '@/components/map/MapLegend';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { listenToVerifiedIncidents } from '@/lib/incidentServiceFirebase';
+import { markUserOnline, markUserOffline, listenToOnlineUsers } from '@/lib/onlineUsersService';
 
 const IncidentMap = dynamic(() => import('@/components/map/IncidentMap'), {
   ssr: false,
@@ -50,6 +51,28 @@ export default function HomePage() {
     if (user) {
       initializeApp();
     }
+  }, [user]);
+
+  // Track online users
+  useEffect(() => {
+    if (!user) {
+      setConnectedUsers(0);
+      return;
+    }
+
+    // Mark user as online
+    markUserOnline(user.uid);
+
+    // Listen to online users count
+    const unsubscribe = listenToOnlineUsers((count) => {
+      setConnectedUsers(count);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      unsubscribe();
+      markUserOffline(user.uid);
+    };
   }, [user]);
 
   // Subscribe to Firebase incident updates (realtime)
@@ -174,6 +197,7 @@ export default function HomePage() {
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         user={user}
+        connectedUsers={connectedUsers}
       />
 
       <main className={`

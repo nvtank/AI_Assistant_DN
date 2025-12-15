@@ -40,10 +40,10 @@ export default function PlaceCard({ place, userLocation }: PlaceCardProps) {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-grab-green/50 transition-all">
       <div className="flex">
         {/* Image or Fallback Icon */}
-        <div className="w-16 h-16 sm:w-24 sm:h-24 flex-shrink-0 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
           {place.imageUrl && !imageError ? (
             <img
               src={place.imageUrl}
@@ -60,10 +60,10 @@ export default function PlaceCard({ place, userLocation }: PlaceCardProps) {
         {/* Content */}
         <div className="flex-1 p-2 sm:p-3">
           <div className="flex items-start justify-between mb-1">
-            <h4 className="font-semibold text-gray-800 text-xs sm:text-sm line-clamp-1">{place.name}</h4>
+            <h4 className="font-semibold text-gray-800 text-xs sm:text-sm line-clamp-1 pr-2">{place.name}</h4>
             {place.rating && (
-              <div className="flex items-center text-[10px] sm:text-xs text-yellow-600">
-                <span className="mr-1">⭐</span>
+              <div className="flex items-center text-[10px] sm:text-xs text-yellow-600 font-semibold flex-shrink-0">
+                <span className="mr-0.5">⭐</span>
                 <span>{place.rating}</span>
               </div>
             )}
@@ -72,14 +72,14 @@ export default function PlaceCard({ place, userLocation }: PlaceCardProps) {
           <p className="text-[10px] sm:text-xs text-gray-600 mb-2 line-clamp-1 sm:line-clamp-2">{place.description}</p>
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-1 sm:space-x-2 text-[10px] sm:text-xs text-gray-500">
-              <span>📍 {formatDistance(place.distance || 0)}</span>
+            <div className="flex items-center space-x-1.5 text-[10px] sm:text-xs text-gray-500">
+              <span className="font-medium">📍 {formatDistance(place.distance || 0)}</span>
               {place.isIndoor && <span className="text-blue-600 hidden sm:inline">🏠</span>}
             </div>
 
             <button
               onClick={handleBookGrab}
-              className="px-2 py-1 sm:px-3 sm:py-1 bg-grab-green text-white text-[10px] sm:text-xs font-semibold rounded-full hover:bg-green-600 transition-colors flex items-center gap-1"
+              className="px-2 py-1 sm:px-3 sm:py-1.5 bg-grab-green text-white text-[10px] sm:text-xs font-semibold rounded-lg hover:bg-green-600 transition-colors flex items-center gap-1 shadow-sm hover:shadow-md"
             >
               <span>🚗</span>
               <span className="hidden sm:inline">Book</span>
