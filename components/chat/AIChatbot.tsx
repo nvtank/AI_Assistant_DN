@@ -87,7 +87,54 @@ export default function AIChatbot({
 
   const switchToNormalMode = () => {
     setChatMode("normal");
+    // Reset messages to default when switching to normal mode
+    // This ensures we don't show planner messages
+    setMessages([{
+      role: "assistant",
+      content: "👋 Hello! I am your AI assistant. Ask me anything about Da Nang!\n\n💡 Tip: Switch to Planner mode to create your travel plan.",
+      timestamp: new Date(),
+    }]);
+    setConversationId(null);
+    // Reload chat history to get normal conversations
+    if (user) {
+      setTimeout(() => {
+        const loadChatHistory = async () => {
+          try {
+            setLoadingHistory(true);
+            const activeConversation = await getUserActiveConversation(user.uid);
+            if (activeConversation && (!activeConversation.type || activeConversation.type === 'normal')) {
+              const loadedMessages = activeConversation.messages.map((msg: any) => ({
+                ...msg,
+                timestamp: msg.timestamp?.toDate ? msg.timestamp.toDate() : new Date(msg.timestamp),
+              }));
+              setMessages(loadedMessages);
+              setConversationId(activeConversation.id || null);
+            }
+          } catch (error) {
+            console.error('❌ Error loading chat history:', error);
+          } finally {
+            setLoadingHistory(false);
+          }
+        };
+        loadChatHistory();
+      }, 100);
+    }
   };
+
+  // Listen for switch to normal mode event from TravelPlannerChat
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const handleSwitchToNormal = () => {
+        switchToNormalMode();
+      };
+      
+      window.addEventListener('switchToNormalMode', handleSwitchToNormal);
+      
+      return () => {
+        window.removeEventListener('switchToNormalMode', handleSwitchToNormal);
+      };
+    }
+  }, [user]); // Add user as dependency
 
   // Check for restart flag and planner mode switch on mount
   useEffect(() => {
@@ -148,7 +195,11 @@ export default function AIChatbot({
         
         // If no specific conversation to load, get active one
         if (!conversationToLoad) {
-          conversationToLoad = await getUserActiveConversation(user.uid);
+          const activeConversation = await getUserActiveConversation(user.uid);
+          // Only use if it's a normal chat conversation (not planner)
+          if (activeConversation && (!activeConversation.type || activeConversation.type === 'normal')) {
+            conversationToLoad = activeConversation;
+          }
         }
         
         if (conversationToLoad && conversationToLoad.messages) {
@@ -481,71 +532,68 @@ export default function AIChatbot({
     "🍜 Good restaurants nearby?",
   ];
 
+  // Force unmount TravelPlannerChat when switching modes
+  if (chatMode === "planner") {
+    return (
+      <div className="flex flex-col h-full sm:h-screen bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
+        <div className="flex-1 overflow-hidden" key="planner-mode">
+          <TravelPlannerChat />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full sm:h-screen bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
-      {/* Modern Header */}
-      <div className="bg-gradient-to-br from-white to-gray-50/50 border-b border-white/30 p-4 sm:p-6 flex-shrink-0">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                {chatMode === "normal" ? "AI Assistant" : "Travel Planner"}
-              </h1>
-              <p className="text-sm text-gray-500 hidden sm:block">
-                {chatMode === "normal"
-                  ? "Your smart companion"
-                  : "Create your perfect trip"}
-              </p>
+      {/* Modern Header - Only show in normal chat mode */}
+          <div className="bg-gradient-to-br from-white to-gray-50/50 border-b border-white/30 p-4 sm:p-6 flex-shrink-0">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+                    AI Assistant
+                  </h1>
+                  <p className="text-sm text-gray-500 hidden sm:block">
+                    Your smart companion
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {voiceSupported && (
+                  <select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value as Language)}
+                    className="text-xs sm:text-sm glass text-gray-700 px-3 py-1.5 rounded-xl border border-white/30 hover:border-grab-green/50 focus:outline-none focus:ring-2 focus:ring-grab-green transition-all"
+                  >
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="vi">🇻🇳 VI</option>
+                  </select>
+                )}
+              </div>
+            </div>
+
+            {/* Modern Mode Toggle */}
+            <div className="glass rounded-2xl p-1 flex gap-1 border border-white/30">
+              <button
+                onClick={switchToNormalMode}
+                className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 bg-grab-green text-white shadow-md"
+              >
+                Chat
+              </button>
+              <button
+                onClick={switchToPlannerMode}
+                className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-white/50"
+              >
+                Planner
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {voiceSupported && chatMode === "normal" && (
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as Language)}
-                className="text-xs sm:text-sm glass text-gray-700 px-3 py-1.5 rounded-xl border border-white/30 hover:border-grab-green/50 focus:outline-none focus:ring-2 focus:ring-grab-green transition-all"
-              >
-                <option value="en">🇬🇧 EN</option>
-                <option value="vi">🇻🇳 VI</option>
-              </select>
-            )}
-          </div>
-        </div>
-
-        {/* Modern Mode Toggle */}
-        <div className="glass rounded-2xl p-1 flex gap-1 border border-white/30">
-          <button
-            onClick={switchToNormalMode}
-            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-              chatMode === "normal"
-                ? "bg-grab-green text-white shadow-md"
-                : "text-gray-600 hover:text-gray-900 hover:bg-white/50"
-            }`}
-          >
-            Chat
-          </button>
-          <button
-            onClick={switchToPlannerMode}
-            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-              chatMode === "planner"
-                ? "bg-grab-green text-white shadow-md"
-                : "text-gray-600 hover:text-gray-900 hover:bg-white/50"
-            }`}
-          >
-            Planner
-          </button>
-        </div>
-      </div>
-
-      {chatMode === "planner" ? (
-        <div className="flex-1 overflow-hidden">
-          <TravelPlannerChat />
-        </div>
-      ) : (
-        <>
-          {/* Modern Chat Box */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gradient-to-b from-white/50 to-white">
+          {/* Normal Chat Mode Content */}
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+            {/* Modern Chat Box */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gradient-to-b from-white/50 to-white">
             {loadingHistory && (
               <div className="flex justify-center items-center py-8">
                 <div className="text-sm text-gray-500">Loading chat history...</div>
@@ -604,58 +652,67 @@ export default function AIChatbot({
             )}
 
             <div ref={messagesEndRef}></div>
-          </div>
+            </div>
 
-          {showSuggestions && suggestedPlaces.length > 0 && (
-            <div className="border-t border-white/30 p-4 sm:p-6 bg-gradient-to-b from-white/50 to-white relative max-h-[200px] overflow-y-auto flex-shrink-0">
-              <button
-                onClick={() => setShowSuggestions(false)}
-                className="absolute right-4 top-4 text-xs px-3 py-1.5 glass hover:bg-white/60 rounded-xl border border-white/30 shadow-sm transition-all text-gray-600"
-              >
-                ✕
-              </button>
-
-              <h3 className="font-bold mb-4 text-gray-900 text-sm sm:text-base flex items-center gap-2">
-                <span className="text-lg">📍</span>
-                <span className="hidden sm:inline">Recommended for You</span>
-                <span className="sm:hidden">Suggestions</span>
-              </h3>
-
-              <div className="space-y-2 sm:space-y-3">
-                {/* Show only 2 places on mobile, 3 on desktop */}
-                {suggestedPlaces.slice(0, 2).map((place) => (
-                  <PlaceCard
-                    key={place.id}
-                    place={place}
-                    userLocation={userLocation}
-                  />
-                ))}
-                {suggestedPlaces.length > 2 && (
-                  <div className="hidden sm:block">
-                    <PlaceCard
-                      key={suggestedPlaces[2].id}
-                      place={suggestedPlaces[2]}
-                      userLocation={userLocation}
-                    />
+            {/* Suggestions - Sticky at bottom, above input */}
+            {showSuggestions && suggestedPlaces.length > 0 && (
+              <div className="border-t border-white/30 bg-gradient-to-b from-white/50 to-white flex-shrink-0 sticky bottom-0 z-10 shadow-lg">
+                <div className="p-3 sm:p-4">
+                  {/* Header with title and close button */}
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base flex items-center gap-2">
+                      <span className="text-lg sm:text-xl">📍</span>
+                      <span className="hidden sm:inline">Recommended for You</span>
+                      <span className="sm:hidden">Suggestions</span>
+                    </h3>
+                    <button
+                      onClick={() => setShowSuggestions(false)}
+                      className="px-2 py-1 sm:px-3 sm:py-1.5 glass hover:bg-white/80 rounded-lg border border-white/30 shadow-sm transition-all text-gray-600 hover:text-gray-900 text-xs sm:text-sm font-medium"
+                      title="Hide suggestions"
+                    >
+                      ✕ Close
+                    </button>
                   </div>
-                )}
+
+                  <div className="space-y-2 sm:space-y-2.5 max-h-[200px] overflow-y-auto">
+                    {/* Show only 2 places on mobile, 3 on desktop */}
+                    {suggestedPlaces.slice(0, 2).map((place) => (
+                      <PlaceCard
+                        key={place.id}
+                        place={place}
+                        userLocation={userLocation}
+                      />
+                    ))}
+                    {suggestedPlaces.length > 2 && (
+                      <div className="hidden sm:block">
+                        <PlaceCard
+                          key={suggestedPlaces[2].id}
+                          place={suggestedPlaces[2]}
+                          userLocation={userLocation}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {!showSuggestions && (
-            <div className="border-t border-white/30 p-3 sm:p-4 bg-white/50 flex justify-center flex-shrink-0">
-              <button
-                onClick={() => setShowSuggestions(true)}
-                className="px-3 sm:px-4 py-2 text-xs sm:text-sm glass hover:bg-white/60 rounded-xl border border-white/30 shadow-sm text-gray-700"
-              >
-                📍 Show Suggestions
-              </button>
-            </div>
-          )}
+            {/* Show Suggestions Button - Sticky at bottom if suggestions hidden */}
+            {!showSuggestions && (
+              <div className="border-t border-white/30 bg-white/50 flex-shrink-0 sticky bottom-0 z-10">
+                <div className="p-2 sm:p-3 flex justify-center">
+                  <button
+                    onClick={() => setShowSuggestions(true)}
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm glass hover:bg-white/60 rounded-xl border border-white/30 shadow-sm text-gray-700 font-medium"
+                  >
+                    📍 Show Suggestions
+                  </button>
+                </div>
+              </div>
+            )}
 
-          {messages.length <= 1 && (
-            <div className="border-t border-white/30 p-4 sm:p-6 bg-gradient-to-b from-white/50 to-white flex-shrink-0">
+            {messages.length <= 1 && (
+              <div className="border-t border-white/30 p-4 sm:p-6 bg-gradient-to-b from-white/50 to-white flex-shrink-0">
               <p className="text-sm text-gray-700 mb-3 font-semibold">
                 💡 Quick Questions
               </p>
@@ -679,8 +736,8 @@ export default function AIChatbot({
                   </button>
                 ))}
               </div>
-            </div>
-          )}
+              </div>
+            )}
 
           {/* INPUT */}
           <div className="border-t border-white/30 bg-white/50 p-3 sm:p-4 flex-shrink-0">
@@ -761,8 +818,7 @@ export default function AIChatbot({
               </button>
             </div>
           </div>
-        </>
-      )}
+          </div>
     </div>
   );
 }

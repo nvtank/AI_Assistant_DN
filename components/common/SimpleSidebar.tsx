@@ -25,14 +25,14 @@ interface SimpleSidebarProps {
   isOpen: boolean;
   onToggle: () => void;
   user: any;
+  connectedUsers?: number;
 }
 
 type SidebarTab = 'chat' | 'plans';
 
-export default function SimpleSidebar({ isOpen, onToggle, user }: SimpleSidebarProps) {
+export default function SimpleSidebar({ isOpen, onToggle, user, connectedUsers = 0 }: SimpleSidebarProps) {
   const router = useRouter();
   const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [connectedUsers] = useState(0);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<SidebarTab>('chat');
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
