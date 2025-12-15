@@ -127,9 +127,9 @@ export const getIncidentStats = () => {
       traffic: verified.filter(i => i.type === 'traffic').length,
     },
     bySeverity: {
-      low: verified.filter(i => i.severity === 'low').length,
-      medium: verified.filter(i => i.severity === 'medium').length,
-      high: verified.filter(i => i.severity === 'high').length,
+      low: verified.filter(i => i.severity_level === 'low').length,
+      medium: verified.filter(i => i.severity_level === 'medium').length,
+      critical: verified.filter(i => i.severity_level === 'critical').length,
     }
   };
 };
