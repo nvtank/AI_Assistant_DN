@@ -69,8 +69,8 @@ graph TB
     CDN --> SSR
     
     %% API connections
-    WEB -.Socket.IO.-> SOCKET
-    MOBILE -.Socket.IO.-> SOCKET
+    WEB -.WebSocket.-> SOCKET
+    MOBILE -.WebSocket.-> SOCKET
     WEB --> API
     MOBILE --> API
     API --> EXPRESS
@@ -95,7 +95,7 @@ graph TB
     TRAVEL_SVC --> PLACES
     API --> WEATHER
     API --> GEOCODE
-    WEB -.Deep Link.-> GRAB
+    WEB -.DeepLink.-> GRAB
 
     %% Data layer connections
     AUTH_SVC --> FB_AUTH
@@ -106,7 +106,7 @@ graph TB
     
     %% Image upload flow
     WEB -.Upload.-> CLOUDINARY
-    INCIDENT_SVC -.Image URL.-> CLOUDINARY
+    INCIDENT_SVC -.ImageURL.-> CLOUDINARY
 
     %% Real-time connections
     FIRESTORE -.Real-time.-> REALTIME

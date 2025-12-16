@@ -186,7 +186,7 @@ graph TB
     P42 -->|Detailed prompt| P43[4.3<br/>Generate with AI]
     
     P43 -.Generate.-> GEMINI[Gemini API]
-    GEMINI -.Raw itinerary.-> P43
+    GEMINI -.RawItinerary.-> P43
     
     P43 -->|Raw text| P44[4.4<br/>Parse Itinerary]
     P44 -->|Structured data| P45[4.5<br/>Enrich with Places]
