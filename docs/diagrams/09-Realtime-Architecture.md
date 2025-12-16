@@ -10,66 +10,17 @@ Tài liệu chi tiết về kiến trúc real-time communication sử dụng Soc
 
 ```mermaid
 graph TB
-    subgraph "Client Layer"
-        USER1[User 1 Browser]
-        USER2[User 2 Browser]
-        USER3[User 3 Mobile]
-        ADMIN[Admin Dashboard]
-    end
-
-    subgraph "Real-time Communication Layer"
-        subgraph "Socket.IO Infrastructure"
-            SOCKET_SERVER[Socket.IO Server<br/>WebSocket Handler]
-            ROOMS[Socket Rooms<br/>incidents, users]
-            EVENT_BUS[Event Bus<br/>Broadcast Manager]
-        end
-
-        subgraph "Firestore Real-time"
-            FIRESTORE_LISTENER[Firestore Listeners<br/>onSnapshot()]
-            FIRESTORE_DB[(Firestore<br/>Real-time DB)]
-        end
-    end
-
-    subgraph "Event Sources"
-        INCIDENT_CREATE[Incident Created]
-        INCIDENT_UPDATE[Incident Updated]
-        USER_ONLINE[User Online/Offline]
-        CHAT_MESSAGE[Chat Message]
-    end
-
-    USER1 -.WebSocket.-> SOCKET_SERVER
-    USER2 -.WebSocket.-> SOCKET_SERVER
-    USER3 -.WebSocket.-> SOCKET_SERVER
-    ADMIN -.WebSocket.-> SOCKET_SERVER
-
-    SOCKET_SERVER --> ROOMS
-    ROOMS --> EVENT_BUS
-
-    USER1 --> FIRESTORE_LISTENER
-    USER2 --> FIRESTORE_LISTENER
-    USER3 --> FIRESTORE_LISTENER
-    ADMIN --> FIRESTORE_LISTENER
-
-    FIRESTORE_LISTENER --> FIRESTORE_DB
-
-    INCIDENT_CREATE --> SOCKET_SERVER
-    INCIDENT_UPDATE --> FIRESTORE_DB
-    USER_ONLINE --> FIRESTORE_DB
-    CHAT_MESSAGE --> SOCKET_SERVER
-
-    EVENT_BUS -.Broadcast.-> USER1
-    EVENT_BUS -.Broadcast.-> USER2
-    EVENT_BUS -.Broadcast.-> USER3
-    EVENT_BUS -.Broadcast.-> ADMIN
-
-    FIRESTORE_DB -.onSnapshot.-> FIRESTORE_LISTENER
-    FIRESTORE_LISTENER -.Updates.-> USER1
-    FIRESTORE_LISTENER -.Updates.-> USER2
-    FIRESTORE_LISTENER -.Updates.-> USER3
-
-    style SOCKET_SERVER fill:#010101,color:#00ff00,stroke:#00ff00,stroke-width:2px
-    style FIRESTORE_DB fill:#FFA611,stroke:#333,stroke-width:3px
-    style EVENT_BUS fill:#4CAF50,stroke:#333,stroke-width:2px
+    Clients[Multiple Clients]
+    SocketIO[Socket.IO Server]
+    Firestore[(Firestore DB)]
+    Listeners[Real-time Listeners]
+    
+    Clients -.WebSocket.-> SocketIO
+    Clients --> Listeners
+    SocketIO --> Firestore
+    Listeners --> Firestore
+    Firestore -.Updates.-> Listeners
+    SocketIO -.Broadcast.-> Clients
 ```
 
 ---
@@ -273,24 +224,10 @@ export const IncidentMap = () => {
 
 ```mermaid
 graph LR
-    A[Client 1<br/>React Component] -->|onSnapshot| B[Firestore SDK]
-    C[Client 2<br/>React Component] -->|onSnapshot| B
-    D[Client 3<br/>Mobile App] -->|onSnapshot| B
-    
-    B -->|Listen| E[(Firestore<br/>incidents collection)]
-    
-    F[Write Operation<br/>New Incident] --> E
-    
-    E -.Trigger.-> B
-    B -.DocumentChange.-> A
-    B -.DocumentChange.-> C
-    B -.DocumentChange.-> D
-    
-    A -->|Update UI| G[User 1 sees new marker]
-    C -->|Update UI| H[User 2 sees new marker]
-    D -->|Update UI| I[User 3 sees new marker]
-
-    style E fill:#FFA611,stroke:#333,stroke-width:2px
+    Clients[Multiple Clients] -->|Listen| Firestore[(Firestore)]
+    Write[Write Event] --> Firestore
+    Firestore -.Notify.-> Clients
+    Clients --> UI[Update UI]
 ```
 
 ---
@@ -406,33 +343,17 @@ const unsubscribe = onSnapshot(q, (snapshot) => {
 
 ```mermaid
 sequenceDiagram
-    participant User1
-    participant Client1
-    participant Firestore
-    participant Listener
-    participant Client2
-    participant User2
-
-    User1->>Client1: Login
-    Client1->>Firestore: SET online_users/{uid}
-    Client1->>Client1: Start heartbeat (20s)
+    User->>Client: Login
+    Client->>Firestore: Mark online
     
-    loop Every 20 seconds
-        Client1->>Firestore: UPDATE lastSeen
+    loop Every 20s
+        Client->>Firestore: Heartbeat
     end
     
-    Client2->>Listener: onSnapshot(online_users)
+    Firestore->>OtherClients: Notify change
     
-    Firestore->>Listener: New document added
-    Listener->>Listener: Count active users
-    Listener->>Client2: callback(count: 2)
-    Client2->>User2: Display "👥 2 users online"
-    
-    User1->>Client1: Close tab
-    Client1->>Client1: beforeunload event
-    Client1->>Firestore: sendBeacon(/api/users/offline)
-    Firestore->>Listener: Document removed
-    Listener->>Client2: callback(count: 1)
+    User->>Client: Logout/Close
+    Client->>Firestore: Mark offline
 ```
 
 ---
@@ -736,25 +657,11 @@ const unsubscribe = onSnapshot(
 ## 🔄 Reconnection Strategy
 
 ```mermaid
-graph TB
-    START[Connection Lost] --> DETECT[Detect Disconnect]
-    DETECT --> WAIT1[Wait 1 second]
-    WAIT1 --> RETRY1[Retry Connection #1]
-    RETRY1 --> CHECK1{Success?}
-    CHECK1 -->|Yes| CONNECTED[Connected]
-    CHECK1 -->|No| WAIT2[Wait 2 seconds]
-    WAIT2 --> RETRY2[Retry Connection #2]
-    RETRY2 --> CHECK2{Success?}
-    CHECK2 -->|Yes| CONNECTED
-    CHECK2 -->|No| WAIT3[Wait 4 seconds]
-    WAIT3 --> RETRY3[Retry Connection #3]
-    RETRY3 --> CHECK3{Success?}
-    CHECK3 -->|Yes| CONNECTED
-    CHECK3 -->|No| FAIL[Show Error Message]
-    
-    style START fill:#FFCDD2
-    style CONNECTED fill:#C8E6C9
-    style FAIL fill:#FF5252,color:#fff
+graph LR
+    Lost[Connection Lost] --> Retry[Retry with backoff]
+    Retry --> Check{Success?}
+    Check -->|Yes| Connected
+    Check -->|No| Retry
 ```
 
 **Implementation:**
