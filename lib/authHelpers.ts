@@ -1,5 +1,6 @@
 import { db } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { logger } from './logger';
 
 
 // Get user role from Firestore
@@ -13,7 +14,7 @@ export async function getUserRole(userId: string): Promise<'user' | 'admin' | nu
     const userData = userDoc.data();
     return (userData?.role as 'user' | 'admin') || 'user';
   } catch (error) {
-    console.error('Error getting user role:', error);
+    logger.error('Error getting user role:', error);
     return null;
   }
 }

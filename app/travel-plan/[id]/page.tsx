@@ -68,15 +68,15 @@ export default function TravelPlanDetailPage() {
 
   if (!plan) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-500 via-green-50 to-yellow-50">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center glass p-8 rounded-3xl shadow-xl border border-white/30"
         >
-          <h2 className="text-2xl font-bold mb-4 text-gray-900">Plan not found</h2>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 uppercase">Plan not found</h2>
           <button
-            onClick={() => router.push('/travel-planner')}
+            onClick={() => router.push('/')}
             className="group relative px-6 py-3 text-white bg-grab-green rounded-lg hover:bg-[#009640] font-semibold shadow-lg transition-all duration-200 overflow-hidden"
           >
             <span className="relative z-10">Create new plan</span>
@@ -179,7 +179,6 @@ export default function TravelPlanDetailPage() {
                   </motion.div>
                 </motion.div>
 
-                {/* Weather Recommendation */}
                 <AnimatePresence>
                   {currentDay.weather && currentDay.weather.recommendation ? (
                     <motion.div
@@ -204,7 +203,6 @@ export default function TravelPlanDetailPage() {
                   )}
                 </AnimatePresence>
 
-                {/* Timeline */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -233,7 +231,6 @@ export default function TravelPlanDetailPage() {
                   )}
                 </motion.div>
 
-                {/* Day Notes */}
                 {currentDay.notes && currentDay.notes.length > 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}

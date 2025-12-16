@@ -203,7 +203,6 @@ export default function HomePage() {
                     : 'text-gray-600 hover:bg-white/50'
                 }`}
               >
-                <span>🗺️</span>
                 <span>Map</span>
               </button>
               <button
@@ -214,7 +213,6 @@ export default function HomePage() {
                     : 'text-gray-600 hover:bg-white/50'
                 }`}
               >
-                <span>💬</span>
                 <span>AI Chat</span>
               </button>
             </div>

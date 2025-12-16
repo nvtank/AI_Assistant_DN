@@ -4,6 +4,7 @@
  */
 
 import { Place, Location } from './types';
+import { logger } from './logger';
 
 const GOOGLE_PLACES_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY || '';
 
@@ -73,7 +74,7 @@ export async function searchNearbyPlaces(
   const { location, radius = 5000, type, keyword } = params;
 
   if (!GOOGLE_PLACES_API_KEY) {
-    console.warn('Google Places API key not configured');
+    logger.warn('Google Places API key not configured');
     return [];
   }
 
@@ -95,7 +96,7 @@ export async function searchNearbyPlaces(
 
     return [];
   } catch (error) {
-    console.error('Error fetching places:', error);
+    logger.error('Error fetching places:', error);
     return [];
   }
 }
@@ -105,7 +106,7 @@ export async function searchNearbyPlaces(
  */
 export async function getPlaceDetails(placeId: string): Promise<any> {
   if (!GOOGLE_PLACES_API_KEY) {
-    console.warn('Google Places API key not configured');
+    logger.warn('Google Places API key not configured');
     return null;
   }
 
@@ -114,7 +115,7 @@ export async function getPlaceDetails(placeId: string): Promise<any> {
     const data = await response.json();
     return data.result;
   } catch (error) {
-    console.error('Error fetching place details:', error);
+    logger.error('Error fetching place details:', error);
     return null;
   }
 }
@@ -168,7 +169,7 @@ export async function searchPlacesByText(
   location?: Location
 ): Promise<Place[]> {
   if (!GOOGLE_PLACES_API_KEY) {
-    console.warn('Google Places API key not configured');
+    logger.warn('Google Places API key not configured');
     return [];
   }
 
@@ -192,7 +193,7 @@ export async function searchPlacesByText(
 
     return [];
   } catch (error) {
-    console.error('Error searching places:', error);
+    logger.error('Error searching places:', error);
     return [];
   }
 }

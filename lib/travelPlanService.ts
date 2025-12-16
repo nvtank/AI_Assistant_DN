@@ -13,6 +13,7 @@ import {
   Timestamp 
 } from 'firebase/firestore';
 import { TravelPlan, ChatConversation } from './types';
+import { logger } from './logger';
 
 /**
  * Firebase service cho Travel Plans
@@ -62,17 +63,17 @@ export async function saveTravelPlan(plan: TravelPlan): Promise<string> {
       updatedAt: Timestamp.now(),
     };
 
-    console.log('💾 Saving plan to Firestore:', {
+    logger.debug('Saving plan to Firestore', {
       userId: planData.userId,
-      days: planData.days?.length,
+      daysCount: planData.days?.length,
       status: planData.status
     });
 
     const docRef = await addDoc(collection(db, TRAVEL_PLANS_COLLECTION), planData);
-    console.log('✅ Plan saved with ID:', docRef.id);
+    logger.debug('Plan saved', { planId: docRef.id });
     return docRef.id;
   } catch (error) {
-    console.error('❌ Error saving travel plan:', error);
+    logger.error('Error saving travel plan:', error);
     throw error;
   }
 }
@@ -91,7 +92,7 @@ export async function updateTravelPlan(planId: string, updates: Partial<TravelPl
       updatedAt: Timestamp.now(),
     });
   } catch (error) {
-    console.error('Error updating travel plan:', error);
+    logger.error('Error updating travel plan:', error);
     throw error;
   }
 }
@@ -113,7 +114,7 @@ export async function getTravelPlan(planId: string): Promise<TravelPlan | null> 
       ...planSnap.data(),
     } as TravelPlan;
   } catch (error) {
-    console.error('Error getting travel plan:', error);
+    logger.error('Error getting travel plan:', error);
     throw error;
   }
 }
@@ -123,7 +124,7 @@ export async function getTravelPlan(planId: string): Promise<TravelPlan | null> 
  */
 export async function getUserTravelPlans(userId: string): Promise<TravelPlan[]> {
   try {
-    console.log('🔍 Getting travel plans for user:', userId);
+    logger.debug('Getting travel plans for user', { userId });
     
     // Try with orderBy first
     try {
@@ -134,7 +135,7 @@ export async function getUserTravelPlans(userId: string): Promise<TravelPlan[]> 
       );
 
       const querySnapshot = await getDocs(q);
-      console.log('📊 Travel plans query snapshot size:', querySnapshot.size);
+      logger.debug('Travel plans query snapshot', { size: querySnapshot.size });
       
       const plans: TravelPlan[] = [];
 
@@ -145,15 +146,14 @@ export async function getUserTravelPlans(userId: string): Promise<TravelPlan[]> 
         } as TravelPlan);
       });
 
-      console.log('✅ Returning travel plans:', plans.length);
+      logger.debug('Returning travel plans', { count: plans.length });
       return plans;
     } catch (orderByError: any) {
       // If orderBy fails (missing index), try without orderBy
       if (orderByError.code === 'failed-precondition') {
-        console.warn('⚠️ Firestore index missing, querying without orderBy...');
-        console.log('💡 Please create a composite index for:');
-        console.log('   Collection:', TRAVEL_PLANS_COLLECTION);
-        console.log('   Fields: userId (Ascending), createdAt (Descending)');
+        logger.warn('Firestore index missing, querying without orderBy', {
+          collection: TRAVEL_PLANS_COLLECTION
+        });
         
         // Query without orderBy
         const q = query(
@@ -178,13 +178,13 @@ export async function getUserTravelPlans(userId: string): Promise<TravelPlan[]> 
           return bTime - aTime; // Descending order
         });
 
-        console.log('✅ Returning travel plans (without index):', plans.length);
+        logger.debug('Returning travel plans (without index)', { count: plans.length });
         return plans;
       }
       throw orderByError;
     }
   } catch (error) {
-    console.error('❌ Error getting user travel plans:', error);
+    logger.error('Error getting user travel plans:', error);
     throw error;
   }
 }
@@ -197,7 +197,7 @@ export async function deleteTravelPlan(planId: string): Promise<void> {
     const planRef = doc(db, TRAVEL_PLANS_COLLECTION, planId);
     await deleteDoc(planRef);
   } catch (error) {
-    console.error('Error deleting travel plan:', error);
+    logger.error('Error deleting travel plan:', error);
     throw error;
   }
 }
@@ -212,7 +212,7 @@ export async function updatePlanStatus(
   try {
     await updateTravelPlan(planId, { status });
   } catch (error) {
-    console.error('Error updating plan status:', error);
+    logger.error('Error updating plan status:', error);
     throw error;
   }
 }
@@ -224,7 +224,7 @@ export async function togglePlanSharing(planId: string, shared: boolean): Promis
   try {
     await updateTravelPlan(planId, { shared });
   } catch (error) {
-    console.error('Error toggling plan sharing:', error);
+    logger.error('Error toggling plan sharing:', error);
     throw error;
   }
 }
@@ -248,7 +248,7 @@ export async function saveChatConversation(conversation: ChatConversation): Prom
     const docRef = await addDoc(collection(db, CHAT_CONVERSATIONS_COLLECTION), conversationData);
     return docRef.id;
   } catch (error) {
-    console.error('Error saving chat conversation:', error);
+    logger.error('Error saving chat conversation:', error);
     throw error;
   }
 }
@@ -270,7 +270,7 @@ export async function updateChatConversation(
       updatedAt: Timestamp.now(),
     });
   } catch (error) {
-    console.error('Error updating chat conversation:', error);
+    logger.error('Error updating chat conversation:', error);
     throw error;
   }
 }
@@ -292,7 +292,7 @@ export async function getChatConversation(conversationId: string): Promise<ChatC
       ...conversationSnap.data(),
     } as ChatConversation;
   } catch (error) {
-    console.error('Error getting chat conversation:', error);
+    logger.error('Error getting chat conversation:', error);
     throw error;
   }
 }
@@ -325,10 +325,9 @@ export async function getUserActiveConversation(userId: string): Promise<ChatCon
     } catch (orderByError: any) {
       // If orderBy fails (missing index), try without orderBy
       if (orderByError.code === 'failed-precondition') {
-        console.warn('⚠️ Firestore index missing for getUserActiveConversation, querying without orderBy...');
-        console.log('💡 Please create a composite index for:');
-        console.log('   Collection:', CHAT_CONVERSATIONS_COLLECTION);
-        console.log('   Fields: completed (Ascending), userId (Ascending), updatedAt (Descending)');
+        logger.warn('Firestore index missing for getUserActiveConversation, querying without orderBy', {
+          collection: CHAT_CONVERSATIONS_COLLECTION
+        });
         
         // Query without orderBy
         const q = query(
@@ -360,7 +359,7 @@ export async function getUserActiveConversation(userId: string): Promise<ChatCon
       throw orderByError;
     }
   } catch (error) {
-    console.error('Error getting active conversation:', error);
+    logger.error('Error getting active conversation:', error);
     throw error;
   }
 }
@@ -370,7 +369,7 @@ export async function getUserActiveConversation(userId: string): Promise<ChatCon
  */
 export async function getUserConversations(userId: string): Promise<ChatConversation[]> {
   try {
-    console.log('🔍 Getting conversations for user:', userId);
+    logger.debug('Getting conversations for user', { userId });
     
     // Try with orderBy first
     try {
@@ -381,13 +380,12 @@ export async function getUserConversations(userId: string): Promise<ChatConversa
       );
 
       const querySnapshot = await getDocs(q);
-      console.log('📊 Query snapshot size:', querySnapshot.size);
+      logger.debug('Query snapshot', { size: querySnapshot.size });
       
       const conversations: ChatConversation[] = [];
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        console.log('📄 Conversation doc:', doc.id, data);
         conversations.push({
           id: doc.id,
           ...data,
@@ -401,15 +399,14 @@ export async function getUserConversations(userId: string): Promise<ChatConversa
         return bTime - aTime;
       });
 
-      console.log('✅ Returning conversations:', conversations.length);
+      logger.debug('Returning conversations', { count: conversations.length });
       return conversations;
     } catch (orderByError: any) {
       // If orderBy fails (missing index), try without orderBy
       if (orderByError.code === 'failed-precondition') {
-        console.warn('⚠️ Firestore index missing, querying without orderBy...');
-        console.warn('💡 Please create a composite index for:');
-        console.warn('   Collection: chat_conversations');
-        console.warn('   Fields: userId (Ascending), updatedAt (Descending)');
+        logger.warn('Firestore index missing, querying without orderBy', {
+          collection: 'chat_conversations'
+        });
         
         const q = query(
           collection(db, CHAT_CONVERSATIONS_COLLECTION),
@@ -435,13 +432,13 @@ export async function getUserConversations(userId: string): Promise<ChatConversa
           return bTime - aTime;
         });
 
-        console.log('✅ Returning conversations (without index):', conversations.length);
+        logger.debug('Returning conversations (without index)', { count: conversations.length });
         return conversations;
       }
       throw orderByError;
     }
   } catch (error: any) {
-    console.error('❌ Error getting user conversations:', error);
+    logger.error('Error getting user conversations:', error);
     throw error;
   }
 }
@@ -454,7 +451,7 @@ export async function deleteChatConversation(conversationId: string): Promise<vo
     const conversationRef = doc(db, CHAT_CONVERSATIONS_COLLECTION, conversationId);
     await deleteDoc(conversationRef);
   } catch (error) {
-    console.error('Error deleting chat conversation:', error);
+    logger.error('Error deleting chat conversation:', error);
     throw error;
   }
 }

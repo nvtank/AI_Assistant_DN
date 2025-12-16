@@ -1,4 +1,6 @@
 // Cloudinary Image Upload Service
+import { logger } from './logger';
+
 export const uploadToCloudinary = async (file: File): Promise<string> => {
   try {
     const formData = new FormData();
@@ -20,7 +22,7 @@ export const uploadToCloudinary = async (file: File): Promise<string> => {
     const data = await response.json();
     return data.secure_url;
   } catch (error) {
-    console.error('Error uploading to Cloudinary:', error);
+    logger.error('Error uploading to Cloudinary:', error);
     throw error;
   }
 };

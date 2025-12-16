@@ -5,6 +5,7 @@
 
 import Pusher from 'pusher-js';
 import { Incident } from './types';
+import { logger } from './logger';
 
 let pusherInstance: Pusher | null = null;
 let incidentsChannel: any = null;
@@ -14,7 +15,7 @@ let incidentsChannel: any = null;
  */
 export function initPusher() {
   if (pusherInstance) {
-    console.log('✅ Pusher already initialized');
+    logger.debug('Pusher already initialized');
     return pusherInstance;
   }
 
@@ -22,13 +23,11 @@ export function initPusher() {
   const cluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER || 'ap1';
 
   if (!key) {
-    console.error('❌ NEXT_PUBLIC_PUSHER_KEY not found');
+    logger.error('NEXT_PUBLIC_PUSHER_KEY not found');
     return null;
   }
 
-  console.log('🔌 Initializing Pusher...');
-  console.log(`   Key: ${key.substring(0, 10)}...`);
-  console.log(`   Cluster: ${cluster}`);
+  logger.debug('Initializing Pusher', { cluster });
 
   pusherInstance = new Pusher(key, {
     cluster: cluster,
@@ -36,15 +35,15 @@ export function initPusher() {
   });
 
   pusherInstance.connection.bind('connected', () => {
-    console.log('✅ Connected to Pusher');
+    logger.debug('Connected to Pusher');
   });
 
   pusherInstance.connection.bind('disconnected', () => {
-    console.log('⚠️ Disconnected from Pusher');
+    logger.warn('Disconnected from Pusher');
   });
 
   pusherInstance.connection.bind('error', (err: any) => {
-    console.error('❌ Pusher connection error:', err);
+    logger.error('Pusher connection error:', err);
   });
 
   return pusherInstance;
@@ -59,24 +58,24 @@ export function subscribeToIncidents() {
   }
 
   if (!pusherInstance) {
-    console.error('❌ Cannot subscribe: Pusher not initialized');
+    logger.error('Cannot subscribe: Pusher not initialized');
     return null;
   }
 
   if (incidentsChannel) {
-    console.log('✅ Already subscribed to incidents channel');
+    logger.debug('Already subscribed to incidents channel');
     return incidentsChannel;
   }
 
-  console.log('📡 Subscribing to incidents channel...');
+  logger.debug('Subscribing to incidents channel');
   incidentsChannel = pusherInstance.subscribe('incidents');
 
   incidentsChannel.bind('pusher:subscription_succeeded', () => {
-    console.log('✅ Subscribed to incidents channel');
+    logger.debug('Subscribed to incidents channel');
   });
 
   incidentsChannel.bind('pusher:subscription_error', (error: any) => {
-    console.error('❌ Failed to subscribe to incidents:', error);
+    logger.error('Failed to subscribe to incidents:', error);
   });
 
   return incidentsChannel;
@@ -89,20 +88,20 @@ export function onNewIncident(callback: (incident: Incident) => void) {
   const channel = subscribeToIncidents();
   
   if (!channel) {
-    console.error('❌ Cannot listen: Channel not available');
+    logger.error('Cannot listen: Channel not available');
     return () => {}; // Return empty cleanup function
   }
 
-  console.log('👂 Listening for new incidents...');
+  logger.debug('Listening for new incidents');
   
   channel.bind('new-incident', (incident: Incident) => {
-    console.log('📬 New incident received:', incident.type, incident.location);
+    logger.debug('New incident received', { type: incident.type });
     callback(incident);
   });
 
   // Return cleanup function
   return () => {
-    console.log('🔇 Stopped listening for incidents');
+    logger.debug('Stopped listening for incidents');
     channel.unbind('new-incident');
   };
 }
@@ -112,7 +111,7 @@ export function onNewIncident(callback: (incident: Incident) => void) {
  */
 export function unsubscribeFromIncidents() {
   if (incidentsChannel) {
-    console.log('🔌 Unsubscribing from incidents channel...');
+    logger.debug('Unsubscribing from incidents channel');
     incidentsChannel.unbind_all();
     pusherInstance?.unsubscribe('incidents');
     incidentsChannel = null;
@@ -124,7 +123,7 @@ export function unsubscribeFromIncidents() {
  */
 export function disconnectPusher() {
   if (pusherInstance) {
-    console.log('🔌 Disconnecting Pusher...');
+    logger.debug('Disconnecting Pusher');
     unsubscribeFromIncidents();
     pusherInstance.disconnect();
     pusherInstance = null;
@@ -136,7 +135,7 @@ export function disconnectPusher() {
  */
 export async function broadcastIncident(incident: Incident) {
   try {
-    console.log('📡 Broadcasting incident via API...');
+    logger.debug('Broadcasting incident via API');
     
     const response = await fetch('/api/incidents/broadcast', {
       method: 'POST',
@@ -151,11 +150,11 @@ export async function broadcastIncident(incident: Incident) {
     }
 
     const data = await response.json();
-    console.log('✅ Incident broadcasted successfully');
+    logger.debug('Incident broadcasted successfully');
     return data;
 
   } catch (error) {
-    console.error('❌ Failed to broadcast incident:', error);
+    logger.error('Failed to broadcast incident:', error);
     throw error;
   }
 }
@@ -165,7 +164,7 @@ export async function broadcastIncident(incident: Incident) {
  */
 export async function uploadImage(file: File): Promise<string> {
   try {
-    console.log(`📤 Uploading image: ${file.name}`);
+    logger.debug('Uploading image', { fileName: file.name });
     
     const formData = new FormData();
     formData.append('image', file);
@@ -181,12 +180,12 @@ export async function uploadImage(file: File): Promise<string> {
     }
 
     const data = await response.json();
-    console.log('✅ Image uploaded:', data.url);
+    logger.debug('Image uploaded successfully');
     
     return data.url;
 
   } catch (error) {
-    console.error('❌ Upload failed:', error);
+    logger.error('Upload failed:', error);
     throw error;
   }
 }
