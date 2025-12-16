@@ -7,9 +7,12 @@ import { logOut } from '@/lib/authService';
 
 interface UserMenuProps {
   showText?: boolean;
+  isSidebarOpen?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  inSidebar?: boolean;
 }
 
-export default function UserMenu({ showText = true }: UserMenuProps) {
+export default function UserMenu({ showText = true, isSidebarOpen = true, size, inSidebar = false }: UserMenuProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -19,9 +22,28 @@ export default function UserMenu({ showText = true }: UserMenuProps) {
     router.push('/login');
   };
 
+  // Determine avatar size based on sidebar state or explicit size prop
+  const getAvatarSize = () => {
+    if (size) {
+      const sizes = {
+        sm: 'w-8 h-8',
+        md: 'w-10 h-10',
+        lg: 'w-12 h-12'
+      };
+      return sizes[size];
+    }
+    // Auto size based on sidebar state
+    if (inSidebar) {
+      return isSidebarOpen ? 'w-9 h-9' : 'w-8 h-8';
+    }
+    return 'w-10 h-10';
+  };
+
+  const avatarSize = getAvatarSize();
+
   if (loading) {
     return (
-      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full animate-pulse"></div>
+      <div className={`${avatarSize} bg-white/20 rounded-full animate-pulse`}></div>
     );
   }
 
@@ -47,17 +69,26 @@ export default function UserMenu({ showText = true }: UserMenuProps) {
   return (
     <div className="relative">
       <button
-        onClick={() => setMenuOpen(!menuOpen)}
+        onClick={() => {
+          if (!inSidebar || isSidebarOpen) {
+            setMenuOpen(!menuOpen);
+          }
+        }}
         className="flex items-center gap-1 sm:gap-2 hover:opacity-80 transition-opacity"
       >
         {user.photoURL ? (
           <img
             src={user.photoURL}
             alt={user.displayName || 'User'}
-            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white"
+            className={`${avatarSize} rounded-full ${inSidebar ? '' : 'border-2 border-white'} object-cover flex-shrink-0`}
+            style={{ aspectRatio: '1/1' }}
           />
         ) : (
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white text-green-600 flex items-center justify-center text-sm sm:text-base font-semibold">
+          <div className={`${avatarSize} rounded-full bg-white text-green-600 flex items-center justify-center font-semibold flex-shrink-0 ${
+            inSidebar 
+              ? (isSidebarOpen ? 'text-sm' : 'text-xs')
+              : 'text-base'
+          }`}>
             {user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}
           </div>
         )}
@@ -86,7 +117,6 @@ export default function UserMenu({ showText = true }: UserMenuProps) {
               }}
               className="w-full text-left px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
             >
-              <span>🛡️</span>
               <span>Admin Dashboard</span>
             </button>
             <button

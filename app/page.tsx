@@ -11,7 +11,6 @@ import SimpleSidebar from '@/components/common/SimpleSidebar';
 import MapLegend from '@/components/map/MapLegend';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { listenToVerifiedIncidents } from '@/lib/incidentServiceFirebase';
-import { markUserOnline, markUserOffline, listenToOnlineUsers } from '@/lib/onlineUsersService';
 
 const IncidentMap = dynamic(() => import('@/components/map/IncidentMap'), {
   ssr: false,
@@ -34,7 +33,6 @@ export default function HomePage() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportLocation, setReportLocation] = useState<Location | null>(null);
-  const [connectedUsers, setConnectedUsers] = useState(0);
   const [loading, setLoading] = useState(true);
   const [mobileView, setMobileView] = useState<'map' | 'chat'>('map');
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -51,28 +49,6 @@ export default function HomePage() {
     if (user) {
       initializeApp();
     }
-  }, [user]);
-
-  // Track online users
-  useEffect(() => {
-    if (!user) {
-      setConnectedUsers(0);
-      return;
-    }
-
-    // Mark user as online
-    markUserOnline(user.uid);
-
-    // Listen to online users count
-    const unsubscribe = listenToOnlineUsers((count) => {
-      setConnectedUsers(count);
-    });
-
-    // Cleanup on unmount
-    return () => {
-      unsubscribe();
-      markUserOffline(user.uid);
-    };
   }, [user]);
 
   // Subscribe to Firebase incident updates (realtime)
@@ -197,17 +173,28 @@ export default function HomePage() {
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         user={user}
-        connectedUsers={connectedUsers}
       />
 
       <main className={`
         flex-1 flex flex-col transition-all duration-300 ease-in-out h-full relative overflow-hidden
-        ${sidebarOpen ? 'ml-64' : 'ml-16'}
+        lg:ml-64
       `}>
         <div className="flex-1 flex flex-col h-full p-3 md:p-4 lg:p-6 gap-3 md:gap-4 lg:gap-6 w-full max-w-[1800px] mx-auto min-w-0">
           
-          <div className="lg:hidden flex-none z-10">
-            <div className="glass rounded-2xl shadow-lg p-1 flex gap-1">
+          <div className="lg:hidden flex-none z-10 flex items-center gap-2">
+            {/* Mobile sidebar toggle button - only show when sidebar is closed */}
+            {!sidebarOpen && (
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="w-10 h-10 bg-white rounded-xl shadow-lg flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all duration-200 flex-shrink-0"
+                aria-label="Open menu"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            )}
+            <div className="glass rounded-2xl shadow-lg p-1 flex gap-1 flex-1">
               <button
                 onClick={() => setMobileView('map')}
                 className={`flex-1 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
