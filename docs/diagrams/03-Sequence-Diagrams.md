@@ -10,196 +10,62 @@ Tài liệu này mô tả các luồng xử lý chính trong hệ thống GrabTh
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant Browser
-    participant NextJS as Next.js App
-    participant FirebaseAuth as Firebase Auth
-    participant Firestore
-    participant OnlineService as Online Users Service
-
-    User->>Browser: Enter email & password
-    Browser->>NextJS: POST /api/auth/login
-    NextJS->>FirebaseAuth: signInWithEmailAndPassword()
-    
-    alt Success
-        FirebaseAuth-->>NextJS: User object + JWT token
-        NextJS->>Firestore: Check/Create user profile
-        Firestore-->>NextJS: User document
-        NextJS->>OnlineService: markUserOnline(userId)
-        OnlineService->>Firestore: Set online_users/{userId}
-        OnlineService-->>NextJS: Success
-        NextJS-->>Browser: { user, token }
-        Browser->>Browser: Store token in localStorage
-        Browser->>Browser: Start heartbeat interval
-        Browser-->>User: Redirect to dashboard
-    else Error
-        FirebaseAuth-->>NextJS: Error (invalid credentials)
-        NextJS-->>Browser: { error }
-        Browser-->>User: Show error message
-    end
-
-    loop Every 20 seconds
-        Browser->>Firestore: Update lastSeen timestamp
-    end
+    User->>NextJS: Login
+    NextJS->>Firebase: Authenticate
+    Firebase-->>NextJS: JWT Token
+    NextJS->>Firestore: Create/Update user
+    NextJS-->>User: Success + Redirect
 ```
 
 ---
 
-## 2. Report Incident Flow (with Image Upload)
+## 2. Report Incident Flow
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant Browser
-    participant Map as Leaflet Map
-    participant Form as Report Form
-    participant NextAPI as Next.js API
-    participant Express as Express Server
-    participant Cloudinary
-    participant Firestore
-    participant SocketIO as Socket.IO Server
-    participant OtherClients as Other Users
-
-    User->>Map: Click on map location
-    Map-->>Form: Set coordinates (lat, lng)
-    User->>Form: Fill title, description, category
-    User->>Form: Upload image
-    Form->>Browser: Validate inputs
-    
-    Browser->>NextAPI: POST /api/upload (multipart/form-data)
-    NextAPI->>Cloudinary: Upload image
-    Cloudinary-->>NextAPI: Image URL + publicId
-    NextAPI-->>Browser: { imageUrl }
-    
-    Browser->>NextAPI: POST /api/incidents/create
-    activate NextAPI
-    NextAPI->>NextAPI: Validate auth token
-    NextAPI->>NextAPI: Reverse geocode (lat, lng)
-    NextAPI->>Firestore: Create incident document
-    Firestore-->>NextAPI: Incident ID
-    
-    NextAPI->>Express: POST /api/broadcast-incident
-    Express->>SocketIO: emit('incident:new', incident)
-    SocketIO->>OtherClients: Broadcast new incident
-    OtherClients->>OtherClients: Add marker to map
-    
-    NextAPI-->>Browser: { success, incidentId }
-    deactivate NextAPI
-    Browser-->>User: Show success message
-    Browser->>Map: Add incident marker
+    User->>Client: Fill form + Upload image
+    Client->>API: POST /api/incidents
+    API->>Cloudinary: Upload image
+    API->>Firestore: Save incident
+    API->>SocketIO: Broadcast event
+    SocketIO-->>OtherUsers: New incident
+    API-->>User: Success
 ```
 
 ---
 
-## 3. AI Chatbot Conversation Flow
+## 3. AI Chatbot Flow
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant Chat as Chat UI
-    participant Voice as Voice Recognition
-    participant NextAPI as Next.js API
-    participant GeminiAPI as Gemini AI API
-    participant PlacesAPI as Google Places API
-    participant WeatherAPI as OpenWeather API
-    participant Firestore
-
-    alt Voice Input
-        User->>Voice: Hold microphone button
-        Voice->>Voice: Speech Recognition API
-        Voice-->>Chat: Transcribed text
-    else Text Input
-        User->>Chat: Type message
-    end
-
-    Chat->>NextAPI: POST /api/chat/send
-    activate NextAPI
+    User->>Chat: Send message
+    Chat->>API: POST /api/chat
+    API->>Gemini: Generate response
     
-    NextAPI->>NextAPI: Build context (user location, history)
-    NextAPI->>GeminiAPI: POST /generateContent
-    activate GeminiAPI
-    
-    alt AI requests venue search
-        GeminiAPI-->>NextAPI: Function call: searchPlaces("restaurants")
-        NextAPI->>PlacesAPI: Text search API
-        PlacesAPI-->>NextAPI: Place results
-        NextAPI->>GeminiAPI: Provide place data
+    alt Need Places
+        Gemini-->>API: searchPlaces()
+        API->>GooglePlaces: Query
+        GooglePlaces-->>API: Results
+        API->>Gemini: Places data
     end
     
-    alt AI requests weather
-        GeminiAPI-->>NextAPI: Function call: getWeather()
-        NextAPI->>WeatherAPI: GET /weather?q=DaNang
-        WeatherAPI-->>NextAPI: Weather data
-        NextAPI->>GeminiAPI: Provide weather data
-    end
-    
-    GeminiAPI-->>NextAPI: AI response text
-    deactivate GeminiAPI
-    
-    NextAPI->>Firestore: Save chat message (optional)
-    NextAPI-->>Chat: { message, places?, weather? }
-    deactivate NextAPI
-    
-    Chat->>Chat: Render message
-    
-    alt Response includes places
-        Chat->>Chat: Render PlaceCards
-        User->>Chat: Click "Book Grab"
-        Chat->>Browser: Open Grab deep link
-        Browser->>Browser: Launch Grab app
-    end
-    
-    Chat-->>User: Display response
+    Gemini-->>API: Response
+    API-->>User: Display + PlaceCards
 ```
 
 ---
 
-## 4. Travel Plan Generation Flow
+## 4. Travel Plan Generation
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant Form as Travel Planner Form
-    participant NextAPI as Next.js API
-    participant TravelService as Travel Plan Service
-    participant GeminiAPI as Gemini AI
-    participant PlacesAPI as Places API
-    participant Firestore
-
-    User->>Form: Fill form (days, budget, people, interests)
-    Form->>Form: Validate inputs
-    Form->>NextAPI: POST /api/travel-plan/generate
-    activate NextAPI
-    
-    NextAPI->>TravelService: generateTravelPlan(params)
-    activate TravelService
-    
-    TravelService->>TravelService: Build AI prompt
-    TravelService->>GeminiAPI: Generate itinerary
-    activate GeminiAPI
-    GeminiAPI-->>TravelService: Raw itinerary text
-    deactivate GeminiAPI
-    
-    TravelService->>TravelService: Parse itinerary
-    
-    loop For each activity
-        TravelService->>PlacesAPI: Search place details
-        PlacesAPI-->>TravelService: Place info (rating, photos, etc)
-        TravelService->>TravelService: Enrich activity data
-    end
-    
-    TravelService->>TravelService: Calculate costs
-    TravelService-->>NextAPI: Complete travel plan
-    deactivate TravelService
-    
-    NextAPI->>Firestore: Save travel_plans document
-    Firestore-->>NextAPI: Plan ID
-    
-    NextAPI-->>Form: { planId, itinerary }
-    deactivate NextAPI
-    
-    Form-->>User: Redirect to /travel-plan/{planId}
-    User->>User: View detailed itinerary
+    User->>Form: Fill preferences
+    Form->>API: Generate plan
+    API->>Gemini: Create itinerary
+    Gemini-->>API: Raw plan
+    API->>Places: Enrich details
+    API->>Firestore: Save plan
+    API-->>User: Show itinerary
 ```
 
 ---

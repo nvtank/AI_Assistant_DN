@@ -6,129 +6,36 @@ Sơ đồ này mô tả cấu trúc module, dependencies giữa các components 
 
 ---
 
-## 📦 High-Level Component Architecture
+## 📦 Component Architecture
 
 ```mermaid
 graph TB
-    subgraph "Presentation Layer"
-        subgraph "Pages"
-            HOME[Home Page<br/>page.tsx]
-            LOGIN[Login Page<br/>login/page.tsx]
-            DASHBOARD[Dashboard<br/>map + incidents]
-            ADMIN_PAGE[Admin Dashboard<br/>admin/page.tsx]
-            PROFILE[Profile Page<br/>profile/page.tsx]
-            TRAVEL_FORM[Travel Planner<br/>travel-planner-form/page.tsx]
-            TRAVEL_VIEW[Travel Plan View<br/>travel-plan/[id]/page.tsx]
-        end
-
-        subgraph "Shared Components"
-            MAP_COMP[IncidentMap<br/>components/map]
-            CHAT_COMP[AIChatbot<br/>components/chat]
-            REPORT_FORM[ReportIncidentForm<br/>components/common]
-            SIDEBAR[SimpleSidebar<br/>components/common]
-            USER_MENU[UserMenu<br/>components/common]
-            PLACE_CARD[PlaceCard<br/>components/chat]
-            TRAVEL_SUMMARY[TravelPlanSummary<br/>components/travel-plan]
-        end
+    subgraph "UI Layer"
+        Pages[Pages: Home, Login, Admin]
+        Components[Components: Map, Chat, Forms]
     end
-
-    subgraph "Business Logic Layer"
-        subgraph "Services"
-            AUTH_SVC[authService.ts<br/>Login/Signup/Logout]
-            INCIDENT_SVC[incidentServiceFirebase.ts<br/>CRUD Incidents]
-            TRAVEL_SVC[travelPlanService.ts<br/>Trip Generation]
-            ONLINE_SVC[onlineUsersService.ts<br/>Presence Tracking]
-            GEMINI_SVC[geminiAI.ts<br/>AI Integration]
-            PLACES_SVC[placesAPI.ts<br/>Venue Search]
-            SOCKET_SVC[socket.ts<br/>Real-time Events]
-        end
-
-        subgraph "Utilities"
-            UTILS[utils.ts<br/>Helper Functions]
-            TRANSLATIONS[translations.ts<br/>i18n Support]
-            TYPES[types.ts<br/>TypeScript Interfaces]
-            EXCEL_EXPORT[excelExport.ts<br/>Report Generation]
-        end
+    
+    subgraph "Service Layer"
+        Auth[authService]
+        Incident[incidentService]
+        Travel[travelService]
+        AI[geminiAI]
     end
-
-    subgraph "Data Access Layer"
-        FIREBASE_LIB[firebase.ts<br/>SDK Initialization]
-        FIRESTORE_CLIENT[Firestore Client<br/>Database Access]
-        FB_AUTH_CLIENT[Firebase Auth<br/>Authentication]
-        FB_STORAGE[Firebase Storage<br/>File Upload]
+    
+    subgraph "Data Layer"
+        Firebase[Firebase SDK]
+        Firestore[(Firestore)]
     end
-
-    subgraph "API Layer"
-        subgraph "Next.js API Routes"
-            API_GEOCODE[/api/geocode<br/>route.ts]
-            API_WEATHER[/api/weather<br/>route.ts]
-            API_OFFLINE[/api/users/offline<br/>route.ts]
-            API_BROADCAST[/api/incidents/broadcast<br/>route.ts]
-            API_UPLOAD[/api/upload<br/>route.ts]
-            API_TRAVEL[/api/travel-plan/*<br/>generate, list]
-        end
-    end
-
-    subgraph "External Services"
-        GEMINI_API[Google Gemini AI]
-        PLACES_API[Google Places API]
-        WEATHER_API[OpenWeather API]
-        NOMINATIM[Nominatim Geocoding]
-        GRAB_LINK[Grab Deep Link]
-    end
-
-    %% Page Dependencies
-    HOME --> SIDEBAR
-    HOME --> MAP_COMP
-    HOME --> CHAT_COMP
-    DASHBOARD --> MAP_COMP
-    DASHBOARD --> REPORT_FORM
-    ADMIN_PAGE --> MAP_COMP
-    ADMIN_PAGE --> EXCEL_EXPORT
-    TRAVEL_FORM --> CHAT_COMP
-    TRAVEL_VIEW --> TRAVEL_SUMMARY
-
-    %% Component Dependencies
-    MAP_COMP --> INCIDENT_SVC
-    MAP_COMP --> SOCKET_SVC
-    CHAT_COMP --> GEMINI_SVC
-    CHAT_COMP --> PLACES_SVC
-    CHAT_COMP --> PLACE_CARD
-    REPORT_FORM --> INCIDENT_SVC
-    USER_MENU --> AUTH_SVC
-    PLACE_CARD --> GRAB_LINK
-    TRAVEL_SUMMARY --> TRAVEL_SVC
-
-    %% Service Dependencies
-    AUTH_SVC --> FIREBASE_LIB
-    AUTH_SVC --> FB_AUTH_CLIENT
-    INCIDENT_SVC --> FIREBASE_LIB
-    INCIDENT_SVC --> FIRESTORE_CLIENT
-    TRAVEL_SVC --> GEMINI_SVC
-    TRAVEL_SVC --> PLACES_SVC
-    TRAVEL_SVC --> FIRESTORE_CLIENT
-    ONLINE_SVC --> FIRESTORE_CLIENT
-    GEMINI_SVC --> GEMINI_API
-    PLACES_SVC --> PLACES_API
-    SOCKET_SVC --> INCIDENT_SVC
-
-    %% API Dependencies
-    API_GEOCODE --> NOMINATIM
-    API_WEATHER --> WEATHER_API
-    API_OFFLINE --> ONLINE_SVC
-    API_BROADCAST --> SOCKET_SVC
-    API_UPLOAD --> FB_STORAGE
-    API_TRAVEL --> TRAVEL_SVC
-
-    %% Utility Dependencies
-    INCIDENT_SVC --> UTILS
-    TRAVEL_SVC --> UTILS
-    AUTH_SVC --> TRANSLATIONS
-
-    style MAP_COMP fill:#61dafb,stroke:#333,stroke-width:2px
-    style CHAT_COMP fill:#61dafb,stroke:#333,stroke-width:2px
-    style GEMINI_SVC fill:#4285f4,stroke:#333,stroke-width:2px
-    style FIREBASE_LIB fill:#FFA611,stroke:#333,stroke-width:2px
+    
+    Pages --> Components
+    Components --> Auth
+    Components --> Incident
+    Components --> Travel
+    Components --> AI
+    Auth --> Firebase
+    Incident --> Firebase
+    Travel --> Firebase
+    Firebase --> Firestore
 ```
 
 ---

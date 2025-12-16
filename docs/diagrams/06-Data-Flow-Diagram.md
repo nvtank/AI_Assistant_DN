@@ -10,40 +10,15 @@ Data Flow Diagram mô tả cách dữ liệu di chuyển qua các thành phần 
 
 ```mermaid
 graph TB
-    subgraph "External Entities"
-        USER([Tourist/User])
-        ADMIN([Admin])
-        GEMINI[Gemini AI System]
-        PLACES[Google Places System]
-        WEATHER[Weather Service]
-        GRAB[Grab System]
-    end
+    User([User])
+    Admin([Admin])
+    System[GrabTheBeyond System]
+    External[External APIs]
 
-    subgraph "GrabTheBeyond System"
-        SYSTEM[GrabTheBeyond<br/>Platform]
-    end
-
-    USER -->|Incident reports<br/>Chat messages<br/>Travel preferences| SYSTEM
-    SYSTEM -->|Map view<br/>AI responses<br/>Travel plans| USER
-    
-    ADMIN -->|Manage incidents<br/>User management| SYSTEM
-    SYSTEM -->|Reports<br/>Statistics| ADMIN
-    
-    SYSTEM -->|Chat prompts<br/>Travel generation| GEMINI
-    GEMINI -->|AI responses| SYSTEM
-    
-    SYSTEM -->|Venue search| PLACES
-    PLACES -->|Place details| SYSTEM
-    
-    SYSTEM -->|Weather request| WEATHER
-    WEATHER -->|Weather data| SYSTEM
-    
-    SYSTEM -->|Deep link| GRAB
-    GRAB -->|Booking confirmation| SYSTEM
-
-    style SYSTEM fill:#4CAF50,stroke:#333,stroke-width:3px
-    style USER fill:#2196F3,stroke:#333,stroke-width:2px
-    style ADMIN fill:#FF9800,stroke:#333,stroke-width:2px
+    User -->|Requests| System
+    System -->|Responses| User
+    Admin -->|Manage| System
+    System <-->|Data| External
 ```
 
 ---
@@ -52,63 +27,24 @@ graph TB
 
 ```mermaid
 graph TB
-    subgraph "External Entities"
-        USER([User])
-        ADMIN([Admin])
-        EXTERNAL[External APIs]
-    end
+    User([User])
+    P1[1. Authentication]
+    P2[2. Incident Management]
+    P3[3. AI Chatbot]
+    P4[4. Travel Planning]
+    DB[(Database)]
+    APIs[External APIs]
 
-    subgraph "Main Processes"
-        P1[1.0<br/>User Authentication<br/>& Management]
-        P2[2.0<br/>Incident Reporting<br/>& Management]
-        P3[3.0<br/>AI Chatbot<br/>Processing]
-        P4[4.0<br/>Travel Planning<br/>Generation]
-        P5[5.0<br/>Real-time<br/>Synchronization]
-    end
-
-    subgraph "Data Stores"
-        D1[(D1: Users<br/>Database)]
-        D2[(D2: Incidents<br/>Database)]
-        D3[(D3: Travel Plans<br/>Database)]
-        D4[(D4: Chat History<br/>Database)]
-        D5[(D5: Online Users<br/>Cache)]
-    end
-
-    USER -->|Login credentials| P1
-    P1 -->|User profile| USER
-    P1 -->|Store user| D1
-    D1 -->|User data| P1
-
-    USER -->|Incident data| P2
-    P2 -->|Incident confirmation| USER
-    P2 -->|Save incident| D2
-    D2 -->|Query incidents| P2
-    P2 -->|Broadcast event| P5
-
-    USER -->|Chat messages| P3
-    P3 -->|AI responses| USER
-    P3 -->|API calls| EXTERNAL
-    EXTERNAL -->|API results| P3
-    P3 -->|Save history| D4
-
-    USER -->|Travel preferences| P4
-    P4 -->|Generated plan| USER
-    P4 -->|AI generation| EXTERNAL
-    EXTERNAL -->|Itinerary| P4
-    P4 -->|Save plan| D3
-
-    ADMIN -->|Management commands| P2
-    P2 -->|Reports & stats| ADMIN
-
-    P1 -->|Online status| D5
-    D5 -->|Active users| P5
-    P5 -->|Real-time updates| USER
-
-    style P1 fill:#E3F2FD
-    style P2 fill:#E8F5E9
-    style P3 fill:#FFF3E0
-    style P4 fill:#F3E5F5
-    style P5 fill:#FCE4EC
+    User --> P1
+    User --> P2
+    User --> P3
+    User --> P4
+    
+    P1 --> DB
+    P2 --> DB
+    P3 --> APIs
+    P4 --> APIs
+    P4 --> DB
 ```
 
 ---

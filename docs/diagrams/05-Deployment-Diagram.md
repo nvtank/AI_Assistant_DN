@@ -6,108 +6,22 @@ Sơ đồ triển khai mô tả cách hệ thống GrabTheBeyond được deploy
 
 ---
 
-## 🌐 Production Deployment Architecture
+## 🌐 Deployment Architecture
 
 ```mermaid
 graph TB
-    subgraph "Client Devices"
-        BROWSER[Web Browser<br/>Chrome, Firefox, Safari]
-        MOBILE[Mobile Browser<br/>iOS, Android]
-    end
-
-    subgraph "DNS & CDN Layer"
-        CLOUDFLARE[Cloudflare DNS<br/>grabthebeyond.com]
-        VERCEL_CDN[Vercel Edge Network<br/>Global CDN<br/>280+ PoPs]
-    end
-
-    subgraph "Vercel Platform - Frontend"
-        direction TB
-        EDGE[Edge Functions<br/>Geolocation, Auth]
-        NEXTJS_PROD[Next.js Application<br/>Serverless Functions<br/>Node.js 18]
-        API_ROUTES[API Routes<br/>/api/*]
-        STATIC[Static Assets<br/>JS, CSS, Images]
-        
-        EDGE --> NEXTJS_PROD
-        NEXTJS_PROD --> API_ROUTES
-        NEXTJS_PROD --> STATIC
-    end
-
-    subgraph "Railway Platform - Backend"
-        direction TB
-        RAILWAY_LB[Load Balancer<br/>Auto-scaling]
-        EXPRESS_CONTAINER[Express Container<br/>Docker Image<br/>Node.js 18]
-        SOCKET_SERVER[Socket.IO Server<br/>WebSocket Handler]
-        
-        RAILWAY_LB --> EXPRESS_CONTAINER
-        EXPRESS_CONTAINER --> SOCKET_SERVER
-    end
-
-    subgraph "Firebase Cloud - Google Cloud Platform"
-        direction TB
-        
-        subgraph "Firebase Services"
-            FIRESTORE_PROD[(Cloud Firestore<br/>Multi-region: asia-southeast1<br/>Auto-scaling)]
-            FB_AUTH_PROD[Firebase Authentication<br/>Global Identity Platform]
-            FB_STORAGE_PROD[Firebase Storage<br/>Multi-region Buckets<br/>CDN-backed]
-            FB_HOSTING[Firebase Hosting<br/>Backup hosting]
-        end
-        
-        subgraph "Firebase Tools"
-            FB_ANALYTICS[Firebase Analytics<br/>User tracking]
-            FB_CRASHLYTICS[Crashlytics<br/>Error reporting]
-            FB_PERFORMANCE[Performance Monitoring]
-        end
-    end
-
-    subgraph "External APIs - Third Party"
-        GEMINI_CLOUD[Google Gemini AI<br/>gemini-1.5-pro<br/>Global endpoints]
-        PLACES_CLOUD[Google Places API<br/>Maps Platform<br/>asia-southeast1]
-        WEATHER_CLOUD[OpenWeather API<br/>Global CDN]
-        CLOUDINARY_CDN[Cloudinary<br/>Image CDN<br/>Auto-optimization]
-    end
-
-    subgraph "Monitoring & Logging"
-        VERCEL_ANALYTICS[Vercel Analytics<br/>Performance tracking]
-        RAILWAY_LOGS[Railway Logs<br/>Centralized logging]
-        FIREBASE_CONSOLE[Firebase Console<br/>Dashboard]
-    end
-
-    %% Client connections
-    BROWSER --> CLOUDFLARE
-    MOBILE --> CLOUDFLARE
-    CLOUDFLARE --> VERCEL_CDN
-    VERCEL_CDN --> EDGE
-
-    %% WebSocket connections
-    BROWSER -.WebSocket.-> RAILWAY_LB
-    MOBILE -.WebSocket.-> RAILWAY_LB
-
-    %% API connections
-    API_ROUTES --> RAILWAY_LB
-    API_ROUTES --> FIRESTORE_PROD
-    API_ROUTES --> FB_AUTH_PROD
-    API_ROUTES --> GEMINI_CLOUD
-    API_ROUTES --> PLACES_CLOUD
-    API_ROUTES --> WEATHER_CLOUD
+    Client[Client Browser]
+    Vercel[Vercel Platform<br/>Next.js App]
+    Railway[Railway Platform<br/>Express Server]
+    Firebase[Firebase Cloud<br/>Database + Auth]
+    External[External APIs<br/>Gemini, Places]
     
-    EXPRESS_CONTAINER --> FIRESTORE_PROD
-    EXPRESS_CONTAINER --> FB_STORAGE_PROD
-    SOCKET_SERVER --> FIRESTORE_PROD
-
-    %% Image uploads
-    NEXTJS_PROD -.Upload.-> CLOUDINARY_CDN
-    API_ROUTES -.Upload.-> FB_STORAGE_PROD
-
-    %% Monitoring connections
-    NEXTJS_PROD -.Metrics.-> VERCEL_ANALYTICS
-    EXPRESS_CONTAINER -.Logs.-> RAILWAY_LOGS
-    FIRESTORE_PROD -.Analytics.-> FB_ANALYTICS
-    NEXTJS_PROD -.Errors.-> FB_CRASHLYTICS
-
-    style VERCEL_CDN fill:#000,color:#fff,stroke:#fff,stroke-width:2px
-    style FIRESTORE_PROD fill:#FFA611,stroke:#333,stroke-width:3px
-    style GEMINI_CLOUD fill:#4285f4,stroke:#333,stroke-width:2px
-    style RAILWAY_LB fill:#6b46c1,stroke:#fff,stroke-width:2px
+    Client --> Vercel
+    Client -.WebSocket.-> Railway
+    Vercel --> Railway
+    Vercel --> Firebase
+    Vercel --> External
+    Railway --> Firebase
 ```
 
 ---
