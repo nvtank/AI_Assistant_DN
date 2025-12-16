@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { isAdmin } from '@/lib/authHelpers';
 import { 
   getPendingIncidents, 
   getVerifiedIncidents, 
@@ -45,19 +46,41 @@ export default function AdminPage() {
   const [stats, setStats] = useState<any>(null);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
+  const [checkingAdmin, setCheckingAdmin] = useState(true);
 
+  // Check if user is admin
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-    }
+    const checkAdminAccess = async () => {
+      if (authLoading) return;
+      
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+
+      try {
+        const userIsAdmin = await isAdmin(user.uid);
+        if (!userIsAdmin) {
+          console.warn('⚠️ Non-admin user attempted to access admin page');
+          router.push('/unauthorized');
+          return;
+        }
+        setCheckingAdmin(false);
+      } catch (error) {
+        console.error('Error checking admin access:', error);
+        router.push('/unauthorized');
+      }
+    };
+
+    checkAdminAccess();
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user) {
+    if (user && !checkingAdmin) {
       loadData();
       setupRealtimeListeners();
     }
-  }, [user]);
+  }, [user, checkingAdmin]);
 
   const loadData = async () => {
     try {
@@ -132,12 +155,12 @@ export default function AdminPage() {
     }
   };
 
-  if (authLoading) {
+  if (authLoading || checkingAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">{checkingAdmin ? 'Checking permissions...' : 'Loading...'}</p>
         </div>
       </div>
     );
@@ -148,6 +171,18 @@ export default function AdminPage() {
   }
 
   const currentIncidents = activeTab === 'pending' ? pendingIncidents : verifiedIncidents;
+
+  // Show loading while checking admin access
+  if (authLoading || checkingAdmin || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Checking permissions...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">

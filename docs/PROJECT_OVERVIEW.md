@@ -7,17 +7,198 @@
 
 ---
 
-## 📋 Table of Contents
+## 📋 Table of Contents (Mục Lục Chi Tiết)
 
-1. [Version History](#version-history)
-2. [Problem Statement](#problem-statement)
-3. [Objectives](#objectives)
-4. [Key User Scenarios](#key-user-scenarios)
-5. [Product Features](#product-features)
-6. [Mockups & Design](#mockups--design)
-7. [Solution Architecture](#solution-architecture)
-8. [Implementation Highlights](#implementation-highlights)
-9. [Related Documents](#related-documents)
+### 1. [Version History](#-version-history)
+- [1.1. Version Table](#version-history)
+
+### 2. [Problem Statement](#-problem-statement)
+- [2.1. The Challenge](#1-the-challenge)
+  - Tourism Statistics
+  - Critical Gaps in Current System
+  - Safety Concerns
+  - Planning Difficulties
+- [2.2. Target Impact](#2-target-impact)
+  - For Visitors
+  - For the City (Public, Private, Governance)
+- [2.3. Why Now?](#3-why-now)
+  - IFC Resolution
+  - Da Nang's Transformation
+
+### 3. [Objectives](#-objectives)
+- [3.1. Make Smart City Feel Real](#1-make-smart-city-feel-real)
+- [3.2. Support Da Nang as Work and Finance Hub](#2-support-da-nang-as-work-and-finance-hub)
+- [3.3. Enhance Safety and Navigation](#3-enhance-safety-and-navigation)
+- [3.4. Spread Income Across the City](#4-spread-income-across-the-city)
+- [3.5. Reinforce International City Identity](#5-reinforce-international-city-identity)
+
+### 4. [Key User Scenarios](#-key-user-scenarios)
+- [4.1. Scenario 1: Independent Traveler](#scenario-1-independent-traveler--short-city-break)
+  - Context
+  - Journey with GrabTheBeyond (5 steps)
+  - Benefits
+- [4.2. Scenario 2: Business Visitor](#scenario-2-business-visitor--one-week-work-trip)
+  - Context
+  - Journey with GrabTheBeyond (5 steps)
+  - Benefits
+- [4.3. Scenario 3: Long-Stay / Aspiring Resident](#scenario-3-long-stay--aspiring-resident)
+  - Context
+  - Journey with GrabTheBeyond (5 steps)
+  - Benefits
+- [4.4. Scenario 4: Local Resident](#scenario-4-local-resident--daily-assistance)
+  - Context
+  - Journey with GrabTheBeyond (5 steps)
+  - Benefits
+
+### 5. [Product Features](#-product-features)
+- [5.1. 🤖 AI-Powered Chatbot (Context-Aware)](#-1-ai-powered-chatbot-context-aware)
+  - Technology: Google Gemini 2.5 Flash
+  - Natural Language Understanding
+  - Voice Input/Output
+  - Context Awareness (4 factors)
+  - Smart Recommendations
+  - Real-time Weather Integration
+  - Conversation History
+  
+- [5.2. 🗺️ Real-Time Incident Reporting & Mapping](#️-2-real-time-incident-reporting--mapping)
+  - Technology Stack
+  - Incident Types (4 types)
+  - Severity Levels (3 levels)
+  - Reporting Flow (8 steps)
+  - Interactive Map Features
+  - Admin Dashboard
+  - Safety Impact
+
+- [5.3. 🧳 AI Travel Planner](#-3-ai-travel-planner-budget-aware-weather-optimized)
+  - Technology
+  - Planning Inputs (9 categories)
+  - AI-Generated Itinerary
+  - Complete Budget Breakdown
+  - Smart Features (5 features)
+  - Plan Management
+  - Database Integration (500+ locations)
+
+- [5.4. 🚗 Seamless Grab Integration](#-4-seamless-grab-integration)
+  - Deep Link Implementation
+  - How It Works (3 steps)
+  - Features
+  - User Experience
+  - Fallback Handling
+
+- [5.5. 👥 Online User Tracking](#-5-online-user-tracking-real-time)
+  - Technology
+  - How It Works (5 steps)
+  - UI Display
+  - Benefits
+
+- [5.6. 🎤 Voice Interaction](#-6-voice-interaction-multi-language)
+  - Technology: Web Speech API
+  - Voice Input
+  - Voice Output (TTS)
+  - Use Cases
+  - Implementation
+  - Browser Support
+
+- [5.7. 🔐 Authentication & User Management](#-7-authentication--user-management)
+  - Supported Methods
+  - Security Features
+  - User Roles
+  - Profile Management
+  - Authorization Flow
+  - Protected/Public Routes
+
+- [5.8. 📊 Admin Dashboard](#-8-admin-dashboard)
+  - Access Control
+  - Features (6 modules)
+  - UI Design
+  - Permissions
+
+### 6. [Mockups & Design](#-mockups--design)
+- [6.1. Logo](#logo)
+- [6.2. Product Interface](#product-interface)
+  - Desktop Layout
+  - Mobile Responsive
+- [6.3. Live Demo](#live-demo)
+- [6.4. Design System](#design-system)
+  - Colors
+  - Typography
+  - Components
+  - Icons
+
+### 7. [Solution Architecture](#️-solution-architecture)
+- [7.1. Technology Stack](#technology-stack)
+  - Frontend Technologies
+  - Backend Technologies
+  - Database & Authentication
+  - External APIs
+  - Hosting
+  
+- [7.2. High-Level Architecture](#high-level-architecture)
+  - Architecture Diagram
+  - Layer Breakdown
+
+- [7.3. Database Design](#database-design-firestore-collections)
+  - users Collection
+  - incidents Collection
+  - travel_plans Collection
+  - chat_history Collection
+  - online_users Collection
+  - Indexes
+
+- [7.4. API Architecture](#api-architecture)
+  - Next.js API Routes (7 endpoints)
+  - Express REST API
+
+- [7.5. Socket.IO Real-Time Events](#socketio-real-time-events)
+  - Client → Server Events
+  - Server → Client Events
+  - Implementation Examples
+
+### 8. [Implementation Highlights](#-implementation-highlights)
+- [8.1. What Makes GrabTheBeyond Stand Out](#what-makes-grabthebeyond-stand-out)
+  - 8 Key Differentiators
+  
+- [8.2. Technical Achievements](#technical-achievements)
+  - Performance
+  - Scalability
+  - Security
+  - SEO & More
+
+- [8.3. Code Quality & Best Practices](#code-quality--best-practices)
+  - 10 Quality Standards
+
+### 9. [Related Documents](#-related-documents)
+- [9.1. Technical Documentation](#technical-documentation)
+  - 9 Architecture Diagrams
+  
+- [9.2. Setup & User Guides](#setup--user-guides)
+  - 4 Guides
+  
+- [9.3. External Research & Context](#external-research--context)
+  - Market Research
+  - Competitor Analysis
+  - Differentiation Points
+
+### 10. [Future Roadmap](#-future-roadmap)
+- [10.1. Phase 2 (Q1 2026)](#phase-2-q1-2026) - 5 features
+- [10.2. Phase 3 (Q2 2026)](#phase-3-q2-2026) - 5 features
+- [10.3. Phase 4 (Beyond)](#phase-4-beyond) - 5 features
+
+### 11. [Team & Acknowledgments](#-team--acknowledgments)
+- [11.1. Development Team](#development-team)
+- [11.2. Technologies & Services](#technologies--services)
+- [11.3. Special Thanks](#special-thanks)
+
+### 12. [Contact & Support](#-contact--support)
+
+---
+
+**📊 Tổng Quan Tài Liệu:**
+- **Tổng số trang:** ~40 pages (A4)
+- **Tổng số từ:** ~12,000 words
+- **Thời gian đọc:** ~45-60 minutes
+- **Cấp độ:** Technical + Business
+- **Mục đích:** Hackathon Submission + Technical Documentation
 
 ---
 
@@ -1209,6 +1390,27 @@ io.on('connection', (socket) => {
 
 ---
 
+## 🧭 Quick Navigation
+
+**🔝 [Back to Table of Contents](#-table-of-contents-mục-lục-chi-tiết)**
+
+### Core Sections (Phần Chính):
+- 📖 [Problem & Objectives](#-problem-statement) - Vấn đề và mục tiêu
+- 👥 [User Scenarios](#-key-user-scenarios) - Tình huống người dùng
+- ✨ [Features](#-product-features) - Tính năng sản phẩm
+- 🏗️ [Architecture](#️-solution-architecture) - Kiến trúc hệ thống
+- 🚀 [Implementation](#-implementation-highlights) - Triển khai
+
+### Quick Links (Liên Kết Nhanh):
+- 🤖 [AI Chatbot Details](#-1-ai-powered-chatbot-context-aware)
+- 🗺️ [Incident Mapping](#️-2-real-time-incident-reporting--mapping)
+- 🧳 [Travel Planner](#-3-ai-travel-planner-budget-aware-weather-optimized)
+- 📊 [Admin Dashboard](#-8-admin-dashboard)
+- 📚 [All Technical Docs](#technical-documentation)
+- 🔮 [Future Roadmap](#-future-roadmap)
+
+---
+
 ## 📞 Contact & Support
 
 **Project Repository**: [GitHub - GrabTheBeyond](https://github.com/yourusername/GrabTheBeyond)  
@@ -1226,6 +1428,22 @@ io.on('connection', (socket) => {
 
 ---
 
-*Document Version: 1.0.0*  
-*Last Updated: December 16, 2025*  
-*Status: Production-Ready MVP*
+### 📄 Document Information
+
+| Property | Value |
+|----------|-------|
+| **Version** | 1.0.0 |
+| **Last Updated** | December 16, 2025 |
+| **Status** | Production-Ready MVP |
+| **Document Type** | Technical + Business Overview |
+| **Page Count** | ~40 pages (A4) |
+| **Word Count** | ~12,000 words |
+| **Reading Time** | 45-60 minutes |
+| **Target Audience** | Hackathon Judges, Investors, Technical Teams |
+
+---
+
+🔝 **[⬆️ Back to Top](#grabthebeyond---ai-powered-smart-tourism-platform-for-da-nang)**
+
+
+

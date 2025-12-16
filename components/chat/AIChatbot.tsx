@@ -171,65 +171,65 @@ export default function AIChatbot({
     if (initGeminiAI()) setGeminiReady(true);
   }, []);
 
-  // Load chat history from Firebase when user is logged in
+  // Reset chat to fresh state on mount - no loading old chat history
   useEffect(() => {
-    const loadChatHistory = async () => {
-      if (!user || chatMode !== "normal") {
-        setLoadingHistory(false);
-        return;
-      }
+    if (chatMode !== "normal") {
+      setLoadingHistory(false);
+      return;
+    }
 
-      try {
-        setLoadingHistory(true);
-        
-        // Check if there's a specific conversation to load from sidebar
-        let conversationToLoad = null;
-        if (typeof window !== 'undefined') {
+    // Always start with fresh chat - clear any cached data
+    if (typeof window !== 'undefined') {
+      // Clear any session storage items related to chat
+      sessionStorage.removeItem('loadConversationId');
+    }
+
+    // Reset to default messages
+    setMessages([
+      {
+        role: "assistant",
+        content: "👋 Hello! I am your AI assistant. Ask me anything about Da Nang!\n\n💡 Tip: Switch to Planner mode to create your travel plan.",
+        timestamp: new Date(),
+      },
+    ]);
+    setConversationId(null);
+    setLoadingHistory(false);
+    console.log('🆕 Chat reset - starting fresh conversation');
+  }, [user, chatMode]); // Only reset when user or chatMode changes, not conversationId
+
+  // Listen for events from sidebar (separate effect to avoid resetting on conversationId change)
+  useEffect(() => {
+    if (chatMode !== "normal") return;
+
+    // Listen for load conversation event from sidebar (only if user explicitly clicks)
+    const handleLoadConversation = () => {
+      console.log('📂 Received loadConversation event from sidebar');
+      // Only load if user explicitly clicks on a conversation in sidebar
+      const loadChatHistory = async () => {
+        try {
+          setLoadingHistory(true);
           const loadConversationId = sessionStorage.getItem('loadConversationId');
           if (loadConversationId) {
-            console.log('📂 Loading specific conversation:', loadConversationId);
-            conversationToLoad = await getChatConversation(loadConversationId);
+            console.log('📂 Loading specific conversation from sidebar:', loadConversationId);
+            const conversationToLoad = await getChatConversation(loadConversationId);
             sessionStorage.removeItem('loadConversationId');
+            
+            if (conversationToLoad && conversationToLoad.messages) {
+              const loadedMessages = conversationToLoad.messages.map((msg: any) => ({
+                ...msg,
+                timestamp: msg.timestamp?.toDate ? msg.timestamp.toDate() : new Date(msg.timestamp),
+              }));
+              setMessages(loadedMessages);
+              setConversationId(conversationToLoad.id || null);
+              console.log('✅ Loaded conversation from sidebar:', loadedMessages.length, 'messages');
+            }
           }
+        } catch (error) {
+          console.error('❌ Error loading conversation:', error);
+        } finally {
+          setLoadingHistory(false);
         }
-        
-        // If no specific conversation to load, get active one
-        if (!conversationToLoad) {
-          const activeConversation = await getUserActiveConversation(user.uid);
-          // Only use if it's a normal chat conversation (not planner)
-          if (activeConversation && (!activeConversation.type || activeConversation.type === 'normal')) {
-            conversationToLoad = activeConversation;
-          }
-        }
-        
-        if (conversationToLoad && conversationToLoad.messages) {
-          // Convert Firestore timestamps to Date objects
-          const loadedMessages = conversationToLoad.messages.map((msg: any) => ({
-            ...msg,
-            timestamp: msg.timestamp?.toDate ? msg.timestamp.toDate() : new Date(msg.timestamp),
-          }));
-          
-          setMessages(loadedMessages);
-          setConversationId(conversationToLoad.id || null);
-          console.log('✅ Loaded chat history from Firebase:', loadedMessages.length, 'messages');
-        } else {
-          // No active conversation, start fresh
-          setConversationId(null);
-          console.log('ℹ️ No previous chat history found');
-        }
-      } catch (error) {
-        console.error('❌ Error loading chat history:', error);
-        // Continue with default messages on error
-      } finally {
-        setLoadingHistory(false);
-      }
-    };
-
-    loadChatHistory();
-    
-    // Listen for load conversation event from sidebar
-    const handleLoadConversation = () => {
-      console.log('📂 Received loadConversation event');
+      };
       loadChatHistory();
     };
     
@@ -291,7 +291,7 @@ export default function AIChatbot({
         window.removeEventListener('chatConversationDeleted', handleConversationDeleted as EventListener);
       };
     }
-  }, [user, chatMode, conversationId]);
+  }, [user, chatMode]); // Don't include conversationId to avoid resetting when it changes
 
   // Save chat to Firebase
   const saveChatToFirebase = async (newMessages: ChatMessage[]) => {
