@@ -580,7 +580,7 @@ export default function SimpleSidebar({ isOpen, onToggle, user }: SimpleSidebarP
                       <button
                         onClick={(e) => handleDeleteChat(chat.id, e)}
                         disabled={deletingId === chat.id}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-100 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all disabled:opacity-50"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-100 text-gray-400 hover:text-red-600 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all disabled:opacity-50"
                         title="Delete conversation"
                       >
                         {deletingId === chat.id ? (
@@ -730,7 +730,7 @@ export default function SimpleSidebar({ isOpen, onToggle, user }: SimpleSidebarP
                               }
                             }
                           }}
-                          className="absolute right-10 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-md hover:bg-orange-100 text-gray-400 hover:text-orange-600 opacity-0 group-hover:opacity-100 transition-all"
+                          className="absolute right-10 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-md hover:bg-orange-100 text-gray-400 hover:text-orange-600 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all"
                           title="Restart planning session"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -765,7 +765,7 @@ export default function SimpleSidebar({ isOpen, onToggle, user }: SimpleSidebarP
                             }
                           }}
                           disabled={deletingId === conv.id}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-100 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all disabled:opacity-50"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-100 text-gray-400 hover:text-red-600 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all disabled:opacity-50"
                           title="Delete"
                         >
                           {deletingId === conv.id ? (
@@ -826,7 +826,7 @@ export default function SimpleSidebar({ isOpen, onToggle, user }: SimpleSidebarP
                           <button
                             onClick={(e) => handleDeletePlan(plan.id || '', e)}
                             disabled={deletingId === plan.id || !plan.id}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-100 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all disabled:opacity-50"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-100 text-gray-400 hover:text-red-600 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all disabled:opacity-50"
                             title="Delete plan"
                           >
                             {deletingId === plan.id ? (

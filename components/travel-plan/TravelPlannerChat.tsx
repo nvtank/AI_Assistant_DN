@@ -584,7 +584,7 @@ export default function TravelPlannerChat() {
             }}
             className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-white/50"
           >
-            Chat
+            Chat Agent
           </button>
           <button
             className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 bg-grab-green text-white shadow-md"

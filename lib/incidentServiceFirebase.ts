@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { Incident, Location } from './types';
+import { logger } from './logger';
 
 const INCIDENTS_COLLECTION = 'incident_report';
 
@@ -71,7 +72,7 @@ export const listenToVerifiedIncidents = (callback: (incidents: Incident[]) => v
 
     return unsubscribe;
   } catch (error) {
-    console.error('Error listening to verified incidents:', error);
+    logger.error('Error listening to verified incidents:', error);
     return () => {};
   }
 };
@@ -97,7 +98,7 @@ export const listenToPendingIncidents = (callback: (incidents: Incident[]) => vo
 
     return unsubscribe;
   } catch (error) {
-    console.error('Error listening to pending incidents:', error);
+    logger.error('Error listening to pending incidents:', error);
     return () => {};
   }
 };
@@ -119,7 +120,7 @@ export const getVerifiedIncidents = async (): Promise<Incident[]> => {
     });
     return incidents;
   } catch (error) {
-    console.error('Error getting verified incidents:', error);
+    logger.error('Error getting verified incidents:', error);
     return [];
   }
 };
@@ -141,7 +142,7 @@ export const getPendingIncidents = async (): Promise<Incident[]> => {
     });
     return incidents;
   } catch (error) {
-    console.error('Error getting pending incidents:', error);
+    logger.error('Error getting pending incidents:', error);
     return [];
   }
 };
@@ -162,7 +163,7 @@ export const reportIncident = async (incident: Omit<Incident, 'id' | 'verified' 
       id: docRef.id,
     } as Incident;
   } catch (error) {
-    console.error('Error reporting incident:', error);
+    logger.error('Error reporting incident:', error);
     throw error;
   }
 };
@@ -177,7 +178,7 @@ export const approveIncident = async (incidentId: string): Promise<boolean> => {
     });
     return true;
   } catch (error) {
-    console.error('Error approving incident:', error);
+    logger.error('Error approving incident:', error);
     return false;
   }
 };
@@ -189,7 +190,7 @@ export const rejectIncident = async (incidentId: string): Promise<boolean> => {
     await deleteDoc(incidentRef);
     return true;
   } catch (error) {
-    console.error('Error rejecting incident:', error);
+    logger.error('Error rejecting incident:', error);
     return false;
   }
 };
@@ -201,7 +202,7 @@ export const deleteIncident = async (incidentId: string): Promise<boolean> => {
     await deleteDoc(incidentRef);
     return true;
   } catch (error) {
-    console.error('Error deleting incident:', error);
+    logger.error('Error deleting incident:', error);
     return false;
   }
 };
@@ -229,7 +230,7 @@ export const getIncidentStats = async () => {
       },
     };
   } catch (error) {
-    console.error('Error getting incident stats:', error);
+    logger.error('Error getting incident stats:', error);
     return {
       total: 0,
       verified: 0,

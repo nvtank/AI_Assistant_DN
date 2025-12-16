@@ -9,6 +9,7 @@ import {
   Place,
   MOCK_PLACES,
 } from "@/lib/types";
+import { CiMicrophoneOff, CiMicrophoneOn } from "react-icons/ci";
 import { calculateDistance } from "@/lib/utils";
 import { callGeminiAI, initGeminiAI } from "@/lib/geminiAI";
 import PlaceCard from "@/components/chat/PlaceCard";
@@ -23,6 +24,7 @@ import {
   getChatConversation,
 } from "@/lib/travelPlanService";
 import { Timestamp } from "firebase/firestore";
+import { logger } from "@/lib/logger";
 
 interface AIChatbotProps {
   userLocation: Location;
@@ -111,7 +113,7 @@ export default function AIChatbot({
               setConversationId(activeConversation.id || null);
             }
           } catch (error) {
-            console.error('❌ Error loading chat history:', error);
+            logger.error('Error loading chat history:', error);
           } finally {
             setLoadingHistory(false);
           }
@@ -203,14 +205,14 @@ export default function AIChatbot({
 
     // Listen for load conversation event from sidebar (only if user explicitly clicks)
     const handleLoadConversation = () => {
-      console.log('📂 Received loadConversation event from sidebar');
+      logger.debug('Received loadConversation event from sidebar');
       // Only load if user explicitly clicks on a conversation in sidebar
       const loadChatHistory = async () => {
         try {
           setLoadingHistory(true);
           const loadConversationId = sessionStorage.getItem('loadConversationId');
           if (loadConversationId) {
-            console.log('📂 Loading specific conversation from sidebar:', loadConversationId);
+            logger.debug('Loading specific conversation from sidebar', { conversationId: loadConversationId });
             const conversationToLoad = await getChatConversation(loadConversationId);
             sessionStorage.removeItem('loadConversationId');
             
@@ -221,11 +223,11 @@ export default function AIChatbot({
               }));
               setMessages(loadedMessages);
               setConversationId(conversationToLoad.id || null);
-              console.log('✅ Loaded conversation from sidebar:', loadedMessages.length, 'messages');
+              logger.debug('Loaded conversation from sidebar', { messageCount: loadedMessages.length });
             }
           }
         } catch (error) {
-          console.error('❌ Error loading conversation:', error);
+          logger.error('Error loading conversation:', error);
         } finally {
           setLoadingHistory(false);
         }
@@ -235,7 +237,7 @@ export default function AIChatbot({
     
     // Listen for new chat requested event
     const handleNewChatRequested = async () => {
-      console.log('🆕 New chat requested, saving current conversation...');
+      logger.debug('New chat requested, saving current conversation');
       
       // Save current conversation before resetting
       if (conversationId && messages.length > 1) {
@@ -247,9 +249,9 @@ export default function AIChatbot({
             await updateChatConversation(conversationId, {
               completed: true,
             });
-            console.log('💾 Saved current conversation before reset');
+            logger.debug('Saved current conversation before reset');
           } catch (error) {
-            console.error('❌ Error saving conversation:', error);
+            logger.error('Error saving conversation:', error);
           }
         }
       }
@@ -261,17 +263,17 @@ export default function AIChatbot({
         timestamp: new Date(),
       }]);
       setConversationId(null);
-      console.log('🔄 Reset chat to new conversation');
+      logger.debug('Reset chat to new conversation');
     };
     
     // Listen for conversation deleted event
     const handleConversationDeleted = (event: CustomEvent) => {
       const deletedConversationId = event.detail?.conversationId;
-      console.log('🗑️ Conversation deleted event:', deletedConversationId);
+      logger.debug('Conversation deleted event', { conversationId: deletedConversationId });
       
       // If all conversations were deleted or current conversation was deleted, reset state
       if (deletedConversationId === 'all' || (deletedConversationId && conversationId === deletedConversationId)) {
-        console.log('🔄 Conversation(s) deleted, resetting...');
+        logger.debug('Conversation(s) deleted, resetting');
         setMessages([{
           role: "assistant",
           content: "👋 Hello! I am your AI assistant. Ask me anything about Da Nang!\n\n💡 Tip: Switch to Planner mode to create your travel plan.",
@@ -313,7 +315,7 @@ export default function AIChatbot({
           messages: messagesForFirestore as any,
           completed: false,
         });
-        console.log('💾 Updated chat conversation in Firebase');
+        logger.debug('Updated chat conversation in Firebase');
       } else {
         // Create new conversation
         const newConversationId = await saveChatConversation({
@@ -325,10 +327,10 @@ export default function AIChatbot({
           updatedAt: Timestamp.now() as any, // Will be overwritten by saveChatConversation
         });
         setConversationId(newConversationId);
-        console.log('💾 Created new chat conversation in Firebase:', newConversationId);
+        logger.debug('Created new chat conversation in Firebase', { conversationId: newConversationId });
       }
     } catch (error) {
-      console.error('❌ Error saving chat to Firebase:', error);
+      logger.error('Error saving chat to Firebase:', error);
       // Don't block user experience if save fails
     }
   };
@@ -356,25 +358,24 @@ export default function AIChatbot({
 
       if (geminiReady) {
         try {
-          console.log("📤 Calling Gemini AI with message:", input);
+          logger.debug("Calling Gemini AI", { messageLength: input.length });
           aiResponse = await callGeminiAI(input, {
             userLocation,
             weather,
             nearbyIncidents,
           });
-          console.log("✅ Gemini AI response received:", aiResponse);
+          logger.debug("Gemini AI response received");
         } catch (e) {
-          console.error("❌ Gemini AI failed, error:", e);
-          console.error("Error details:", (e as Error).message);
+          logger.error("Gemini AI failed", e);
           aiResponse = await callServerAI();
         }
       } else {
-        console.warn("⚠️ Gemini not ready, using server AI");
+        logger.warn("Gemini not ready, using server AI");
         aiResponse = await callServerAI();
       }
 
       if (!aiResponse || aiResponse.trim() === "") {
-        console.error("❌ Empty response received!");
+        logger.error("Empty response received");
         aiResponse =
           "I'm having trouble processing your request. Please try again.";
       }
@@ -579,7 +580,7 @@ export default function AIChatbot({
                 onClick={switchToNormalMode}
                 className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 bg-grab-green text-white shadow-md"
               >
-                Chat
+                Chat Agent
               </button>
               <button
                 onClick={switchToPlannerMode}
@@ -772,11 +773,11 @@ export default function AIChatbot({
                   className={`flex-shrink-0 px-3 sm:px-4 py-2 sm:py-3 rounded-xl shadow-lg transition-all text-sm sm:text-base ${
                     isListening
                       ? "bg-red-500 text-white hover:bg-red-600"
-                      : "bg-grab-green text-white hover:bg-[#009640] disabled:opacity-40"
+                      : "text-black hover:bg-green-400 disabled:opacity-40"
                   }`}
                   title="Click to speak"
                 >
-                  {isListening ? "🎙️⏹" : "🎤"}
+                  {isListening ? <CiMicrophoneOn className=" w-6 h-6" /> : <CiMicrophoneOff className="w-6 h-6" />}
                 </button>
               )}
 
@@ -786,8 +787,8 @@ export default function AIChatbot({
                     onClick={() => setAutoSpeak(!autoSpeak)}
                     className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
                       autoSpeak
-                        ? "bg-grab-green text-white shadow-md border-grab-green"
-                        : "glass text-gray-700 hover:bg-grab-green "
+                        ? "bg-green-300 text-white shadow-md border-grab-green"
+                        : " text-gray-700 hover:bg-green-400 "
                     }`}
                   >
                     <span className="text-lg">{autoSpeak ? "🔊" : "🔇"}</span>
@@ -806,7 +807,6 @@ export default function AIChatbot({
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <span className="hidden sm:inline">Sending...</span>
                     </>
                   ) : (
                     <>

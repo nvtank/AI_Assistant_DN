@@ -1,4 +1,6 @@
 // Gemini API Configuration
+import { logger } from './logger';
+
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
 
@@ -6,10 +8,10 @@ const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/
 
 export function initGeminiAI() {
   if (!GEMINI_API_KEY) {
-    console.error('❌ Gemini API key not found');
+    logger.error('Gemini API key not found');
     return false;
   }
-  console.log('✅ Gemini AI is ready');
+  logger.debug('Gemini AI is ready');
   return true;
 }
 
@@ -41,12 +43,11 @@ export async function callGeminiAI(
   let placeType = '';
 
   try {
-    console.log('🔍 Gemini AI called with message:', message);
-    console.log('📍 Context received:', {
-      location: context.userLocation?.address,
-      weather: context.weather?.description,
-      temp: context.weather?.temp,
-      incidents: context.nearbyIncidents?.length
+    logger.debug('Gemini AI called', { 
+      messageLength: message.length,
+      hasLocation: !!context.userLocation,
+      hasWeather: !!context.weather,
+      incidentsCount: context.nearbyIncidents?.length || 0
     });
     for (const [type, words] of Object.entries(keywords)) {
       if (words.some(word => messageLower.includes(word))) {
@@ -184,12 +185,11 @@ Now provide specific recommendations matching user's intent:`;
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ Gemini API error status:', response.status);
-      console.error('❌ Gemini API error response:', errorText);
+      logger.error('Gemini API error', { status: response.status, error: errorText });
       
       // Handle rate limit (429) and quota errors
       if (response.status === 429 || response.status === 403) {
-        console.warn('⚠️ API quota exceeded or rate limited - using fallback response');
+        logger.warn('API quota exceeded or rate limited - using fallback response');
         return getFallbackResponse(message, context, placeType, isRaining);
       }
       
@@ -197,11 +197,11 @@ Now provide specific recommendations matching user's intent:`;
     }
 
     const data = await response.json();
-    console.log('🔍 Raw Gemini AI response:', data);
+    logger.debug('Gemini AI response received');
 
     // Check for API errors
     if (data.error) {
-      console.error('❌ Gemini API returned error:', data.error);
+      logger.error('Gemini API returned error:', data.error);
       throw new Error(`Gemini API error: ${data.error.message || 'Unknown error'}`);
     }
 
@@ -211,12 +211,12 @@ Now provide specific recommendations matching user's intent:`;
       
       // Check finish reason
       if (candidate.finishReason === 'SAFETY') {
-        console.warn('⚠️ Response blocked by safety filters');
+        logger.warn('Response blocked by safety filters');
         return getFallbackResponse(message, context, placeType, isRaining);
       }
       
       if (candidate.finishReason === 'MAX_TOKENS') {
-        console.warn('⚠️ Response truncated due to MAX_TOKENS - using fallback');
+        logger.warn('Response truncated due to MAX_TOKENS - using fallback');
         return getFallbackResponse(message, context, placeType, isRaining);
       }
       
@@ -239,29 +239,27 @@ Now provide specific recommendations matching user's intent:`;
       }
       
       if (text && typeof text === 'string' && text.trim()) {
-        console.log('✅ Gemini AI response extracted successfully');
+        logger.debug('Gemini AI response extracted successfully');
         const finalResponse = weatherResponse + text;
-        console.log('📝 Final response:', finalResponse.substring(0, 200) + '...');
         return finalResponse;
       }
       
       // If no text but finish reason is STOP, it might be empty response
       if (candidate.finishReason === 'STOP' && !text) {
-        console.warn('⚠️ Empty response from Gemini - using fallback');
+        logger.warn('Empty response from Gemini - using fallback');
         return getFallbackResponse(message, context, placeType, isRaining);
       }
     }
 
-    console.warn('⚠️ Invalid response structure from Gemini API');
-    console.warn('Response data:', JSON.stringify(data, null, 2));
+    logger.warn('Invalid response structure from Gemini API');
     throw new Error('Invalid response format from Gemini API');
 
   } catch (error: any) {
-    console.error('❌ Gemini AI error:', error);
+    logger.error('Gemini AI error:', error);
     
     // Check if error is quota-related
     if (error.message?.includes('429') || error.message?.includes('quota')) {
-      console.warn('⚠️ API quota exceeded - using fallback response');
+      logger.warn('API quota exceeded - using fallback response');
       return getFallbackResponse(message, context, placeType, false);
     }
     
@@ -329,7 +327,7 @@ export async function testGeminiAI(): Promise<boolean> {
     const response = await callGeminiAI('Hello, are you working?', {});
     return response.length > 0;
   } catch (error) {
-    console.error('❌ Gemini AI test failed:', error);
+    logger.error('Gemini AI test failed:', error);
     return false;
   }
 }
