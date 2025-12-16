@@ -23,108 +23,30 @@ Use Case Diagram mô tả các tương tác giữa users và hệ thống GrabTh
 
 ```mermaid
 graph TB
-    subgraph "GrabTheBeyond System"
-        subgraph "Incident Management"
-            UC1[Report Incident]
-            UC2[View Incident Map]
-            UC3[Filter Incidents]
-            UC4[Verify Incident]
-            UC5[Resolve Incident]
-            UC6[Export Incident Report]
-        end
-
-        subgraph "AI Chatbot"
-            UC7[Ask Travel Questions]
-            UC8[Search Places]
-            UC9[Get Weather Info]
-            UC10[Get Recommendations]
-            UC11[Voice Input]
-        end
-
-        subgraph "Travel Planning"
-            UC12[Create Travel Plan]
-            UC13[View Travel Plans]
-            UC14[Edit Travel Plan]
-            UC15[Share Travel Plan]
-        end
-
-        subgraph "User Management"
-            UC16[Register Account]
-            UC17[Login/Logout]
-            UC18[Update Profile]
-            UC19[View Profile]
-        end
-
-        subgraph "Grab Integration"
-            UC20[Book Grab Ride]
-            UC21[Get Fare Estimate]
-        end
-
-        subgraph "Real-time Features"
-            UC22[Track Online Users]
-            UC23[Receive Real-time Alerts]
-        end
-    end
-
-    %% Actors
-    USER([Tourist/User])
-    ADMIN([Admin])
-    GEMINI[Gemini AI]
-    PLACES[Places API]
-    WEATHER[Weather Service]
-    GRAB[Grab System]
-
-    %% User connections
-    USER --> UC1
-    USER --> UC2
-    USER --> UC3
-    USER --> UC7
-    USER --> UC8
-    USER --> UC9
-    USER --> UC10
-    USER --> UC11
-    USER --> UC12
-    USER --> UC13
-    USER --> UC14
-    USER --> UC15
-    USER --> UC16
-    USER --> UC17
-    USER --> UC18
-    USER --> UC19
-    USER --> UC20
-    USER --> UC21
-    USER --> UC22
-    USER --> UC23
-
-    %% Admin connections
-    ADMIN --> UC2
-    ADMIN --> UC3
-    ADMIN --> UC4
-    ADMIN --> UC5
-    ADMIN --> UC6
-    ADMIN --> UC18
-    ADMIN --> UC19
-
-    %% External system connections
-    UC7 --> GEMINI
-    UC8 --> PLACES
-    UC9 --> WEATHER
-    UC10 --> GEMINI
-    UC12 --> GEMINI
-    UC12 --> PLACES
-    UC20 --> GRAB
-    UC21 --> GRAB
-
-    %% Include relationships
-    UC1 -.include.-> UC2
-    UC4 -.include.-> UC2
-    UC7 -.include.-> UC8
-    UC10 -.include.-> UC8
-    UC12 -.include.-> UC8
-
-    style USER fill:#2196F3,stroke:#333,stroke-width:2px,color:#fff
-    style ADMIN fill:#FF9800,stroke:#333,stroke-width:2px,color:#fff
-    style GEMINI fill:#4285f4,stroke:#333,stroke-width:2px,color:#fff
+    User([User])
+    Admin([Admin])
+    
+    UC1[Login/Register]
+    UC2[Report Incident]
+    UC3[View Map]
+    UC4[AI Chatbot]
+    UC5[Create Travel Plan]
+    UC6[Book Grab]
+    UC7[Manage Incidents]
+    
+    User --> UC1
+    User --> UC2
+    User --> UC3
+    User --> UC4
+    User --> UC5
+    User --> UC6
+    
+    Admin --> UC7
+    Admin --> UC3
+    
+    UC4 --> Gemini[Gemini AI]
+    UC5 --> Gemini
+    UC6 --> Grab[Grab App]
 ```
 
 ---

@@ -282,9 +282,9 @@ graph LR
     F[Write Operation<br/>New Incident] --> E
     
     E -.Trigger.-> B
-    B -.Document Change.-> A
-    B -.Document Change.-> C
-    B -.Document Change.-> D
+    B -.DocumentChange.-> A
+    B -.DocumentChange.-> C
+    B -.DocumentChange.-> D
     
     A -->|Update UI| G[User 1 sees new marker]
     C -->|Update UI| H[User 2 sees new marker]

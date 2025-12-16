@@ -12,101 +12,36 @@ GrabTheBeyond sử dụng **Firebase Firestore** - một NoSQL document-oriented
 erDiagram
     USERS ||--o{ INCIDENTS : reports
     USERS ||--o{ TRAVEL_PLANS : creates
-    USERS ||--o{ CHAT_HISTORY : has
     USERS ||--o| ONLINE_USERS : tracks
-    INCIDENTS ||--o{ INCIDENT_IMAGES : contains
-    TRAVEL_PLANS ||--o{ DAILY_ITINERARIES : includes
-    DAILY_ITINERARIES ||--o{ ACTIVITIES : contains
 
     USERS {
-        string uid PK "Firebase Auth UID"
-        string email UK "User email"
-        string displayName "Full name"
-        string photoURL "Profile picture URL"
-        string role "user|admin"
-        timestamp createdAt "Registration date"
-        timestamp lastLogin "Last login time"
-        object location "lat, lng, address"
-        array preferences "Travel preferences"
+        string uid PK
+        string email
+        string displayName
+        string role
     }
 
     INCIDENTS {
-        string id PK "Auto-generated ID"
-        string userId FK "Reporter user ID"
-        string title "Incident title"
-        string description "Detailed description"
-        string category "accident|construction|flood|..."
-        string severity "low|medium|high|critical"
-        object location "lat, lng, address"
-        string imageUrl "Cloudinary URL"
-        string status "pending|verified|resolved"
-        timestamp reportedAt "Report time"
-        timestamp updatedAt "Last update"
-        number viewCount "View statistics"
-        array tags "Searchable tags"
+        string id PK
+        string userId FK
+        string title
+        string category
+        string severity
+        object location
+        string status
     }
 
     TRAVEL_PLANS {
-        string id PK "Auto-generated ID"
-        string userId FK "Creator user ID"
-        string title "Trip title"
-        number duration "Number of days"
-        number budget "Total budget (VND)"
-        number people "Number of travelers"
-        array interests "Categories: beach, food, culture..."
-        object startLocation "Starting point"
-        timestamp createdAt "Creation time"
-        timestamp updatedAt "Last modification"
-        string status "draft|published|completed"
-    }
-
-    DAILY_ITINERARIES {
-        string id PK "Auto-generated ID"
-        string travelPlanId FK "Parent travel plan"
-        number dayNumber "Day 1, 2, 3..."
-        string theme "Daily theme"
-        number estimatedCost "Daily budget"
-        array activities "List of activities"
-    }
-
-    ACTIVITIES {
-        string id PK "Activity ID"
-        string name "Activity name"
-        string placeId "Google Places ID"
-        string category "restaurant|attraction|beach..."
-        object location "lat, lng, address"
-        string timeSlot "morning|afternoon|evening"
-        number duration "Minutes"
-        number estimatedCost "Cost in VND"
-        string description "Activity details"
-        number rating "Google rating"
-        array photos "Image URLs"
+        string id PK
+        string userId FK
+        number duration
+        number budget
+        array interests
     }
 
     ONLINE_USERS {
-        string userId PK,FK "User ID"
-        timestamp lastSeen "Last heartbeat"
-        boolean online "Online status"
-    }
-
-    CHAT_HISTORY {
-        string id PK "Auto-generated ID"
-        string userId FK "User ID"
-        string sessionId "Conversation session"
-        string role "user|assistant|system"
-        string content "Message content"
-        object metadata "tokens, model, etc"
-        timestamp createdAt "Message time"
-    }
-
-    INCIDENT_IMAGES {
-        string id PK "Image ID"
-        string incidentId FK "Parent incident"
-        string url "Cloudinary URL"
-        string publicId "Cloudinary public ID"
-        number width "Image width"
-        number height "Image height"
-        timestamp uploadedAt "Upload time"
+        string userId PK
+        timestamp lastSeen
     }
 ```
 
