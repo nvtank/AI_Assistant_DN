@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0000ff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>My PWA Demo</title>
+  <link rel="manifest" href="/pwa-demo/manifest.json" />
+  <style>
+    :root { --bg: #f6f8ff; --card: #fff; --accent: #0000ff; --muted:#667085; }
+    html,body { height:100%; margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; background:var(--bg); color:#0f172a; }
+    .wrap { min-height:100%; display:flex; align-items:center; justify-content:center; padding:32px; box-sizing:border-box; }
+    .card { width:100%; max-width:720px; background:var(--card); border-radius:12px; box-shadow:0 8px 30px rgba(15,23,42,0.08); padding:28px; text-align:center; }
+    h1 { margin:0 0 8px; font-size:28px; }
+    p { margin:0 0 18px; color:var(--muted); }
+    .btn { display:inline-flex; align-items:center; gap:10px; background:var(--accent); color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600; }
+    .meta { margin-top:18px; font-size:13px; color:var(--muted); }
+  </style>
+</head>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<body>
+  <div class="wrap">
+    <div class="card" role="main">
+      <img src="https://via.placeholder.com/128/0000FF/ffffff?text=APP" alt="App" width="96" height="96" style="border-radius:16px;margin-bottom:18px" />
+      <h1>My PWA</h1>
+      <p>Small demo Progressive Web App — installable and offline-capable via Service Worker.</p>
+
+      <button id="installBtn" class="btn" style="display:none">Install App</button>
+
+      <div class="meta">
+        Tip: Open on mobile to test install behavior. The manifest uses an external placeholder icon link.
+        <div style="margin-top:8px"><a style="color:var(--accent);text-decoration:none;font-weight:600" href="/pwa-demo/index.html">Reload</a></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Register service worker for this demo path
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/pwa-demo/service-worker.js')
+        .then(reg => {
+          console.log('Service Worker registered:', reg.scope);
+        })
+        .catch(err => {
+          console.warn('Service Worker registration failed:', err);
+        });
+    }
+
+    // Optional: show install prompt for supported browsers
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-flex';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log('User response to install prompt:', outcome);
+      deferredPrompt = null;
+      installBtn.style.display = 'none';
+    });
+
+    window.addEventListener('online', () => console.log('Network: online'));
+    window.addEventListener('offline', () => console.log('Network: offline'));
+  </script>
+</body>
+</html>
