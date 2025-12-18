@@ -23,31 +23,17 @@ Workflow này tự động phân tích hình ảnh từ báo cáo sự cố, ph�
 
 ```mermaid
 flowchart TD
-    Start[n8n Workflow Trigger<br/>Webhook từ Firebase Function<br/>New incident report với image] --> N1[Node 1: Extract Image Data<br/>HTTP Request<br/>GET image from Firebase Storage]
-    N1 --> N2[Node 2: Image Preprocessing<br/>Code Node Python/JS<br/>Resize 224x224<br/>Normalize pixels<br/>Extract EXIF data]
-    N2 --> N3[Node 3: AI Model Inference<br/>HTTP Request to ML API<br/>POST /predict<br/>Send base64 image]
-    N3 --> N4{Node 4: Decision Logic<br/>IF Node Conditional}
-    
-    N4 -->|confidence >= 0.85<br/>AND severity = critical| Auto[AUTO-APPROVE]
-    N4 -->|confidence >= 0.70| Priority[PRIORITY REVIEW]
-    N4 -->|confidence < 0.70| Manual[MANUAL REVIEW]
-    
-    Auto --> N5[Node 5: Update Firebase<br/>HTTP Request Firebase REST API<br/>Update incident status<br/>Store AI analysis<br/>Set verified: true]
+    Start[Webhook Trigger] --> N1[Extract Image]
+    N1 --> N2[Preprocess Image]
+    N2 --> N3[AI Model Inference]
+    N3 --> N4{Decision Logic}
+    N4 -->|High Confidence| Auto[Auto-Approve]
+    N4 -->|Medium Confidence| Priority[Priority Review]
+    N4 -->|Low Confidence| Manual[Manual Review]
+    Auto --> N5[Update Firebase]
     Priority --> N5
     Manual --> N5
-    
-    N5 --> N6[Node 6: Broadcast Notification<br/>HTTP Request Socket.IO<br/>Emit incident:new event<br/>Send push notification<br/>Update admin dashboard]
-    
-    style Start fill:#e1f5ff
-    style N1 fill:#fff4e1
-    style N2 fill:#fff4e1
-    style N3 fill:#fff4e1
-    style N4 fill:#ffe1f5
-    style Auto fill:#d4edda
-    style Priority fill:#fff3cd
-    style Manual fill:#f8d7da
-    style N5 fill:#e1f5ff
-    style N6 fill:#e1f5ff
+    N5 --> N6[Broadcast Notification]
 ```
 
 ### Chi Tiết Các Nodes
@@ -138,39 +124,16 @@ AI Agent tự động tạo kế hoạch du lịch dựa trên yêu cầu ngư�
 
 ```mermaid
 flowchart TD
-    Start[Trigger: Webhook<br/>Travel Planner Form<br/>TravelPlanRequest JSON] --> N1[Node 1: Parse Request<br/>Extract dates, budget, preferences<br/>Validate input]
-    N1 --> N2[Node 2: Fetch Weather Forecast<br/>HTTP Request OpenWeather API<br/>Get 5-day forecast]
-    N1 --> N3[Node 3: Query Google Places API<br/>HTTP Request Google Places<br/>Nearby Search<br/>Filter by preferences]
-    
-    N2 --> N4[Node 4: Prepare Context for AI<br/>Code Node<br/>Format weather data<br/>Format places data<br/>Create prompt template]
+    Start[Webhook Trigger] --> N1[Parse Request]
+    N1 --> N2[Fetch Weather]
+    N1 --> N3[Query Places API]
+    N2 --> N4[Prepare Context]
     N3 --> N4
-    
-    N4 --> N5[Node 5: Call Gemini AI<br/>HTTP Request Gemini API<br/>Send formatted prompt<br/>Include context<br/>Request JSON response]
-    
-    N5 --> N6[Node 6: Parse AI Response<br/>Code Node<br/>Parse day-by-day itinerary<br/>Extract activities, times, costs<br/>Validate format]
-    
-    N6 --> N7[Node 7: Calculate Costs & Times<br/>Code Node<br/>Calculate Grab costs<br/>Estimate travel times<br/>Sum total budget]
-    
-    N7 --> N8[Node 8: Save to Firestore<br/>HTTP Request Firebase REST API<br/>Create travel_plans document<br/>Link to user ID]
-    
-    N8 --> N9[Node 9: Send Notification<br/>Update UI via WebSocket<br/>Send email optional<br/>Log completion]
-    
-    N1 -.Error.-> Error[Error Handling<br/>Log error<br/>Notify admin<br/>Retry with backoff]
-    N2 -.Error.-> Error
-    N3 -.Error.-> Error
-    N5 -.Error.-> Error
-    
-    style Start fill:#e1f5ff
-    style N1 fill:#fff4e1
-    style N2 fill:#fff4e1
-    style N3 fill:#fff4e1
-    style N4 fill:#fff4e1
-    style N5 fill:#ffe1f5
-    style N6 fill:#fff4e1
-    style N7 fill:#fff4e1
-    style N8 fill:#d4edda
-    style N9 fill:#d4edda
-    style Error fill:#f8d7da
+    N4 --> N5[Call Gemini AI]
+    N5 --> N6[Parse Response]
+    N6 --> N7[Calculate Costs]
+    N7 --> N8[Save to Firestore]
+    N8 --> N9[Send Notification]
 ```
 
 ### Error Handling
@@ -200,31 +163,18 @@ Workflow tự động thu thập dữ liệu mới, gán nhãn, và retrain mode
 
 ```mermaid
 flowchart TD
-    Start[Trigger: Scheduled Daily 2 AM<br/>OR Manual from Admin Dashboard] --> N1[Node 1: Collect New Images<br/>HTTP Request Firebase Firestore<br/>Query incidents with new images<br/>Filter last 7 days<br/>Download images]
-    N1 --> N2[Node 2: Auto-Labeling<br/>HTTP Request Model API<br/>Run inference on new images<br/>Get predictions with confidence<br/>Filter high-confidence >0.90]
-    N2 --> N3[Node 3: Human Review Queue<br/>Code Node<br/>Low-confidence → Review queue<br/>Send notification to admin<br/>Wait for human labels]
-    N3 --> N4[Node 4: Prepare Training Dataset<br/>Code Node<br/>Merge auto-labeled + human-labeled<br/>Split train/val/test 70/15/15<br/>Augment data]
-    N4 --> N5[Node 5: Train Model<br/>HTTP Request Training Service<br/>Upload dataset<br/>Start training job<br/>Monitor progress]
-    N5 --> N6[Node 6: Evaluate Model<br/>HTTP Request Evaluation API<br/>Run on test set<br/>Calculate metrics<br/>Compare with current model]
-    N6 --> N7{Node 7: A/B Testing Decision<br/>IF new accuracy > current + 2%}
-    N7 -->|Yes| DeployStaging[Deploy to Staging<br/>Run A/B test 10% traffic]
-    N7 -->|No| KeepCurrent[Keep Current Model<br/>Archive new model]
-    DeployStaging --> N8{Node 8: Deploy Best Model<br/>IF A/B test successful<br/>after 7 days}
-    N8 -->|Yes| DeployProd[Deploy to Production<br/>Update model version<br/>Notify team]
+    Start[Scheduled Trigger] --> N1[Collect New Images]
+    N1 --> N2[Auto-Labeling]
+    N2 --> N3[Human Review Queue]
+    N3 --> N4[Prepare Dataset]
+    N4 --> N5[Train Model]
+    N5 --> N6[Evaluate Model]
+    N6 --> N7{Accuracy > Current + 2%?}
+    N7 -->|Yes| DeployStaging[Deploy to Staging]
+    N7 -->|No| KeepCurrent[Keep Current]
+    DeployStaging --> N8{A/B Test Success?}
+    N8 -->|Yes| DeployProd[Deploy Production]
     N8 -->|No| KeepCurrent
-    
-    style Start fill:#e1f5ff
-    style N1 fill:#fff4e1
-    style N2 fill:#fff4e1
-    style N3 fill:#fff4e1
-    style N4 fill:#fff4e1
-    style N5 fill:#ffe1f5
-    style N6 fill:#fff4e1
-    style N7 fill:#ffe1f5
-    style DeployStaging fill:#fff3cd
-    style N8 fill:#ffe1f5
-    style DeployProd fill:#d4edda
-    style KeepCurrent fill:#f8d7da
 ```
 
 ---

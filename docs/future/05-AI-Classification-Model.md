@@ -40,72 +40,35 @@ Xây dựng hệ thống AI có thể:
 
 ```mermaid
 flowchart TD
-    Input[Input: Image<br/>224x224x3<br/>Normalized] --> Backbone[Feature Extraction Backbone<br/>ResNet50 / EfficientNet-B3<br/>Pre-trained on ImageNet<br/>Transfer Learning<br/>Output: 1024-dim vector]
-    
-    Backbone --> Shared[Shared Dense Layers<br/>Dense 512 → BatchNorm → ReLU → Dropout 0.3<br/>Dense 256 → BatchNorm → ReLU → Dropout 0.2]
-    
-    Shared --> TypeHead[Incident Type Head<br/>Dense 128 → ReLU<br/>Dense 4 → Softmax]
-    Shared --> SeverityHead[Severity Head<br/>Dense 64 → ReLU<br/>Dense 3 → Softmax]
-    Shared --> ConfidenceHead[Confidence Head<br/>Dense 32 → ReLU<br/>Dense 1 → Sigmoid]
-    
-    TypeHead --> TypeOutput[4 Classes<br/>flooding<br/>traffic<br/>pothole<br/>construction]
-    SeverityHead --> SeverityOutput[3 Levels<br/>low<br/>medium<br/>critical]
-    ConfidenceHead --> ConfidenceOutput[Confidence Score<br/>0.0 - 1.0]
-    
-    style Input fill:#e1f5ff
-    style Backbone fill:#fff4e1
-    style Shared fill:#fff4e1
-    style TypeHead fill:#ffe1f5
-    style SeverityHead fill:#ffe1f5
-    style ConfidenceHead fill:#ffe1f5
-    style TypeOutput fill:#d4edda
-    style SeverityOutput fill:#d4edda
-    style ConfidenceOutput fill:#d4edda
+    Input[Image Input<br/>224x224x3] --> Backbone[Feature Extraction<br/>ResNet50]
+    Backbone --> Shared[Shared Layers<br/>Dense 512 → Dense 256]
+    Shared --> TypeHead[Type Head<br/>4 Classes]
+    Shared --> SeverityHead[Severity Head<br/>3 Levels]
+    Shared --> ConfidenceHead[Confidence Head<br/>Score 0-1]
+    TypeHead --> Output[Output]
+    SeverityHead --> Output
+    ConfidenceHead --> Output
 ```
 
 ### Detailed Model Architecture
 
 ```mermaid
 graph TB
-    Input[Input Layer<br/>224x224x3<br/>Normalized Image] --> Conv1[Conv2D 7x7, 64<br/>BatchNorm<br/>ReLU]
-    Conv1 --> MaxPool[MaxPool2D 3x3]
-    MaxPool --> ResBlock1[ResBlock1 64<br/>× 3 layers]
-    ResBlock1 --> ResBlock2[ResBlock2 128<br/>× 4 layers]
-    ResBlock2 --> ResBlock3[ResBlock3 256<br/>× 6 layers]
-    ResBlock3 --> ResBlock4[ResBlock4 512<br/>× 3 layers]
-    ResBlock4 --> GAP[GlobalAveragePooling2D<br/>Output: 1024-dim]
-    
-    GAP --> Dense1[Dense 512<br/>BatchNorm<br/>ReLU<br/>Dropout 0.3]
-    Dense1 --> Dense2[Dense 256<br/>BatchNorm<br/>ReLU<br/>Dropout 0.2]
-    
-    Dense2 --> TypeDense1[Type Head<br/>Dense 128<br/>ReLU]
-    Dense2 --> SeverityDense1[Severity Head<br/>Dense 64<br/>ReLU]
-    Dense2 --> ConfDense1[Confidence Head<br/>Dense 32<br/>ReLU]
-    
-    TypeDense1 --> TypeDense2[Dense 4<br/>Softmax]
-    SeverityDense1 --> SeverityDense2[Dense 3<br/>Softmax]
-    ConfDense1 --> ConfDense2[Dense 1<br/>Sigmoid]
-    
-    TypeDense2 --> TypeOut[Type Output<br/>p_flood, p_traffic<br/>p_pothole, p_const]
-    SeverityDense2 --> SeverityOut[Severity Output<br/>p_low, p_medium<br/>p_critical]
-    ConfDense2 --> ConfOut[Confidence Output<br/>0.0 - 1.0]
-    
-    style Input fill:#e1f5ff
-    style Conv1 fill:#fff4e1
-    style MaxPool fill:#fff4e1
-    style ResBlock1 fill:#fff4e1
-    style ResBlock2 fill:#fff4e1
-    style ResBlock3 fill:#fff4e1
-    style ResBlock4 fill:#fff4e1
-    style GAP fill:#fff4e1
-    style Dense1 fill:#fff4e1
-    style Dense2 fill:#fff4e1
-    style TypeDense1 fill:#ffe1f5
-    style SeverityDense1 fill:#ffe1f5
-    style ConfDense1 fill:#ffe1f5
-    style TypeOut fill:#d4edda
-    style SeverityOut fill:#d4edda
-    style ConfOut fill:#d4edda
+    Input[Image 224x224x3] --> Conv[Conv2D]
+    Conv --> Pool[MaxPool]
+    Pool --> Res1[ResBlock1]
+    Res1 --> Res2[ResBlock2]
+    Res2 --> Res3[ResBlock3]
+    Res3 --> Res4[ResBlock4]
+    Res4 --> GAP[GlobalAvgPool]
+    GAP --> Dense1[Dense 512]
+    Dense1 --> Dense2[Dense 256]
+    Dense2 --> Type[Type Head<br/>4 Classes]
+    Dense2 --> Severity[Severity Head<br/>3 Levels]
+    Dense2 --> Confidence[Confidence Head<br/>Score]
+    Type --> Output[Output]
+    Severity --> Output
+    Confidence --> Output
 ```
 
 ### Model Code (PyTorch)

@@ -61,70 +61,22 @@ Xây dựng hệ thống AI có thể tự động phân tích hình ảnh từ 
 
 ### Kiến Trúc Hệ Thống
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    USER SUBMITS REPORT                       │
-│              (Image + Location + Description)                │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│              IMAGE PREPROCESSING SERVICE                     │
-│  - Resize & Normalize                                        │
-│  - Quality Check                                             │
-│  - Metadata Extraction                                       │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│           AI CLASSIFICATION MODEL (n8n Workflow)            │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  Step 1: Image Analysis                              │   │
-│  │  - Object Detection (YOLO/Custom Model)             │   │
-│  │  - Scene Understanding                               │   │
-│  │  - Feature Extraction                                │   │
-│  └─────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  Step 2: Incident Type Classification               │   │
-│  │  - Flooding Detection (Water, Depth Estimation)     │   │
-│  │  - Traffic Jam Detection (Vehicles, Congestion)    │   │
-│  │  - Pothole Detection (Road Damage)                 │   │
-│  │  - Construction Detection (Barriers, Equipment)    │   │
-│  └─────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  Step 3: Severity Assessment                        │   │
-│  │  - Flood Depth → Severity Level                     │   │
-│  │  - Vehicle Count → Traffic Severity                 │   │
-│  │  - Damage Size → Pothole Severity                  │   │
-│  └─────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  Step 4: Confidence Scoring                         │   │
-│  │  - Model Confidence (0-100%)                        │   │
-│  │  - Location Validation                              │   │
-│  │  - Time-based Verification                          │   │
-│  └─────────────────────────────────────────────────────┘   │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│              DECISION ENGINE                                 │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  IF confidence > 85% AND severity = critical:        │   │
-│  │    → AUTO-APPROVE + Notify Admin                    │   │
-│  │  ELSE IF confidence > 70%:                          │   │
-│  │    → FLAG FOR REVIEW (Priority Queue)                │   │
-│  │  ELSE:                                                │   │
-│  │    → PENDING (Manual Review Required)                │   │
-│  └─────────────────────────────────────────────────────┘   │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│              FIREBASE FIRESTORE                              │
-│  - Update incident status                                   │
-│  - Store AI analysis results                                │
-│  - Trigger real-time notifications                          │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A[User Submits Report] --> B[Image Preprocessing]
+    B --> C[AI Classification Model]
+    C --> D[Image Analysis]
+    D --> E[Type Classification]
+    E --> F[Severity Assessment]
+    F --> G[Confidence Scoring]
+    G --> H{Decision Engine}
+    H -->|High Confidence| I[Auto-Approve]
+    H -->|Medium Confidence| J[Priority Review]
+    H -->|Low Confidence| K[Manual Review]
+    I --> L[Update Firestore]
+    J --> L
+    K --> L
+    L --> M[Broadcast Notification]
 ```
 
 ### Mô Hình Phân Loại (Classification Model)
