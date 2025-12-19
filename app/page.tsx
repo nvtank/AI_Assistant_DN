@@ -50,7 +50,7 @@ export default function HomePage() {
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportLocation, setReportLocation] = useState<Location | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
-  const [mobileView, setMobileView] = useState<'map' | 'map'>('map');
+  const [mobileView, setMobileView] = useState<'map' | 'chat'>('map');
   // Initialize sidebar: closed on mobile, open on desktop
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window !== 'undefined') {
