@@ -11,7 +11,6 @@ export function initGeminiAI() {
     logger.error('Gemini API key not found');
     return false;
   }
-  logger.debug('Gemini AI is ready');
   return true;
 }
 
@@ -43,12 +42,6 @@ export async function callGeminiAI(
   let placeType = '';
 
   try {
-    logger.debug('Gemini AI called', { 
-      messageLength: message.length,
-      hasLocation: !!context.userLocation,
-      hasWeather: !!context.weather,
-      incidentsCount: context.nearbyIncidents?.length || 0
-    });
     for (const [type, words] of Object.entries(keywords)) {
       if (words.some(word => messageLower.includes(word))) {
         placeType = type;
@@ -197,7 +190,6 @@ Now provide specific recommendations matching user's intent:`;
     }
 
     const data = await response.json();
-    logger.debug('Gemini AI response received');
 
     // Check for API errors
     if (data.error) {
@@ -239,7 +231,6 @@ Now provide specific recommendations matching user's intent:`;
       }
       
       if (text && typeof text === 'string' && text.trim()) {
-        logger.debug('Gemini AI response extracted successfully');
         const finalResponse = weatherResponse + text;
         return finalResponse;
       }

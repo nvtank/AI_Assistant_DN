@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Pusher from 'pusher';
+import { logger } from '@/lib/logger';
 
 // Initialize Pusher (server-side)
 const pusher = new Pusher({
@@ -18,8 +19,6 @@ export async function POST(request: NextRequest) {
   try {
     const incident = await request.json();
 
-    console.log('📡 Broadcasting new incident:', incident.type);
-
     // Broadcast to all connected clients via Pusher
     await pusher.trigger('incidents', 'new-incident', incident);
 
@@ -29,7 +28,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('❌ Failed to broadcast incident:', error);
+    logger.error('Failed to broadcast incident:', error);
     return NextResponse.json(
       { error: 'Failed to broadcast incident', details: error.message },
       { status: 500 }

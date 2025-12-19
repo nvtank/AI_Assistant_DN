@@ -49,22 +49,17 @@ export function formatDistance(km: number): string {
  */
 async function getLocationFromIP(): Promise<Location> {
   try {
-    logger.debug('Fetching location from IP address');
-    
     // Use ipapi.co (free HTTPS API, 1000 requests/day, no key)
     const response = await fetch('https://ipapi.co/json/');
     
     // If API error or rate limit exceeded, return Da Nang center (safe fallback)
     if (!response.ok) {
-      logger.warn(`IP API Error (${response.status}), using default Da Nang location`);
       return DA_NANG_CENTER;
     }
     
     const data = await response.json();
     
     if (data.latitude && data.longitude) {
-      logger.debug('IP location success', { city: data.city, country: data.country_name });
-      
       return {
         lat: data.latitude,
         lng: data.longitude,
@@ -73,12 +68,9 @@ async function getLocationFromIP(): Promise<Location> {
     }
     
     // API returned fail status, use Da Nang
-    logger.warn('IP API failed to get location, using default Da Nang location');
     return DA_NANG_CENTER;
 
   } catch (error) {
-    logger.warn('IP API connection error, using default Da Nang location', error);
-    
     // CRITICAL: Always return a valid location instead of throwing error
     // This ensures the app never crashes due to location issues
     return DA_NANG_CENTER;
@@ -98,31 +90,21 @@ export function getCurrentLocation(): Promise<Location> {
   return new Promise(async (resolve) => {
     // Check if geolocation is not supported at all
     if (!navigator.geolocation) {
-      logger.warn('Geolocation API not supported, trying IP location');
       const ipLocation = await getLocationFromIP();
       resolve(ipLocation); // getLocationFromIP() already handles fallback to DA_NANG_CENTER
       return;
     }
 
-    logger.debug('Requesting geolocation (Stage 1: High accuracy GPS)');
-
     // Stage 1: Try high accuracy (GPS) - Best for mobile
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        logger.debug('GPS success (High accuracy)', { 
-          lat: position.coords.latitude, 
-          lng: position.coords.longitude 
-        });
         resolve({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         });
       },
       async (error) => {
-        logger.warn('GPS failed', { message: error.message });
-        
         // Fallback to IP location if GPS fails
-        logger.debug('Trying IP location as fallback');
         const ipLocation = await getLocationFromIP();
         resolve(ipLocation); // getLocationFromIP() already handles fallback to DA_NANG_CENTER
       },

@@ -5,13 +5,13 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Incident, Location, WeatherData, DA_NANG_CENTER } from '@/lib/types';
 import { getCurrentLocation, getAddressFromCoords } from '@/lib/utils';
-import AIChatbot from '@/components/chat/AIChatbot';
 import ReportIncidentForm from '@/components/common/ReportIncidentForm';
 import SimpleSidebar from '@/components/common/SimpleSidebar';
 import MapLegend from '@/components/map/MapLegend';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { listenToVerifiedIncidents } from '@/lib/incidentServiceFirebase';
 
+// Lazy load heavy components
 const IncidentMap = dynamic(() => import('@/components/map/IncidentMap'), {
   ssr: false,
   loading: () => (
@@ -24,16 +24,32 @@ const IncidentMap = dynamic(() => import('@/components/map/IncidentMap'), {
   ),
 });
 
+const AIChatbot = dynamic(() => import('@/components/chat/AIChatbot'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-grab-green mx-auto mb-2"></div>
+        <p className="text-gray-600 text-sm">Loading AI Chat...</p>
+      </div>
+    </div>
+  ),
+});
+
 
 export default function HomePage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const [userLocation, setUserLocation] = useState<Location>(DA_NANG_CENTER);
+  // Start with default location immediately - don't wait for geolocation
+  const [userLocation, setUserLocation] = useState<Location>(() => {
+    // Initialize with default address to avoid loading delay
+    return { ...DA_NANG_CENTER, address: 'Đà Nẵng, Việt Nam' };
+  });
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportLocation, setReportLocation] = useState<Location | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [locationLoading, setLocationLoading] = useState(false);
   const [mobileView, setMobileView] = useState<'map' | 'chat'>('map');
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -44,65 +60,73 @@ export default function HomePage() {
     }
   }, [user, authLoading, router]);
 
-  // Initialize
+  // Initialize location in background (non-blocking)
   useEffect(() => {
     if (user) {
-      initializeApp();
+      // Set loading to false immediately to show page
+      setLocationLoading(true);
+      
+      // Update location in background
+      updateLocationInBackground();
+      
+      // Fetch weather for default location immediately (non-blocking)
+      fetchWeatherInBackground(userLocation);
     }
   }, [user]);
 
-  // Subscribe to Firebase incident updates (realtime)
+  // Subscribe to Firebase incident updates (realtime) - non-blocking
   useEffect(() => {
+    if (!user) return;
+    
     const unsubscribe = listenToVerifiedIncidents((incidents) => {
       setIncidents(incidents);
-      console.log('✅ Updated incidents from Firebase:', incidents.length);
     });
 
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [user]);
 
-  const initializeApp = async () => {
+  // Update location in background without blocking render
+  const updateLocationInBackground = async () => {
     try {
-      // Get user location with better error handling
-      try {
-        console.log('🔍 Requesting user location...');
-        let location = await getCurrentLocation();
-        console.log('✅ Got location:', location);
-        
-        // Check if location is within Da Nang bounds
-        const isDaNang = location.lat >= 15.9 && location.lat <= 16.2 && 
-                         location.lng >= 107.9 && location.lng <= 108.4;
-        
-        if (!isDaNang) {
-          console.warn('⚠️ Location outside Da Nang, using Da Nang center');
-          location = DA_NANG_CENTER;
-        }
-        
-        const address = await getAddressFromCoords(location.lat, location.lng);
-        console.log('✅ Got address:', address);
-        
-        setUserLocation({ ...location, address });
-      } catch (error: any) {
-        console.error('❌ Error getting location:', error);
-        console.warn('⚠️ Using Da Nang center as default location');
-        
-        const address = await getAddressFromCoords(DA_NANG_CENTER.lat, DA_NANG_CENTER.lng);
-        setUserLocation({ ...DA_NANG_CENTER, address });
+      let location = await getCurrentLocation();
+      
+      // Check if location is within Da Nang bounds
+      const isDaNang = location.lat >= 15.9 && location.lat <= 16.2 && 
+                       location.lng >= 107.9 && location.lng <= 108.4;
+      
+      if (!isDaNang) {
+        location = DA_NANG_CENTER;
       }
-
-      // Fetch weather
-      await fetchWeather(userLocation);
-
-      setLoading(false);
-    } catch (error) {
-      console.error('Error initializing app:', error);
-      setLoading(false);
+      
+      const address = await getAddressFromCoords(location.lat, location.lng);
+      
+      const newLocation = { ...location, address };
+      setUserLocation(newLocation);
+      setLocationLoading(false);
+      
+      // Fetch weather for new location
+      fetchWeatherInBackground(newLocation);
+    } catch (error: any) {
+      let defaultLocation: Location;
+      try {
+        const address = await getAddressFromCoords(DA_NANG_CENTER.lat, DA_NANG_CENTER.lng);
+        defaultLocation = { ...DA_NANG_CENTER, address };
+      } catch (addrError) {
+        // If address lookup fails, just use default
+        defaultLocation = { ...DA_NANG_CENTER, address: 'Đà Nẵng, Việt Nam' };
+      }
+      setUserLocation(defaultLocation);
+      setLocationLoading(false);
+      
+      // Fetch weather for default location
+      fetchWeatherInBackground(defaultLocation);
     }
   };
 
-  const fetchWeather = async (location: Location) => {
+  // Fetch weather in background (non-blocking)
+  const fetchWeatherInBackground = async (location: Location) => {
     try {
       const response = await fetch(
         `/api/weather?lat=${location.lat}&lon=${location.lng}`
@@ -120,9 +144,10 @@ export default function HomePage() {
         });
       }
     } catch (error) {
-      console.error('Error fetching weather:', error);
+      // Silently fail - weather is not critical
     }
   };
+
 
   const handleMapClick = useCallback((location: Location) => {
     setReportLocation(location);
@@ -151,7 +176,8 @@ export default function HomePage() {
     });
   }, [incidents, userLocation]);
 
-  if (authLoading || loading) {
+  // Only show loading for auth, not for location/weather
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-grab-green to-green-600">
         <div className="text-center text-white">

@@ -26,13 +26,6 @@ export function getAdminApp(): App {
   const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
   const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY;
 
-  console.log('🔧 Initializing Firebase Admin SDK...', {
-    hasProjectId: !!projectId,
-    hasClientEmail: !!clientEmail,
-    hasPrivateKey: !!privateKey,
-    privateKeyLength: privateKey?.length || 0,
-  });
-
   if (!projectId) {
     const error = new Error('FIREBASE_ADMIN_PROJECT_ID is not set in environment variables');
     initializationError = error;
@@ -64,7 +57,6 @@ export function getAdminApp(): App {
       const formattedKeyContent = keyContent.match(/.{1,64}/g)?.join('\n') || keyContent;
       // Add BEGIN/END markers with proper formatting
       formattedPrivateKey = `-----BEGIN PRIVATE KEY-----\n${formattedKeyContent}\n-----END PRIVATE KEY-----`;
-      console.log('⚠️ Private key was missing BEGIN/END markers. Auto-formatted.');
     }
 
     adminApp = initializeApp({
@@ -75,18 +67,15 @@ export function getAdminApp(): App {
       }),
     });
 
-    console.log('✅ Firebase Admin SDK initialized successfully');
     return adminApp;
   } catch (error: any) {
-    console.error('❌ Failed to initialize Firebase Admin SDK:', {
-      message: error.message,
-      code: error.code,
-      name: error.name,
-    });
-    
-    // Provide more specific error messages
-    if (error.message?.includes('private_key')) {
-      console.error('💡 Tip: Make sure your FIREBASE_ADMIN_PRIVATE_KEY includes -----BEGIN PRIVATE KEY----- and -----END PRIVATE KEY----- markers');
+    // Log error details for debugging in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to initialize Firebase Admin SDK:', {
+        message: error.message,
+        code: error.code,
+        name: error.name,
+      });
     }
     
     initializationError = error;

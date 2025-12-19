@@ -15,7 +15,6 @@ let incidentsChannel: any = null;
  */
 export function initPusher() {
   if (pusherInstance) {
-    logger.debug('Pusher already initialized');
     return pusherInstance;
   }
 
@@ -27,15 +26,13 @@ export function initPusher() {
     return null;
   }
 
-  logger.debug('Initializing Pusher', { cluster });
-
   pusherInstance = new Pusher(key, {
     cluster: cluster,
     forceTLS: true // Always use HTTPS
   });
 
   pusherInstance.connection.bind('connected', () => {
-    logger.debug('Connected to Pusher');
+    // Connected successfully
   });
 
   pusherInstance.connection.bind('disconnected', () => {
@@ -63,15 +60,13 @@ export function subscribeToIncidents() {
   }
 
   if (incidentsChannel) {
-    logger.debug('Already subscribed to incidents channel');
     return incidentsChannel;
   }
 
-  logger.debug('Subscribing to incidents channel');
   incidentsChannel = pusherInstance.subscribe('incidents');
 
   incidentsChannel.bind('pusher:subscription_succeeded', () => {
-    logger.debug('Subscribed to incidents channel');
+    // Subscribed successfully
   });
 
   incidentsChannel.bind('pusher:subscription_error', (error: any) => {
@@ -91,17 +86,13 @@ export function onNewIncident(callback: (incident: Incident) => void) {
     logger.error('Cannot listen: Channel not available');
     return () => {}; // Return empty cleanup function
   }
-
-  logger.debug('Listening for new incidents');
   
   channel.bind('new-incident', (incident: Incident) => {
-    logger.debug('New incident received', { type: incident.type });
     callback(incident);
   });
 
   // Return cleanup function
   return () => {
-    logger.debug('Stopped listening for incidents');
     channel.unbind('new-incident');
   };
 }
@@ -111,7 +102,6 @@ export function onNewIncident(callback: (incident: Incident) => void) {
  */
 export function unsubscribeFromIncidents() {
   if (incidentsChannel) {
-    logger.debug('Unsubscribing from incidents channel');
     incidentsChannel.unbind_all();
     pusherInstance?.unsubscribe('incidents');
     incidentsChannel = null;
@@ -123,7 +113,6 @@ export function unsubscribeFromIncidents() {
  */
 export function disconnectPusher() {
   if (pusherInstance) {
-    logger.debug('Disconnecting Pusher');
     unsubscribeFromIncidents();
     pusherInstance.disconnect();
     pusherInstance = null;
@@ -135,8 +124,6 @@ export function disconnectPusher() {
  */
 export async function broadcastIncident(incident: Incident) {
   try {
-    logger.debug('Broadcasting incident via API');
-    
     const response = await fetch('/api/incidents/broadcast', {
       method: 'POST',
       headers: {
@@ -150,7 +137,6 @@ export async function broadcastIncident(incident: Incident) {
     }
 
     const data = await response.json();
-    logger.debug('Incident broadcasted successfully');
     return data;
 
   } catch (error) {
@@ -164,8 +150,6 @@ export async function broadcastIncident(incident: Incident) {
  */
 export async function uploadImage(file: File): Promise<string> {
   try {
-    logger.debug('Uploading image', { fileName: file.name });
-    
     const formData = new FormData();
     formData.append('image', file);
 
@@ -180,8 +164,6 @@ export async function uploadImage(file: File): Promise<string> {
     }
 
     const data = await response.json();
-    logger.debug('Image uploaded successfully');
-    
     return data.url;
 
   } catch (error) {

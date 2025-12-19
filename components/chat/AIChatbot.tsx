@@ -205,14 +205,12 @@ export default function AIChatbot({
 
     // Listen for load conversation event from sidebar (only if user explicitly clicks)
     const handleLoadConversation = () => {
-      logger.debug('Received loadConversation event from sidebar');
       // Only load if user explicitly clicks on a conversation in sidebar
       const loadChatHistory = async () => {
         try {
           setLoadingHistory(true);
           const loadConversationId = sessionStorage.getItem('loadConversationId');
           if (loadConversationId) {
-            logger.debug('Loading specific conversation from sidebar', { conversationId: loadConversationId });
             const conversationToLoad = await getChatConversation(loadConversationId);
             sessionStorage.removeItem('loadConversationId');
             
@@ -223,7 +221,6 @@ export default function AIChatbot({
               }));
               setMessages(loadedMessages);
               setConversationId(conversationToLoad.id || null);
-              logger.debug('Loaded conversation from sidebar', { messageCount: loadedMessages.length });
             }
           }
         } catch (error) {
@@ -237,8 +234,6 @@ export default function AIChatbot({
     
     // Listen for new chat requested event
     const handleNewChatRequested = async () => {
-      logger.debug('New chat requested, saving current conversation');
-      
       // Save current conversation before resetting
       if (conversationId && messages.length > 1) {
         // Only save if there are actual messages (more than just welcome message)
@@ -249,7 +244,6 @@ export default function AIChatbot({
             await updateChatConversation(conversationId, {
               completed: true,
             });
-            logger.debug('Saved current conversation before reset');
           } catch (error) {
             logger.error('Error saving conversation:', error);
           }
@@ -263,17 +257,14 @@ export default function AIChatbot({
         timestamp: new Date(),
       }]);
       setConversationId(null);
-      logger.debug('Reset chat to new conversation');
     };
     
     // Listen for conversation deleted event
     const handleConversationDeleted = (event: CustomEvent) => {
       const deletedConversationId = event.detail?.conversationId;
-      logger.debug('Conversation deleted event', { conversationId: deletedConversationId });
       
       // If all conversations were deleted or current conversation was deleted, reset state
       if (deletedConversationId === 'all' || (deletedConversationId && conversationId === deletedConversationId)) {
-        logger.debug('Conversation(s) deleted, resetting');
         setMessages([{
           role: "assistant",
           content: "👋 Hello! I am your AI assistant. Ask me anything about Da Nang!\n\n💡 Tip: Switch to Planner mode to create your travel plan.",
@@ -315,7 +306,6 @@ export default function AIChatbot({
           messages: messagesForFirestore as any,
           completed: false,
         });
-        logger.debug('Updated chat conversation in Firebase');
       } else {
         // Create new conversation
         const newConversationId = await saveChatConversation({
@@ -327,7 +317,6 @@ export default function AIChatbot({
           updatedAt: Timestamp.now() as any, // Will be overwritten by saveChatConversation
         });
         setConversationId(newConversationId);
-        logger.debug('Created new chat conversation in Firebase', { conversationId: newConversationId });
       }
     } catch (error) {
       logger.error('Error saving chat to Firebase:', error);
@@ -358,19 +347,16 @@ export default function AIChatbot({
 
       if (geminiReady) {
         try {
-          logger.debug("Calling Gemini AI", { messageLength: input.length });
           aiResponse = await callGeminiAI(input, {
             userLocation,
             weather,
             nearbyIncidents,
           });
-          logger.debug("Gemini AI response received");
         } catch (e) {
           logger.error("Gemini AI failed", e);
           aiResponse = await callServerAI();
         }
       } else {
-        logger.warn("Gemini not ready, using server AI");
         aiResponse = await callServerAI();
       }
 

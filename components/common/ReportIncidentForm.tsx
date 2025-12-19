@@ -53,7 +53,6 @@ export default function ReportIncidentForm({
         try {
           imageUrl = await uploadToCloudinary(image);
         } catch (cloudError) {
-          console.warn('Cloudinary upload failed, using base64 fallback:', cloudError);
           // Fallback to base64 if Cloudinary fails
           imageUrl = imagePreview;
         }
@@ -76,21 +75,12 @@ export default function ReportIncidentForm({
       setLoading(false);
 
       // Show success message
-      alert('✅ Report Submitted Successfully!\n\n' +
-            '📋 Status: Pending Admin Approval\n' +
-            '🔍 Your report will be reviewed and verified by Admin\n' +
-            '✓ Once approved, it will appear on the map for all users\n\n' +
-            '💡 Demo Note: In production version, you will receive:\n' +
-            '   • Real-time push notifications\n' +
-            '   • SMS/Email confirmations\n' +
-            '   • Report tracking with status updates\n' +
-            '   • Integration with city emergency services');
+      alert('Report submitted successfully. Your report is pending admin approval.');
 
       onSuccess?.();
 
     } catch (error: any) {
-      console.error('❌ Error reporting incident:', error);
-      alert('❌ An error occurred: ' + error.message);
+      alert('An error occurred while submitting your report. Please try again.');
       setLoading(false);
       setUploadProgress(0);
     }
@@ -99,20 +89,8 @@ export default function ReportIncidentForm({
   return (
     <div className="glass rounded-3xl shadow-2xl p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto border border-white/30 backdrop-blur-xl">
       <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-900">
-        📍 Report Incident
+        Report Incident
       </h2>
-
-      {/* Demo Notice */}
-      <div className="mb-3 sm:mb-4 bg-blue-50/80 backdrop-blur-sm border border-blue-200/50 rounded-xl p-2 sm:p-3">
-        <div className="flex items-start space-x-2">
-          <span className="text-sm sm:text-base">💡</span>
-          <div className="flex-1">
-            <p className="text-[10px] sm:text-xs text-blue-800 leading-relaxed">
-              <span className="font-semibold">Reports stored in Firebase:</span> Your report will be saved to Firebase Firestore and reviewed by admins in real-time.
-            </p>
-          </div>
-        </div>
-      </div>
 
       <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
         {/* Incident Type */}
