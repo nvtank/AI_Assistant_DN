@@ -294,7 +294,7 @@ export const MOCK_PLACES: Place[] = [
     name: 'Madame Lan Restaurant',
     type: 'restaurant',
     location: { lat: 16.0695, lng: 108.2242, address: '4 Bạch Đằng, Thạch Thang, Hải Châu' },
-    description: 'Upscale Vietnamese cuisine with riverside view, specializing in seafood and traditional dishes',
+    description: 'Famous for authentic Banh Xeo, spacious restaurant with Air Conditioning, right by the Han River. Staff can look after your luggage while you eat. Perfect for travelers with bags!',
     isIndoor: true,
     rating: 4.5,
     imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop',

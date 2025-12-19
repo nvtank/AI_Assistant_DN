@@ -50,7 +50,7 @@ export default function HomePage() {
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportLocation, setReportLocation] = useState<Location | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
-  const [mobileView, setMobileView] = useState<'map' | 'chat'>('chat');
+  const [mobileView, setMobileView] = useState<'map' | 'map'>('map');
   // Initialize sidebar: closed on mobile, open on desktop
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -228,16 +228,6 @@ export default function HomePage() {
               </button>
             )}
             <div className="glass rounded-2xl shadow-lg p-1 flex gap-1 flex-1">
-            <button
-                onClick={() => setMobileView('chat')}
-                className={`flex-1 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
-                  mobileView === 'chat'
-                    ? 'bg-grab-green text-white shadow-md'
-                    : 'text-gray-600 hover:bg-white/50'
-                }`}
-              >
-                <span>AI Chat</span>
-              </button>
               <button
                 onClick={() => setMobileView('map')}
                 className={`flex-1 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
@@ -247,6 +237,16 @@ export default function HomePage() {
                 }`}
               >
                 <span>Map</span>
+              </button>
+              <button
+                onClick={() => setMobileView('chat')}
+                className={`flex-1 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
+                  mobileView === 'chat'
+                    ? 'bg-grab-green text-white shadow-md'
+                    : 'text-gray-600 hover:bg-white/50'
+                }`}
+              >
+                <span>AI Chat</span>
               </button>
             </div>
           </div>

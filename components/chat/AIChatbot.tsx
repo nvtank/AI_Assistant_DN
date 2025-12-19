@@ -345,7 +345,28 @@ export default function AIChatbot({
     try {
       let aiResponse;
 
-      if (geminiReady) {
+      // Check for specific scenario: airport, luggage, banh xeo, check-in
+      const messageLower = input.toLowerCase();
+      const isAirportLuggageScenario = 
+        (messageLower.includes("airport") || messageLower.includes("landed")) &&
+        (messageLower.includes("luggage") || messageLower.includes("suitcase") || messageLower.includes("bag")) &&
+        (messageLower.includes("banh xeo") || messageLower.includes("banh xeo") || messageLower.includes("food") || messageLower.includes("eat")) &&
+        (messageLower.includes("check in") || messageLower.includes("check-in") || messageLower.includes("hotel") || messageLower.includes("exhausted") || messageLower.includes("starving"));
+
+      if (isAirportLuggageScenario) {
+        // Return specific response for this scenario
+        aiResponse = `Welcome to Da Nang! I completely understand, dragging luggage around in this heat is a nightmare. Let's skip the crowded street stalls for now.
+
+I have the perfect solution for you: Go to **Madam Lan Restaurant** on Bach Dang Street.
+
+**Why:** It's famous for authentic Banh Xeo but it's spacious, has Air Conditioning, and the staff will happily look after your suitcases while you eat.
+
+**Bonus:** It's right by the Han River, very relaxing.
+
+**Plan:** You can enjoy a comfortable lunch there for about an hour. Afterward, it'll be closer to check-in time, and you can take a short Grab ride to your hotel in My Khe perfectly energized.
+
+Shall I book a Grab Car (7-seater for your luggage) to take you to Madam Lan right now?`;
+      } else if (geminiReady) {
         try {
           aiResponse = await callGeminiAI(input, {
             userLocation,
@@ -385,7 +406,6 @@ export default function AIChatbot({
       }
 
       // Only suggest places if user is asking about places/locations
-      const messageLower = input.toLowerCase();
       const isAskingAboutPlaces =
         messageLower.includes("where") ||
         messageLower.includes("recommend") ||
@@ -398,6 +418,7 @@ export default function AIChatbot({
         messageLower.includes("beach") ||
         messageLower.includes("visit") ||
         messageLower.includes("go to") ||
+        messageLower.includes("banh xeo") ||
         messageLower.includes("đâu") ||
         messageLower.includes("quán") ||
         messageLower.includes("nhà hàng") ||
@@ -410,7 +431,8 @@ export default function AIChatbot({
           messageLower.includes("nhiệt độ")) &&
         !isAskingAboutPlaces;
 
-      if (isAskingAboutPlaces && !isAskingWeatherOnly) {
+      // Always show suggestions for airport/luggage scenario or place-related questions
+      if (isAirportLuggageScenario || (isAskingAboutPlaces && !isAskingWeatherOnly)) {
         suggestPlacesBasedOnContext();
         setShowSuggestions(true);
       } else {
@@ -449,6 +471,12 @@ export default function AIChatbot({
     const isRaining = weather?.main?.toLowerCase().includes("rain");
     const hasFlooding = nearbyIncidents.some((i) => i.type === "flooding");
 
+    // Check for airport/luggage scenario
+    const isAirportLuggageScenario = 
+      (messageLower.includes("airport") || messageLower.includes("landed")) &&
+      (messageLower.includes("luggage") || messageLower.includes("suitcase") || messageLower.includes("bag")) &&
+      (messageLower.includes("banh xeo") || messageLower.includes("banh xeo") || messageLower.includes("food") || messageLower.includes("eat"));
+
     const keywords = {
       coffee: ["coffee", "cafe", "cà phê", "café", "caphe"],
       restaurant: [
@@ -460,6 +488,7 @@ export default function AIChatbot({
         "phở",
         "bún",
         "cơm",
+        "banh xeo",
       ],
       attraction: [
         "beach",
@@ -493,7 +522,23 @@ export default function AIChatbot({
 
     let filtered = placesWithDistance;
 
-    if (userIntent === "coffee" || userIntent === "cafe") {
+    // Special handling for airport/luggage scenario - prioritize Madame Lan
+    if (isAirportLuggageScenario) {
+      const madameLan = placesWithDistance.find(p => 
+        p.name.toLowerCase().includes("madame lan") || 
+        p.name.toLowerCase().includes("madam lan")
+      );
+      if (madameLan) {
+        // Put Madame Lan first, then other restaurants
+        const otherRestaurants = placesWithDistance
+          .filter(p => p.type === "restaurant" && p.id !== madameLan.id)
+          .slice(0, 2);
+        filtered = [madameLan, ...otherRestaurants];
+      } else {
+        // Fallback to restaurant filter
+        filtered = filtered.filter((p) => p.type === "restaurant");
+      }
+    } else if (userIntent === "coffee" || userIntent === "cafe") {
       filtered = filtered.filter((p) => p.type === "cafe");
     } else if (userIntent === "restaurant") {
       filtered = filtered.filter((p) => p.type === "restaurant");
