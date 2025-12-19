@@ -1749,6 +1749,49 @@
       ],
       "tik-tok": "https://www.tiktok.com/@danangpho.sco/video/7483109296952118536?q=m%C3%ADt%20tr%E1%BB%99n%20b%C3%A0%20gi%C3%A0%20%C4%91%C3%A0%20n%E1%BA%B5ng&t=1765595047179",
       "social-link": ""
+    },
+    {
+      "id": "madame-lan",
+      "name": "Madame Lân Restaurant",
+      "type": "service",
+      "category": "restaurant",
+      "location": {
+        "lat": 16.0773,
+        "lng": 108.2231,
+        "address": "04 Bạch Đằng, Thạch Thang, Hải Châu, Đà Nẵng"
+      },
+      "description": "Không gian kiến trúc Hội An bên sông Hàn, chuyên ẩm thực Việt Nam và đặc sản Đà Nẵng - Huế.",
+      "estimatedCost": 350000,
+      "experience_duration": 120,
+      "rating": 4.3,
+      "openingHours": "06:30-21:30",
+      "phone": "+84 905 697 555",
+      "website": "https://www.facebook.com/madamelan",
+      "suitable": [
+        "family",
+        "group",
+        "foodie"
+      ],
+      "tips": [
+        "Nên thử Bánh xèo miền Trung và Nem lụi",
+        "Đặt bàn trước nếu muốn ngồi khu vực sân vườn view sông"
+      ],
+      "reviews": [
+        {
+          "user": "Sarah Jenkins",
+          "rating": 5,
+          "comment": "Beautiful atmosphere and the Banh Xeo was the best I had in Vietnam. Great for big groups.",
+          "date": "2025-12-10"
+        },
+        {
+          "user": "Minh Khang",
+          "rating": 4,
+          "comment": "Đồ ăn ngon, chuẩn vị, tuy nhiên quán khá đông khách nên phục vụ hơi chậm vào giờ cao điểm.",
+          "date": "2025-11-25"
+        }
+      ],
+      "tik-tok": "https://www.tiktok.com/@danang_angi/video/7253812948121505030?q=madame%20lan%20da%20nang&t=1765548500000",
+      "social-link": "https://madamelan.vn/"
     }
   ]
 }
