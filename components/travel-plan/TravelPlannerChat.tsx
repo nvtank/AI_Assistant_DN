@@ -13,6 +13,7 @@ import {
   getUserActiveConversation,
   getChatConversation,
   getTravelPlan,
+  getLatestPlannerConversationWithPlan,
 } from '@/lib/travelPlanService';
 import { Timestamp } from 'firebase/firestore';
 
@@ -49,22 +50,14 @@ export default function TravelPlannerChat() {
       try {
         setLoadingHistory(true);
         
-        // Check if there's a conversation ID to load from sidebar
+        // Only load conversation if explicitly requested from sidebar
+        // When F5, always start fresh (create new chat)
         let conversationToLoad = null;
         if (typeof window !== 'undefined') {
           const loadConversationId = sessionStorage.getItem('loadPlannerConversationId');
           if (loadConversationId) {
             conversationToLoad = await getChatConversation(loadConversationId);
             sessionStorage.removeItem('loadPlannerConversationId');
-          }
-        }
-        
-        // If no specific conversation to load, get active planner conversation
-        if (!conversationToLoad) {
-          const activeConversation = await getUserActiveConversation(user.uid);
-          // Only use if it's a planner conversation
-          if (activeConversation && activeConversation.type === 'planner') {
-            conversationToLoad = activeConversation;
           }
         }
         
@@ -82,18 +75,8 @@ export default function TravelPlannerChat() {
             setPlanRequest(conversationToLoad.planRequest);
           }
           
-          // If conversation has a travel plan ID and is completed, navigate to plan detail
-          if (conversationToLoad.travelPlanId && conversationToLoad.completed) {
-            try {
-              console.log('📋 Conversation has completed plan, navigating to:', conversationToLoad.travelPlanId);
-              // Navigate directly to the plan detail page
-              router.push(`/travel-plan/${conversationToLoad.travelPlanId}`);
-              return; // Exit early since we're navigating away
-            } catch (error) {
-              console.error('❌ Error navigating to travel plan:', error);
-            }
-          } else if (conversationToLoad.travelPlanId) {
-            // If plan exists but not completed, load it for preview
+          // If conversation has a travel plan ID, load it for preview
+          if (conversationToLoad.travelPlanId) {
             try {
               console.log('📋 Loading travel plan for preview:', conversationToLoad.travelPlanId);
               const plan = await getTravelPlan(conversationToLoad.travelPlanId);
@@ -106,17 +89,31 @@ export default function TravelPlannerChat() {
             }
           }
           
-          console.log('✅ Loaded planner conversation from Firebase:', loadedMessages.length, 'messages');
+          console.log('✅ Loaded planner conversation from sidebar:', loadedMessages.length, 'messages');
         } else {
-          // No active conversation, start fresh
+          // F5 or no conversation to load - always start fresh (create new chat)
           setConversationId(null);
           setMessages([{ role: 'assistant', content: QUESTIONS[0].question, timestamp: new Date() }]);
-          console.log('ℹ️ No previous planner conversation found');
+          setCurrentStep(0);
+          setPlanRequest({
+            numberOfPeople: { adults: 1, children: 0 },
+            budget: { min: 1000000, max: 5000000, currency: 'VND' },
+            foodPreferences: [],
+            allergies: [],
+            restrictions: [],
+            timePreference: { morningStart: 'normal', eveningEnd: 'normal' },
+          });
+          setGeneratedPlan(null);
+          setInput('');
+          setSelectedOptions([]);
+          console.log('🆕 Starting fresh chat (F5 or new session)');
         }
       } catch (error) {
         console.error('❌ Error loading planner conversation:', error);
         // Start fresh on error
+        setConversationId(null);
         setMessages([{ role: 'assistant', content: QUESTIONS[0].question, timestamp: new Date() }]);
+        setGeneratedPlan(null);
       } finally {
         setLoadingHistory(false);
       }

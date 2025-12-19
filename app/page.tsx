@@ -51,7 +51,14 @@ export default function HomePage() {
   const [reportLocation, setReportLocation] = useState<Location | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [mobileView, setMobileView] = useState<'map' | 'chat'>('map');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Initialize sidebar: closed on mobile, open on desktop
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      // On mobile (below lg breakpoint), sidebar should be closed by default
+      return window.innerWidth >= 1024; // lg breakpoint
+    }
+    return true; // Default to open for SSR
+  });
 
   // Check authentication
   useEffect(() => {
