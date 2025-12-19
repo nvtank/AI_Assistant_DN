@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { isAdmin } from '@/lib/authHelpers';
 import { 
   getPendingIncidents, 
   getVerifiedIncidents, 
@@ -48,7 +47,7 @@ export default function AdminPage() {
   const [dataLoading, setDataLoading] = useState(true);
   const [checkingAdmin, setCheckingAdmin] = useState(true);
 
-  // Check if user is admin
+  // Check if user is admin (using API route to bypass Firestore security rules)
   useEffect(() => {
     const checkAdminAccess = async () => {
       if (authLoading) return;
@@ -59,15 +58,29 @@ export default function AdminPage() {
       }
 
       try {
-        const userIsAdmin = await isAdmin(user.uid);
-        if (!userIsAdmin) {
-          console.warn('⚠️ Non-admin user attempted to access admin page');
+        // Get Firebase ID token
+        const idToken = await user.getIdToken();
+        
+        // Check role via API route (server-side, bypasses security rules)
+        const response = await fetch('/api/auth/check-role', {
+          headers: {
+            'Authorization': `Bearer ${idToken}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to check role');
+        }
+
+        const data = await response.json();
+        
+        if (!data.isAdmin) {
           router.push('/unauthorized');
           return;
         }
+        
         setCheckingAdmin(false);
       } catch (error) {
-        console.error('Error checking admin access:', error);
         router.push('/unauthorized');
       }
     };
@@ -94,7 +107,6 @@ export default function AdminPage() {
       setStats(statsData);
       setDataLoading(false);
     } catch (error) {
-      console.error('Error loading data:', error);
       setDataLoading(false);
     }
   };
@@ -119,12 +131,24 @@ export default function AdminPage() {
   const handleApprove = async (incidentId: string) => {
     if (confirm('Approve this incident?')) {
       try {
-        await approveIncident(incidentId);
+        const response = await fetch('/api/incidents/approve', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ incidentId }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to approve incident');
+        }
+
         setSelectedIncident(null);
-        alert('✅ Incident approved! It is now displayed on the map.');
-      } catch (error) {
-        console.error('Error approving incident:', error);
-        alert('❌ Error approving incident');
+        alert('Incident approved successfully.');
+      } catch (error: any) {
+        alert('Error approving incident: ' + (error.message || 'Unknown error'));
       }
     }
   };
@@ -136,7 +160,6 @@ export default function AdminPage() {
         setSelectedIncident(null);
         alert('✅ Incident rejected!');
       } catch (error) {
-        console.error('Error rejecting incident:', error);
         alert('❌ Error rejecting incident');
       }
     }
@@ -149,7 +172,6 @@ export default function AdminPage() {
         setSelectedIncident(null);
         alert('✅ Incident deleted!');
       } catch (error) {
-        console.error('Error deleting incident:', error);
         alert('❌ Error deleting incident');
       }
     }

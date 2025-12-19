@@ -255,11 +255,11 @@ export default function IncidentMap({
 
           markersRef.current.push(marker);
         } catch (error) {
-          console.error('Error adding marker:', error);
+          // Silently fail - marker will not be added
         }
       });
     } catch (error) {
-      console.error('Error updating markers:', error);
+      // Silently fail - markers will not be updated
     }
   }, [displayIncidents, isClient, onIncidentClick]);
 

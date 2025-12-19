@@ -172,40 +172,6 @@
       "social-link": "https://30shine.com/"
     },
     {
-      "id": "liem-barber",
-      "name": "Liem Barber Shop",
-      "type": "service",
-      "category": "barber",
-      "location": {
-        "lat": 16.0655,
-        "lng": 108.2155,
-        "address": "Lê Duẩn, Đà Nẵng"
-      },
-      "description": "Tiệm cắt tóc phong cách Chicano đường phố, bụi bặm và cá tính.",
-      "estimatedCost": 80000,
-      "experience_duration": 60,
-      "rating": 4.7,
-      "openingHours": "09:00-19:00",
-      "phone": "+84 905 567 890",
-      "website": "https://www.facebook.com/LiemBarberShop/",
-      "suitable": [
-        "men",
-        "style"
-      ],
-      "tips": [
-        "Chuyên fade và undercut",
-        "Nên đặt lịch trước"
-      ],
-      "reviews": [
-        {
-          "user": "Hải Nam",
-          "rating": 5,
-          "comment": "Thợ cắt rất kỹ, fade cực mượt. Không gian chất lừ.",
-          "date": "2025-10-10"
-        }
-      ]
-    },
-    {
       "id": "herbal-spa",
       "name": "Herbal Spa Da Nang",
       "type": "service",

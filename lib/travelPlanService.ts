@@ -63,14 +63,7 @@ export async function saveTravelPlan(plan: TravelPlan): Promise<string> {
       updatedAt: Timestamp.now(),
     };
 
-    logger.debug('Saving plan to Firestore', {
-      userId: planData.userId,
-      daysCount: planData.days?.length,
-      status: planData.status
-    });
-
     const docRef = await addDoc(collection(db, TRAVEL_PLANS_COLLECTION), planData);
-    logger.debug('Plan saved', { planId: docRef.id });
     return docRef.id;
   } catch (error) {
     logger.error('Error saving travel plan:', error);
@@ -124,8 +117,6 @@ export async function getTravelPlan(planId: string): Promise<TravelPlan | null> 
  */
 export async function getUserTravelPlans(userId: string): Promise<TravelPlan[]> {
   try {
-    logger.debug('Getting travel plans for user', { userId });
-    
     // Try with orderBy first
     try {
       const q = query(
@@ -135,7 +126,6 @@ export async function getUserTravelPlans(userId: string): Promise<TravelPlan[]> 
       );
 
       const querySnapshot = await getDocs(q);
-      logger.debug('Travel plans query snapshot', { size: querySnapshot.size });
       
       const plans: TravelPlan[] = [];
 
@@ -146,7 +136,6 @@ export async function getUserTravelPlans(userId: string): Promise<TravelPlan[]> 
         } as TravelPlan);
       });
 
-      logger.debug('Returning travel plans', { count: plans.length });
       return plans;
     } catch (orderByError: any) {
       // If orderBy fails (missing index), try without orderBy
@@ -178,7 +167,6 @@ export async function getUserTravelPlans(userId: string): Promise<TravelPlan[]> 
           return bTime - aTime; // Descending order
         });
 
-        logger.debug('Returning travel plans (without index)', { count: plans.length });
         return plans;
       }
       throw orderByError;
@@ -365,12 +353,80 @@ export async function getUserActiveConversation(userId: string): Promise<ChatCon
 }
 
 /**
+ * Lấy conversation mới nhất có travelPlanId (kể cả completed)
+ * Dùng để load lại plan khi F5 trang
+ */
+export async function getLatestPlannerConversationWithPlan(userId: string): Promise<ChatConversation | null> {
+  try {
+    // Query tất cả planner conversations có travelPlanId
+    const q = query(
+      collection(db, CHAT_CONVERSATIONS_COLLECTION),
+      where('userId', '==', userId),
+      where('type', '==', 'planner'),
+      orderBy('updatedAt', 'desc')
+    );
+
+    const querySnapshot = await getDocs(q);
+    
+    // Tìm conversation mới nhất có travelPlanId
+    for (const doc of querySnapshot.docs) {
+      const data = doc.data() as ChatConversation;
+      if (data.travelPlanId) {
+        return {
+          id: doc.id,
+          ...data,
+        } as ChatConversation;
+      }
+    }
+    
+    return null;
+  } catch (error: any) {
+    // Nếu orderBy fail, thử không có orderBy
+    if (error.code === 'failed-precondition') {
+      try {
+        const q = query(
+          collection(db, CHAT_CONVERSATIONS_COLLECTION),
+          where('userId', '==', userId),
+          where('type', '==', 'planner')
+        );
+
+        const querySnapshot = await getDocs(q);
+        const conversations: ChatConversation[] = [];
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data() as ChatConversation;
+          if (data.travelPlanId) {
+            conversations.push({
+              id: doc.id,
+              ...data,
+            } as ChatConversation);
+          }
+        });
+
+        // Sort manually by updatedAt
+        conversations.sort((a, b) => {
+          const aTime = a.updatedAt?.toDate ? a.updatedAt.toDate().getTime() : 0;
+          const bTime = b.updatedAt?.toDate ? b.updatedAt.toDate().getTime() : 0;
+          return bTime - aTime; // Descending order
+        });
+
+        return conversations[0] || null;
+      } catch (fallbackError) {
+        logger.error('Error getting latest planner conversation with plan:', fallbackError);
+        return null;
+      }
+    }
+    
+    logger.error('Error getting latest planner conversation with plan:', error);
+    return null;
+  }
+}
+
+/**
  * Get all conversations for user
  */
 export async function getUserConversations(userId: string): Promise<ChatConversation[]> {
   try {
-    logger.debug('Getting conversations for user', { userId });
-    
     // Try with orderBy first
     try {
       const q = query(
@@ -380,7 +436,6 @@ export async function getUserConversations(userId: string): Promise<ChatConversa
       );
 
       const querySnapshot = await getDocs(q);
-      logger.debug('Query snapshot', { size: querySnapshot.size });
       
       const conversations: ChatConversation[] = [];
 
@@ -399,7 +454,6 @@ export async function getUserConversations(userId: string): Promise<ChatConversa
         return bTime - aTime;
       });
 
-      logger.debug('Returning conversations', { count: conversations.length });
       return conversations;
     } catch (orderByError: any) {
       // If orderBy fails (missing index), try without orderBy
@@ -432,7 +486,6 @@ export async function getUserConversations(userId: string): Promise<ChatConversa
           return bTime - aTime;
         });
 
-        logger.debug('Returning conversations (without index)', { count: conversations.length });
         return conversations;
       }
       throw orderByError;
