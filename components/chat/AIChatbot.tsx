@@ -354,6 +354,9 @@ export default function AIChatbot({
         (messageLower.includes("check in") || messageLower.includes("check-in") || messageLower.includes("hotel") || messageLower.includes("exhausted") || messageLower.includes("starving"));
 
       if (isAirportLuggageScenario) {
+        // Delay 2 seconds before returning response for this specific scenario
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
         // Return specific response for this scenario
         aiResponse = `Welcome to Da Nang! I completely understand, dragging luggage around in this heat is a nightmare. Let's skip the crowded street stalls for now.
 
